@@ -112,6 +112,7 @@ describe 'blocks, Procs and lambdas.' do
   context "a 'binding' is the context in which code is executing." do
     before(:all) do
       class Simple
+        attr_accessor :ivar
         def initialize
           @ivar = "I am alive"
         end
@@ -121,12 +122,34 @@ describe 'blocks, Procs and lambdas.' do
         end
       end
     end
-    it 'should provide access to all variables in this binding' do
+    it 'should provide access to all variables in this binding including all passed parameters, instance variables, and local variables' do
       s = Simple.new
       @the_binding = s.give_me_the_binding(99) { "block value" }
       eval('param',@the_binding).should == 99
       eval('var',@the_binding).should == 'some variable'
+      eval('@ivar',@the_binding).should == s.ivar
+      eval('@ivar',@the_binding).should == 'I am alive'
+    end
+    it 'should provide access to all associated block in this binding' do
+      s = Simple.new
+      @the_binding = s.give_me_the_binding(99) { "block value" }
       eval('yield',@the_binding).should == 'block value'
+    end
+    it "should provide access to 'self' in this binding" do
+      s = Simple.new
+      @the_binding = s.give_me_the_binding(99) { "block value" }
+      eval('self',@the_binding).should == s
+    end
+    it "Ruby provides a binding with every block it creates" do
+      def n_times(n)
+        lambda {|val| n * val }
+          # Proc.new also works the same way (below)
+        #Proc.new {|val| n * val }
+      end
+
+      two_times = n_times(2)
+      two_times.call(3).should == 6
+      eval('n', two_times.binding).should == 2
     end
   end
 end
