@@ -127,6 +127,19 @@ describe 'Modulization' do
 
       Car.log("hello from the Car class").should == "hello from the Car class"
     end
+
+    it "should provide access to the module's instance method as a class method using the 'extend' keyword and from within the extending class at the class level" do
+
+      class Accessor
+        extend Logger
+        #class << self
+        #  include Logger
+        #end
+
+        log("hello from inside the Accessor class").should == "hello from inside the Accessor class"
+      end
+
+    end
   end
 
   context "for inheritance without subclassing" do
