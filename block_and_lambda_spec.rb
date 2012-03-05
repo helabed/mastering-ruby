@@ -108,4 +108,17 @@ describe 'blocks, Procs and lambdas.' do
       @bottom_of_method_b_reached.should == true
     end
   end
+
+  context "a 'binding' is the context in which code is executing." do
+    it 'should provide access to all variables in this binding' do
+      def give_me_the_binding(param)
+        var = "some variable"
+        binding     # a kernel method
+      end
+      the_binding = give_me_the_binding(99) { "block value" }
+      eval('param',the_binding).should == 99
+      eval('var',the_binding).should == 'some variable'
+      eval('yield',the_binding).should == 'block value'
+    end
+  end
 end
