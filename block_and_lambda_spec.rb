@@ -110,15 +110,23 @@ describe 'blocks, Procs and lambdas.' do
   end
 
   context "a 'binding' is the context in which code is executing." do
-    it 'should provide access to all variables in this binding' do
-      def give_me_the_binding(param)
-        var = "some variable"
-        binding     # a kernel method
+    before(:all) do
+      class Simple
+        def initialize
+          @ivar = "I am alive"
+        end
+        def give_me_the_binding(param)
+          var = "some variable"
+          binding     # a kernel method
+        end
       end
-      the_binding = give_me_the_binding(99) { "block value" }
-      eval('param',the_binding).should == 99
-      eval('var',the_binding).should == 'some variable'
-      eval('yield',the_binding).should == 'block value'
+    end
+    it 'should provide access to all variables in this binding' do
+      s = Simple.new
+      @the_binding = s.give_me_the_binding(99) { "block value" }
+      eval('param',@the_binding).should == 99
+      eval('var',@the_binding).should == 'some variable'
+      eval('yield',@the_binding).should == 'block value'
     end
   end
 end
