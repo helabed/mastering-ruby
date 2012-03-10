@@ -59,7 +59,7 @@ describe 'blocks, Procs and lambdas.' do
       lambda {
         l.call('1','2')}.should raise_error(ArgumentError, "wrong number of arguments (2 for 4)")
     end
-    it 'runs fine when passed a larger number of arguments as it was defined' do
+    it 'raises an error when passed a larger number of arguments as it was defined' do
       l = lambda { |a,b,c,d| "#{a}#{b}#{c}#{d}" }
       lambda {
         l.call('1','2','3','4','5')}.should raise_error(ArgumentError, "wrong number of arguments (5 for 4)")
