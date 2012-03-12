@@ -58,4 +58,15 @@ describe 'define_method' do
       m.times_8(10).should == 80
     end
   end
+  context "is NOT available inside a singleton object, but just for classes or modules" do
+    it "should raise error when we attempt to use it inside an object" do
+      class Multiplier
+      end
+      m = Multiplier.new
+      lambda {
+        m.define_method(:times_2) do |val|
+          val * 2
+        end}.should raise_error(NoMethodError)
+    end
+  end
 end

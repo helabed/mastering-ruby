@@ -1,4 +1,0 @@
-describe 'memoization' do
-
-
-end
