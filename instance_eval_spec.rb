@@ -120,7 +120,7 @@ describe 'instance_eval' do
     end
   end
   context 'allows us to create a Domain Specific Language(DSL) in a block' do
-    it "should allow us to define and use a DSL inside a block" do
+    it "should allow us to define and use a DSL inside a block - though people are moving away from such implementation because of wrong assumption that we have a closure around the block" do
       class Turtle
         def initialize
           @path = []
@@ -134,7 +134,13 @@ describe 'instance_eval' do
         def path
           @path.join
         end
+        def bad_move
+          # this does not work because the { } block will be run in this 'self' object context
+          # but the yield will be run in the original context where right, and up are not defined
+          instance_eval { yield }
+        end
         def move(&block)
+          # this 'block' will be executed in the context of this 'self'
           instance_eval &block
         end
       end
@@ -143,12 +149,34 @@ describe 'instance_eval' do
       t.up(2)
       t.right
       t.path.should == 'rrruur'
+
       t.move do
         right(3)
         up(2)
         right
       end
       t.path.should == 'rrruurrrruur'
+
+      lambda {
+      t.bad_move do
+        right(3)
+        up(2)
+        right
+      end
+      }.should raise_error(NoMethodError)
+
+      # @count below is defined in this context but not inside the to object 't' itself
+      # so even though it looks like @count should be available inside the block. But remember,
+      # we do NOT have a closure with instance_eval blocks, we are changing self to the receiver 't' where @count does
+      # not exist.
+      lambda {
+        @count = 3
+        t.move do
+          right(@count)
+          up(2)
+          right
+        end
+      }.should raise_error(TypeError)
     end
   end
 end
