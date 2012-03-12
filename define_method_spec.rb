@@ -69,4 +69,18 @@ describe 'define_method' do
         end}.should raise_error(NoMethodError)
     end
   end
+  context "can be made available inside a singleton object with the help of class_eval" do
+    it "should allow us to create methods inside a class" do
+      class Multiplier
+      end
+      m = Multiplier.new
+      m.class.class_eval do
+        # now the value of 'self' is the class of m
+        define_method(:times_2) do |val|
+          val * 2
+        end
+      end
+      m.times_2(3).should == 6
+    end
+  end
 end

@@ -245,7 +245,6 @@ describe 'memoization examples - many ways to do it - subclassing, method rewrit
       end
     end
     it "should execute expensive calculation once" do
-      #d = memoize(Discounter_4, :discount).new
       d = Discounter_4.new
       def d.discount(*skus)
         @expensive_calculation = false
@@ -270,7 +269,7 @@ describe 'memoization examples - many ways to do it - subclassing, method rewrit
 
 
 
-  context "memoization using a ghost with code generation to create a hidden singleton class" do
+  context "memoization using a ghost class with code generation to create a hidden singleton class" do
     class Discounter_5
       attr_accessor :expensive_calculation
       def initialize
@@ -289,18 +288,31 @@ describe 'memoization examples - many ways to do it - subclassing, method rewrit
         skus.inject {|m,n| m + n }
       end
     end
-    it "should execute expensive calculation once" do
-      #d = memoize(Discounter_4, :discount).new
-      d = Discounter_5.new
-      def d.discount(*skus)
-        @expensive_calculation = false
-        @memory ||= {}
-        if @memory.has_key?(skus)
-          @memory[skus]
-        else
-          @memory[skus] = super(*skus)
+    it "should execute expensive calculation once - see 'create_a_ghost_class_from_an_object.png'" do
+      def memoize(obj, method)
+        # the line below (obj.class.class_eval do) would fail with 'no superclass method `discount' for #<Discounter_5..' because it is true,
+        # we are inside Discounter_5 and it doesn't have a superclass
+        # so we have to create a ghost class and use class_eval on it - see 'create_a_ghost_class_from_an_object.png'
+        # also - see 'create_a_ghost_class_from_an_object_2.png'
+        ghost = class << obj
+          self
+        end
+        # now ghost's superclass is Discounter_5 and ghost has superclass method called discount
+        ghost.class_eval do
+        #obj.class.class_eval do
+          memory ||= {}
+          define_method(method) do |*args|
+            @expensive_calculation = false
+            if memory.has_key?(args)
+              memory[args]
+            else
+              memory[args] = super(*args)
+            end
+          end
         end
       end
+      d = Discounter_5.new
+      memoize(d, :discount)
       d.discount(1,2,3).should == 6
       d.expensive_calculation.should == true
       d.discount(1,2,3).should == 6
