@@ -83,4 +83,23 @@ describe 'define_method' do
       m.times_2(3).should == 6
     end
   end
+  context "can be made available inside a singleton object's ghost subclass with the help of class_eval" do
+    it "should allow us to create methods inside a class" do
+      class Multiplier
+        def times_3(val)
+          val * 3
+        end
+      end
+      m = Multiplier.new
+      ghost = class << m; self; end;
+      ghost.class_eval do
+        # now the value of 'self' is the class of m
+        define_method(:times_2) do |val|
+          val * 2
+        end
+      end
+      m.times_2(3).should == 6
+      m.times_3(3).should == 9
+    end
+  end
 end
