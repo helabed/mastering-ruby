@@ -562,7 +562,7 @@ describe 'memoization examples - many ways to do it - subclassing, method rewrit
 
   context "memoization using Delegation" do
     it "should execute expensive calculation once" do
-      pending
+      pending "not done yet"
     end
   end
 end

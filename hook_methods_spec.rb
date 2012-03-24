@@ -6,8 +6,28 @@ describe 'ruby hook methods' do
       end
     end
     context "method_added" do
-      it "should do method_added" do
-        #pending("not done yet")
+      it "should do be triggered everytime we add a method to a class" do
+        module TraceMethodCalls
+          def self.included(klass)
+            def klass.method_added(name)
+              @stack.push "added method #{name} to class #{self}"
+            end
+          end
+        end
+        class Example
+          include TraceMethodCalls
+
+          class << self
+            attr_accessor :stack
+          end
+          @stack = []
+
+          def a_method( arg1, arg2 )
+            arg1 + arg2
+          end
+        end
+        ex = Example.new
+        Example.stack.pop.should == "added method a_method to class Example"
       end
     end
     context "singleton_method_added" do
@@ -43,16 +63,41 @@ describe 'ruby hook methods' do
 
   context "- for Classes and Modules: " do
     context "inherited" do
-      it "should do inherited" do
+      it "should show us who inherited from us with help of a stack" do
         class Parent
           def self.inherited(klass)
-            puts "#{self} was inherited by #{klass}"
+            @stack.push "#{self} was inherited by #{klass}"
           end
+
+          class << self
+            attr_accessor :stack
+          end
+          @stack = []
         end
         class Child < Parent
         end
         class AnotherChild < Parent
         end
+        Parent.stack.pop.should == 'Parent was inherited by AnotherChild'
+        Parent.stack.pop.should == 'Parent was inherited by Child'
+      end
+      it "should show us who inherited from us with help of a queue" do
+        class TheParent
+          def self.inherited(klass)
+            @queue << "#{self} was inherited by #{klass}"
+          end
+
+          class << self
+            attr_accessor :queue
+          end
+          @queue = []
+        end
+        class TheChild < TheParent
+        end
+        class TheOtherChild < TheParent
+        end
+        TheParent.queue.shift.should == 'TheParent was inherited by TheChild'
+        TheParent.queue.shift.should == 'TheParent was inherited by TheOtherChild'
       end
     end
     context "append_features" do
@@ -119,7 +164,7 @@ describe 'ruby hook methods' do
         end
         Module.call_ben
         Module.stack.pop.should == 'Missing Ben'
-        lambda {Fred}.should raise_error(NameError)
+        lambda {Francois}.should raise_error(NameError)
       end
       it "should be restricted to a single class or module when defined inside this class or module" do
         class Dave
@@ -137,7 +182,7 @@ describe 'ruby hook methods' do
         end
         Dave.call_ben
         Dave.stack.pop.should == 'Missing Ben in Dave'
-        lambda {Fred}.should raise_error(NameError)
+        lambda {Gamel}.should raise_error(NameError)
       end
     end
   end
