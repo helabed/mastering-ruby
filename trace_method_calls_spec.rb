@@ -338,7 +338,7 @@ describe 'trace method calls' do
       module TraceMethodCalls_6
         def self.included(klass)
           method_hash = klass.const_set(:METHOD_HASH, {})
-          suppress_tracing do 
+          suppress_tracing do
             # instance_methods(false) because we don't want inherited methods
             klass.instance_methods(false).sort.each do |meth|
               # meth is provided as a string and not a symbol ( a total inconsistency in Ruby)
@@ -409,7 +409,7 @@ describe 'trace method calls' do
       module TraceMethodCalls_7
         def self.included(klass)
           method_hash = klass.const_set(:METHOD_HASH, {})
-          suppress_tracing do 
+          suppress_tracing do
             # instance_methods(false) because we don't want inherited methods
             klass.instance_methods(false).sort.each do |meth|
               # meth is provided as a string and not a symbol ( a total inconsistency in Ruby)
@@ -496,12 +496,35 @@ describe 'trace method calls' do
     it "should trace any existing class in Ruby 1.8 - with nested classes and dealing with recursive Array#inspect" do
       module TraceMethodCalls_8
         def self.included(klass)
-          method_hash = klass.const_set(:METHOD_HASH, {})
-          suppress_tracing do 
-            # instance_methods(false) because we don't want inherited methods
-            klass.instance_methods(false).sort.each do |meth|
-              # meth is provided as a string and not a symbol ( a total inconsistency in Ruby)
-              wrap_method(klass, meth.to_sym)
+          method_hash = klass.const_set(:METHODS_HASH, {})
+          # instance_methods(false) because we don't want inherited methods
+          suppress_tracing do
+            if klass == Array
+              klass.instance_methods(false).each do |meth|
+                # meth is provided as a string in Ruby 1.8 and not a symbol ( a total inconsistency in Ruby)
+                # had to pre-empt these Array methods otherwise I could not Trace any other array methods
+                arr = [
+                         '+',
+                         '<<',
+                         'each',
+                         'empty?',
+                         'reject',
+                         'reverse',
+                         'reverse_each',
+                         'select',
+                      ]
+
+                unless arr.include? "#{meth}"
+                  wrap_method(klass, meth.to_sym)
+                end
+              end
+            else
+              suppress_tracing do
+                klass.instance_methods(false).sort.each do |meth|
+                  # meth is provided as a string and not a symbol ( a total inconsistency in Ruby)
+                  wrap_method(klass, meth.to_sym)
+                end
+              end
             end
           end
           # inside body of method_added, self is set to klass
@@ -525,28 +548,37 @@ describe 'trace method calls' do
           ! Thread.current[:'suppress tracing'] # if hash never been initialize, will return true
         end
         def self.wrap_method(klass, name)
-          method_hash = klass.const_get(:METHOD_HASH)
+          method_hash = klass.const_get(:METHODS_HASH)
           method_hash[name] = klass.instance_method(name)
           # inside here, we are overwriting the method name with our own tracing method
           body = %{
             def #{name}(*args, &block)
               if TraceMethodCalls_8.ok_to_trace?
-                TraceMethodCalls_8.suppress_tracing do 
+                TraceMethodCalls_8.suppress_tracing do
                   self.class.queue << "Calling method #{klass}\##{name} with \#{args.inspect}"
                 end
               end
-              result = METHOD_HASH[:#{name}].bind(self).call(*args, &block)
+              result = METHODS_HASH[:#{name}].bind(self).call(*args, &block)
               if TraceMethodCalls_8.ok_to_trace?
-                TraceMethodCalls_8.suppress_tracing do 
+                TraceMethodCalls_8.suppress_tracing do
                   self.class.queue << "#{klass}\##{name} result = \#{result}"
                 end
               end
               result
             end
           }
-          puts body
+          #puts body
           klass.class_eval body
         end
+      end
+
+      class Array
+        include TraceMethodCalls_8
+
+        class << self
+          attr_accessor :queue
+        end
+        @queue = []
       end
 
       class AOne
@@ -582,15 +614,169 @@ describe 'trace method calls' do
       ATwo.queue.shift.should == "Calling method ATwo#two with []"
       ATwo.queue.shift.should == "ATwo#two result = 99"
       AOne.queue.shift.should == "AOne#one result = 99"
+    end
+  end
+  context '- nineth iteration' do
+    it "should trace any existing class in Ruby 1.9 - with nested classes and with method_define with block support" do
+      module TraceMethodCalls_9
+        def self.included(klass)
+          method_hash = klass.const_set(:METHOD_HASH, {})
+          # instance_methods(false) because we don't want inherited methods
+          suppress_tracing do
+            if klass == Array
+              klass.instance_methods(false).each do |meth|
+                # meth is provided as a string in Ruby 1.8 and not a symbol ( a total inconsistency in Ruby)
+                # had to pre-empt these Array methods otherwise I could not Trace any other array methods
+                arr = [
+                         '+',
+                         '<<',
+                         'each',
+                         'empty?',
+                         'reject',
+                         'reverse',
+                         'reverse_each',
+                         'select',
+                      ]
+
+                unless arr.include? "#{meth}"
+                  #puts "I am with #{meth}"
+                  wrap_method(klass, meth.to_sym)
+                end
+              end
+            else
+              suppress_tracing do
+                klass.instance_methods(false).sort.each do |meth|
+                  # meth is provided as a string and not a symbol ( a total inconsistency in Ruby)
+                  wrap_method(klass, meth.to_sym)
+                end
+              end
+            end
+          end
+          # inside body of method_added, self is set to klass
+          def klass.method_added(name)
+            return if @_adding_a_method
+            @_adding_a_method = true
+            TraceMethodCalls_9.wrap_method(self, name)
+            @_adding_a_method = false
+          end
+        end
+        def self.suppress_tracing
+          # old_value is needed to deal with nesting
+          old_value = Thread.current[:'suppress tracing 9']
+          # Thread.current returns the current thread and allows us to store whatever we want in its hash
+          Thread.current[:'suppress tracing 9'] = true
+          yield
+        ensure  # no need for begin..end for ensure
+          Thread.current[:'suppress tracing 9'] = old_value
+        end
+        def self.ok_to_trace?
+          ! Thread.current[:'suppress tracing 9'] # if hash never been initialize, will return true
+        end
+        def self.wrap_method(klass, name)
+          #puts "inside wrap_method, self is: #{self.inspect} and name is: #{name}"
+          klass.class_eval do
+            #puts "inside klass.class_eval, self is: #{self.inspect}, and name is: #{name}"
+            original_method = instance_method(name)
+            # inside here, we are overwriting the method name with our own tracing method
+            define_method(name) do |*args, &block|
+              if TraceMethodCalls_9.ok_to_trace?
+                TraceMethodCalls_9.suppress_tracing do
+                  self.class.queue << "==> Calling method #{klass}\##{name} with #{args.inspect}"
+                end
+              end
+              result = original_method.bind(self).call(*args, &block)
+              if TraceMethodCalls_9.ok_to_trace?
+                TraceMethodCalls_9.suppress_tracing do
+                  self.class.queue << "<== #{klass}\##{name} result = #{result}"
+                end
+              end
+              result
+            end
+          end
+        end
+      end
+
+      class AAOne
+        include TraceMethodCalls_9
+
+        class << self
+          attr_accessor :queue
+        end
+        @queue = []
+
+        def one
+          t = AATwo.new
+          t.two
+        end
+      end
+
+      class AATwo
+        include TraceMethodCalls_9
+
+        class << self
+          attr_accessor :queue
+        end
+        @queue = []
+
+        def two
+          99
+        end
+      end
 
 #     class Array
-#       include TraceMethodCalls_8
+#       include TraceMethodCalls_9
 #
 #       class << self
 #         attr_accessor :queue
 #       end
 #       @queue = []
 #     end
+
+      AAOne.new.one
+
+      AAOne.queue.shift.should == "==> Calling method AAOne#one with []"
+      AATwo.queue.shift.should == "==> Calling method AATwo#two with []"
+      AATwo.queue.shift.should == "<== AATwo#two result = 99"
+      AAOne.queue.shift.should == "<== AAOne#one result = 99"
+
+      class Example_9
+        include TraceMethodCalls_9
+
+        class << self
+          attr_accessor :queue
+        end
+        @queue = []
+
+        def a_method( arg1, arg2 )
+          arg1 + arg2
+        end
+
+        def another_method( arg1 )
+          arg1 * yield
+        end
+
+        def name=(name)
+          @name = name
+        end
+
+        def <<(thing)
+          "pushing #{thing}"
+        end
+      end
+      ex = Example_9.new
+      ex.a_method(3,4)
+      Example_9.queue.shift.should == "==> Calling method Example_9#a_method with [3, 4]"
+      Example_9.queue.shift.should == "<== Example_9#a_method result = 7"
+      ex.another_method(50) { 2 }
+      Example_9.queue.shift.should == "==> Calling method Example_9#another_method with [50]"
+      Example_9.queue.shift.should == "<== Example_9#another_method result = 100"
+      ex.name = 'fred'
+      Example_9.queue.shift.should == "==> Calling method Example_9#name= with [\"fred\"]"
+      Example_9.queue.shift.should == "<== Example_9#name= result = fred"
+      ex << 'cat'
+      Example_9.queue.shift.should == "==> Calling method Example_9#<< with [\"cat\"]"
+      Example_9.queue.shift.should == "<== Example_9#<< result = pushing cat"
+
     end
   end
 end
