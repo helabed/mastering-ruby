@@ -27,7 +27,7 @@ describe 'blocks, Procs and lambdas.' do
       l = Proc.new { |a,b,c| a+b+c }
       l.call(1,2,3).should == 6
     end
-    it 'runs fine when passed the exact number of arguments as it was defined' do
+    it 'runs fine when passed the exact number of string arguments as it was defined' do
       l = Proc.new { |a,b,c,d| "#{a}#{b}#{c}#{d}" }
       l.call('1','2','3','4').should == '1234'
     end
@@ -50,7 +50,7 @@ describe 'blocks, Procs and lambdas.' do
       l = lambda { |a,b,c| a+b+c }
       l.call(1,2,3).should == 6
     end
-    it 'runs fine when passed the exact number of arguments as it was defined' do
+    it 'runs fine when passed the exact number of string arguments as it was defined' do
       l = lambda { |a,b,c,d| "#{a}#{b}#{c}#{d}" }
       l.call('1','2','3','4').should == '1234'
     end
@@ -140,7 +140,7 @@ describe 'blocks, Procs and lambdas.' do
       @the_binding = s.give_me_the_binding(99) { "block value" }
       eval('self',@the_binding).should == s
     end
-    it "Ruby provides a binding with every block it creates" do
+    it "Ruby provides a binding with every block it creates - with lambda" do
       def n_times(n)
         lambda {|val| n * val }
           # Proc.new also works the same way (below)
@@ -150,6 +150,15 @@ describe 'blocks, Procs and lambdas.' do
       two_times = n_times(2)
       two_times.call(3).should == 6
       eval('n', two_times.binding).should == 2
+    end
+    it "Ruby provides a binding with every block it creates - with Proc.new" do
+      def many_times(n)
+        Proc.new {|val| n * val }
+      end
+
+      three_times = many_times(3)
+      three_times.call(5).should == 15
+      eval('n', three_times.binding).should == 3
     end
   end
 end
