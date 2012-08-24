@@ -201,7 +201,8 @@ describe 'trace method calls' do
       # another way of getting at the constant
       my_class.class::MY_CONST[:my_var].should == 'var_1'
       # yet another way of getting at the constant
-      my_class.instance_eval {MY_CONST[:my_var]}.should == 'var_1'
+      my_class.instance_eval {
+        MyClass::MY_CONST[:my_var]}.should == 'var_1'
     end
   end
   context '- forth iteration' do
@@ -329,8 +330,12 @@ describe 'trace method calls' do
       ex.localtime
       Time.queue.shift.should == "Calling method localtime with []"
       Time.queue.shift.should == "Calling method to_s with []"
-      Time.queue.shift.should == "result = 2012-03-25 14:33:20 -0500"
-      Time.queue.shift.should == "result = 2012-03-25 14:33:20 -0500"
+      if ENV['RUBY_VERSION'] =~ /1\.8/
+        Time.queue.shift.should == "result = Sun Mar 25 14:33:20 -0500 2012"
+      end
+      if ENV['RUBY_VERSION'] =~ /1\.9/
+        Time.queue.shift.should == "result = 2012-03-25 14:33:20 -0500"
+      end
     end
   end
   context '- sixth iteration' do
