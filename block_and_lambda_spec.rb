@@ -161,4 +161,20 @@ describe 'blocks, Procs and lambdas.' do
       eval('n', three_times.binding).should == 3
     end
   end
+  context "a 'reference' to the block can be passed around with an '&'" do
+    class A
+      attr_accessor :a, :b
+      def initialize(a, &b)
+         @a = a
+         @b = b
+      end
+    end
+    c = 0
+    a = A.new(1) { c = 2 }
+    c.should == 0
+    it "then the bloack can be called with the call method" do
+      a.b.call
+      c.should == 2
+    end
+  end
 end
