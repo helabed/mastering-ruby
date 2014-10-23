@@ -330,12 +330,7 @@ describe 'trace method calls' do
       ex.localtime
       Time.queue.shift.should == "Calling method localtime with []"
       Time.queue.shift.should == "Calling method to_s with []"
-      if ENV['RUBY_VERSION'] =~ /1\.8/
-        Time.queue.shift.should == "result = Sun Mar 25 14:33:20 -0500 2012"
-      end
-      if ENV['RUBY_VERSION'] =~ /1\.9/
-        Time.queue.shift.should == "result = 2012-03-25 14:33:20 -0500"
-      end
+      Time.queue.shift.should == "result = Sun Mar 25 14:33:20 -0500 2012"
     end
   end
   context '- sixth iteration' do
