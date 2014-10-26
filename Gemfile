@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
 source 'http://rubygems.org'
 
-gem 'rspec-rails'
-gem 'rspec'
+gem 'rspec', '2.13.0'
