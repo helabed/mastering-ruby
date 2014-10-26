@@ -330,7 +330,8 @@ describe 'trace method calls' do
       ex.localtime
       Time.queue.shift.should == "Calling method localtime with []"
       Time.queue.shift.should == "Calling method to_s with []"
-      Time.queue.shift.should == "result = Sun Mar 25 14:33:20 -0500 2012"
+      #Time.queue.shift.should == "result = Sun Mar 25 14:33:20 -0500 2012"
+      Time.queue.shift.should == "result = 2012-03-25 14:33:20 -0500"
     end
   end
   context '- sixth iteration' do
