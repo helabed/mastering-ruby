@@ -66,7 +66,7 @@ Class Methods
 Class Variables
   can be created with self
     should be called without an instance
-  can be created with class < < self
+  can be created with class &lt;&lt; self
     should be called without an instance
 
 color enumeration
@@ -144,7 +144,7 @@ Enumerable transformers
   - partition (same as [select(&block), reject(&block)])
     returns 2 arrays for which all items in the collection whose blocks evaluate to true and false, respectively
   - sort
-    returns the transformed sorted collection by the given block or the elements own <=> operator
+    returns the transformed sorted collection by the given block or the elements own &lt;=&gt; operator
   - sort_by
     returns sorted collection using criteria in given block
 
@@ -201,7 +201,7 @@ ruby hook methods
     to_string
       should do to_string
   - example of including comparable
-    should trigger the space-ship operator (<=>) method
+    should trigger the space-ship operator (&lt;=&gt;) method
     should trigger the Ruby built-in hook method included
 
 instance_eval
@@ -275,7 +275,7 @@ Modulization
     should be available for use from an object with the 'extend' keyword
     should be available for use from an object by including the methods from the module into a singleton class using 'class < < object'
   for converting a module instance methods into class methods of the class that is mixing in the module
-    should provide access to the module's instance method as a class method using a singleton class using 'class < < self'
+    should provide access to the module's instance method as a class method using a singleton class using 'class &lt;&lt; self'
     should provide access to the module's instance method as a class method using the 'extend' keyword
     should provide access to the module's instance method as a class method using the 'extend' keyword and from within the extending class at the class level
   for inheritance without subclassing
@@ -334,12 +334,12 @@ trace method calls
   - second iteration
     should trace a simple method everytime it is called with the help of class_eval and without define_method so that it can work with Ruby 1.8
   - third iteration
-    should trace simple and complex methods(< <,[], and variable=) everytime it is called with the help of instance_method and Ruby 1.9
+    should trace simple and complex methods(&lt;&lt;,[], and variable=) everytime it is called with the help of instance_method and Ruby 1.9
   - sidenote - prove that a CONST is available from within both a Ruby class and its instance
     should have access to the CONST at the class level
     should have access to the CONST from any instance of the class
   - forth iteration
-    should trace simple and complex methods(< <,[], and variable=) everytime it is called with the help of instance_method and Ruby 1.8 and METHOD_HASH
+    should trace simple and complex methods(&lt;&lt;,[], and variable=) everytime it is called with the help of instance_method and Ruby 1.8 and METHOD_HASH
   - fifth iteration
     should trace any existing class in Ruby 1.8 - try it with Time class
   - sixth iteration
