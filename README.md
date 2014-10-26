@@ -60,7 +60,7 @@ class_eval or module_eval
 Class Methods
   can be created with self
     should be called without an instance
-  can be created with class < < self
+  can be created with class &lt;&lt; self
     should be called without an instance
 
 Class Variables
@@ -273,7 +273,7 @@ Modulization
     should assert that to 'include' a module's instance method does not mean copying the method's body, but instead referencing the one and only copy of it
     should be available for use from more than one class
     should be available for use from an object with the 'extend' keyword
-    should be available for use from an object by including the methods from the module into a singleton class using 'class < < object'
+    should be available for use from an object by including the methods from the module into a singleton class using 'class &lt;&lt; object'
   for converting a module instance methods into class methods of the class that is mixing in the module
     should provide access to the module's instance method as a class method using a singleton class using 'class &lt;&lt; self'
     should provide access to the module's instance method as a class method using the 'extend' keyword
