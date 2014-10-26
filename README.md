@@ -273,9 +273,9 @@ Modulization
     should assert that to 'include' a module's instance method does not mean copying the method's body, but instead referencing the one and only copy of it
     should be available for use from more than one class
     should be available for use from an object with the 'extend' keyword
-    should be available for use from an object by including the methods from the module into a singleton class using 'class << object'
+    should be available for use from an object by including the methods from the module into a singleton class using 'class < < object'
   for converting a module instance methods into class methods of the class that is mixing in the module
-    should provide access to the module's instance method as a class method using a singleton class using 'class << self'
+    should provide access to the module's instance method as a class method using a singleton class using 'class < < self'
     should provide access to the module's instance method as a class method using the 'extend' keyword
     should provide access to the module's instance method as a class method using the 'extend' keyword and from within the extending class at the class level
   for inheritance without subclassing
