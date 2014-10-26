@@ -60,13 +60,13 @@ class_eval or module_eval
 Class Methods
   can be created with self
     should be called without an instance
-  can be created with class << self
+  can be created with class < < self
     should be called without an instance
 
 Class Variables
   can be created with self
     should be called without an instance
-  can be created with class << self
+  can be created with class < < self
     should be called without an instance
 
 color enumeration
@@ -334,12 +334,12 @@ trace method calls
   - second iteration
     should trace a simple method everytime it is called with the help of class_eval and without define_method so that it can work with Ruby 1.8
   - third iteration
-    should trace simple and complex methods(<<,[], and variable=) everytime it is called with the help of instance_method and Ruby 1.9
+    should trace simple and complex methods(< <,[], and variable=) everytime it is called with the help of instance_method and Ruby 1.9
   - sidenote - prove that a CONST is available from within both a Ruby class and its instance
     should have access to the CONST at the class level
     should have access to the CONST from any instance of the class
   - forth iteration
-    should trace simple and complex methods(<<,[], and variable=) everytime it is called with the help of instance_method and Ruby 1.8 and METHOD_HASH
+    should trace simple and complex methods(< <,[], and variable=) everytime it is called with the help of instance_method and Ruby 1.8 and METHOD_HASH
   - fifth iteration
     should trace any existing class in Ruby 1.8 - try it with Time class
   - sixth iteration
