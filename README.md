@@ -3,7 +3,7 @@ mastering-ruby
 
 my attempt at mastering ruby motivated by Dave Thomas video tutorials https://pragprog.com/screencasts/v-dtrubyom/the-ruby-object-model-and-metaprogramming
 
-
+<pre>
 helabed@hani-elabeds-MacBook-Pro:~/mastering-ruby(master) $ rspec ./*_spec.rb -f doc
 
 blocks, Procs and lambdas.
@@ -358,3 +358,4 @@ Pending:
 
 Finished in 0.12168 seconds
 188 examples, 0 failures, 1 pending 
+</pre>
