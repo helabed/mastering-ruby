@@ -14,10 +14,10 @@ describe 'Class Variables' do
       end
     end
     it "should be called without an instance" do
-      David.count.should == 0
+      expect(David.count).to eq 0
       d1 = David.new
       d2 = David.new
-      David.count.should == 2
+      expect(David.count).to eq 2
     end
   end
   context "can be created with class << self" do
@@ -34,11 +34,10 @@ describe 'Class Variables' do
       end
     end
     it "should be called without an instance" do
-      Dave.count.should == 0
+      expect(Dave.count).to eq 0
       d1 = Dave.new
       d2 = Dave.new
-      Dave.count.should == 2
+      expect(Dave.count).to eq 2
     end
   end
 end
-
