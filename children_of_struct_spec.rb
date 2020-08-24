@@ -1,5 +1,3 @@
-require 'rspec/autorun'
-
 RSpec.describe 'Struct' do
 
   context 'a Struct allows bundling a number of attributes together without needing an explicit class' do
