@@ -1,27 +1,27 @@
-describe 'color enumeration' do
-  context 'using different classes' do
-    it "should define color enumeration classes on the fly" do
+describe 'enumeration' do
+  context 'using many different enumeration classes' do
+    it "should define enumeration classes on the fly (ex: Color or ThreatLevel)" do
       class Color
         def self.const_missing(name)
           const_set(name, new)
         end
       end
-      Color::Red.should == Color::Red
-      Color::Red.should_not == Color::Orange
+      expect(Color::Red).to eq Color::Red
+      expect(Color::Red).to_not eq Color::Orange
     end
-    it "should be distinct from other classes color enumeration schemes" do
+    it "should be distinct from other enumeration classes (ex: Color vs. ThreatLevel)" do
       class ThreatLevel
         def self.const_missing(name)
           const_set(name, new)
         end
       end
-      Color::Red.should_not == ThreatLevel::Red
-      Color::Orange.should_not == ThreatLevel::Orange
-      ThreatLevel::Red.should == ThreatLevel::Red
+      expect(Color::Red).to_not eq ThreatLevel::Red
+      expect(Color::Orange).to_not eq ThreatLevel::Orange
+      expect(ThreatLevel::Red).to eq ThreatLevel::Red
     end
   end
-  context 'using Single Enum class' do
-    it "should define color enumeration classes on the fly without conflicting with others and remember its name" do
+  context 'using a single Enum class for all kind of enumerations' do
+    it "should define Color or ThreatLevel enumeration on the fly without conflicting and remember its name/value" do
       class Enum
         def self.new
           Class.new do
@@ -44,14 +44,14 @@ describe 'color enumeration' do
       ThreatLevel = Enum.new
       Color = Enum.new
 
-      Color::Red.should == Color::Red
-      Color::Red.should_not == Color::Orange
-      Color::Orange.should_not == ThreatLevel::Orange
-      ThreatLevel::Red.should == ThreatLevel::Red
-      ThreatLevel::Red.should_not == ThreatLevel::Orange
+      expect(Color::Red).to eq Color::Red
+      expect(Color::Red).to_not eq Color::Orange
+      expect(Color::Orange).to_not eq ThreatLevel::Orange
+      expect(ThreatLevel::Red).to eq ThreatLevel::Red
+      expect(ThreatLevel::Red).to_not eq ThreatLevel::Orange
 
-      Color::Red.to_s.should == 'Color->Red'
-      ThreatLevel::Orange.to_s.should == "ThreatLevel->Orange"
+      expect(Color::Red.to_s).to eq 'Color->Red'
+      expect(ThreatLevel::Orange.to_s).to eq "ThreatLevel->Orange"
     end
   end
 end
