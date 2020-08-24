@@ -5,7 +5,7 @@ describe 'Enumerable transformers' do
       result = items.map do |x|
         x + 'w'
       end
-      result.should == ['hellow', 'mellow', 'yellow']
+      expect(result).to eq ['hellow', 'mellow', 'yellow']
     end
   end
   context '- collect (same as map)' do
@@ -14,7 +14,7 @@ describe 'Enumerable transformers' do
       result = items.collect do |x|
         x + 'w'
       end
-      result.should == ['hellow', 'mellow', 'yellow']
+      expect(result).to eq ['hellow', 'mellow', 'yellow']
     end
   end
   context '- partition (same as [select(&block), reject(&block)])' do
@@ -23,7 +23,7 @@ describe 'Enumerable transformers' do
       result = items.partition do |x|
         x.end_with?('llow')
       end
-      result.should == [['yellow'], ['hello', 'mello']]
+      expect(result).to eq [['yellow'], ['hello', 'mello']]
     end
   end
   context '- sort' do
@@ -32,13 +32,13 @@ describe 'Enumerable transformers' do
       result = items.sort do |x, y|
         x <=> y
       end
-      result.should == ['hello', 'mello', 'yello']
+      expect(result).to eq ['hello', 'mello', 'yello']
     end
   end
   context '- sort_by' do
     it 'returns sorted collection using criteria in given block' do
       result = %w{ apple pear fig }.sort_by {|word| word.length}
-      result.should == ['fig', 'pear', 'apple']
+      expect(result).to eq ['fig', 'pear', 'apple']
     end
   end
 end
