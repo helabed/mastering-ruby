@@ -5,14 +5,14 @@ describe 'Enumerable predicates' do
       result = items.all? do |x|
         x.end_with?('llo')
       end
-      result.should == true
+      expect(result).to eq true
     end
     it 'returns false if the given block evaluates to false for at least one item in the collection' do
       items << 'orange'
       result = items.all? do |x|
         x.end_with?('llo')
       end
-      result.should == false
+      expect(result).to eq false
     end
   end
 
@@ -22,13 +22,13 @@ describe 'Enumerable predicates' do
       result = items.any? do |x|
         x.end_with?('llo')
       end
-      result.should == true
+      expect(result).to eq true
     end
     it 'returns false if the given block evaluates to false for all items in the collection (none of the items evaluates to true)' do
       result = items.any? do |x|
         x.end_with?('xxx')
       end
-      result.should == false
+      expect(result).to eq false
     end
   end
 
@@ -36,11 +36,11 @@ describe 'Enumerable predicates' do
     items = %w(hello orange red)
     it 'returns true if x is a member of the collection' do
       result = items.include?('red')
-      result.should == true
+      expect(result).to eq true
     end
     it 'returns false if x is NOT a member of the collection' do
       result = items.include?('green')
-      result.should == false
+      expect(result).to eq false
     end
   end
 
@@ -48,13 +48,12 @@ describe 'Enumerable predicates' do
     items = %w(hello orange red)
     it 'returns true if x is a member of the collection' do
       result = items.member?('red')
-      result.should == true
+      expect(result).to eq true
     end
     it 'returns false if x is NOT a member of the collection' do
       result = items.member?('green')
-      result.should == false
+      expect(result).to eq false
     end
   end
-
-
 end
+
