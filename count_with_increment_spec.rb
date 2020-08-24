@@ -17,16 +17,16 @@ describe 'count with increment method' do
     counter = Counter.new.count_with_increment(10,3)
 
     it "should return start first time called" do
-      counter.call.should == 10
+      expect(counter.call).to eq 10
     end
     it "should return start + inc when called after first time(2nd)" do
-      counter.call.should == 13
+      expect(counter.call).to eq 13
     end
     it "should return start + inc when called after first time(3rd)" do
-      counter.call.should == 16
+      expect(counter.call).to eq 16
     end
     it "should return start + inc when called after first time(4th)" do
-      counter.call.should == 19
+      expect(counter.call).to eq 19
     end
   end
   context "daves solution" do
@@ -40,16 +40,16 @@ describe 'count with increment method' do
     counter = Counter.new.count_with_increment(10,3)
 
     it "should return start first time called" do
-      counter.call.should == 10
+      expect(counter.call).to eq 10
     end
     it "should return start + inc when called after first time(2nd)" do
-      counter.call.should == 13
+      expect(counter.call).to eq 13
     end
     it "should return start + inc when called after first time(3rd)" do
-      counter.call.should == 16
+      expect(counter.call).to eq 16
     end
     it "should return start + inc when called after first time(4th)" do
-      counter.call.should == 19
+      expect(counter.call).to eq 19
     end
   end
 end
