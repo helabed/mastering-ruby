@@ -1,4 +1,6 @@
-describe 'blocks, Procs and lambdas.' do
+require 'rspec/autorun'
+
+RSpec.describe 'blocks, Procs and lambdas.' do
   context 'many ways to define/create an object out of a block.' do
     it 'can be created with a lambda' do
       l = lambda { |a| a+1 }
@@ -57,12 +59,12 @@ describe 'blocks, Procs and lambdas.' do
     it 'raises an error when passed a smaller number of arguments as it was defined' do
       l = lambda { |a,b,c,d| "#{a}#{b}#{c}#{d}" }
       lambda {
-        l.call('1','2')}.should raise_error(ArgumentError, "wrong number of arguments (2 for 4)")
+        l.call('1','2')}.should raise_error(ArgumentError, "wrong number of arguments (given 2, expected 4)")
     end
     it 'raises an error when passed a larger number of arguments as it was defined' do
       l = lambda { |a,b,c,d| "#{a}#{b}#{c}#{d}" }
       lambda {
-        l.call('1','2','3','4','5')}.should raise_error(ArgumentError, "wrong number of arguments (5 for 4)")
+        l.call('1','2','3','4','5')}.should raise_error(ArgumentError, "wrong number of arguments (given 5, expected 4)")
     end
     it 'runs fine when passed a larger number of arguments and when it is defined with a variable argument list' do
       l = lambda { |a,b,c,*d| "#{a}#{b}#{c}#{d.join}" }
@@ -116,8 +118,12 @@ describe 'blocks, Procs and lambdas.' do
         def initialize
           @ivar = "I am alive"
         end
+        def get_var(var)
+          var
+        end
         def give_me_the_binding(param)
           var = "some variable"
+          get_var(var)
           binding     # a kernel method
         end
       end
