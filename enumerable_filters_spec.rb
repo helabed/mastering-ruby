@@ -5,13 +5,13 @@ describe 'Enumerable filters' do
       result = items.find do |x|
         x.end_with?('llo')
       end
-      result.should == 'hello'
+      expect(result).to eq 'hello'
     end
     it 'returns nil if no such item was found' do
       result = items.find do |x|
         x.end_with?('red')
       end
-      result.should == nil
+      expect(result).to eq nil
     end
   end
   context '- detect (same as find)' do
@@ -20,13 +20,13 @@ describe 'Enumerable filters' do
       result = items.detect do |x|
         x.end_with?('ed')
       end
-      result.should == 'red'
+      expect(result).to eq 'red'
     end
     it 'returns nil if no such item was found' do
       result = items.detect do |x|
         x.end_with?('xxx')
       end
-      result.should == nil
+      expect(result).to eq nil
     end
   end
   context '- find_all' do
@@ -35,13 +35,13 @@ describe 'Enumerable filters' do
       result = items.find_all do |x|
         x.end_with?('llo')
       end
-      result.should == ['hello', 'mello', 'yello']
+      expect(result).to eq ['hello', 'mello', 'yello']
     end
     it 'returns empty array if no such item was found' do
       result = items.find_all do |x|
         x.end_with?('red')
       end
-      result.should == []
+      expect(result).to eq []
     end
   end
   context '- select (same as find_all)' do
@@ -50,35 +50,47 @@ describe 'Enumerable filters' do
       result = items.select do |x|
         x.end_with?('llo')
       end
-      result.should == ['hello', 'mello', 'yello']
+      expect(result).to eq ['hello', 'mello', 'yello']
     end
     it 'returns empty array if no such item was found' do
       result = items.select do |x|
         x.end_with?('red')
       end
-      result.should == []
+      expect(result).to eq []
     end
   end
   context '- reject' do
     items = %w(hello mello yellow)
-    it 'returns all items in the collection for which the block evaluates to false' do
+    it 'returns all items in the collection for which the block evaluates to false (i.e removes items w/truthy blocks)' do
       result = items.reject do |x|
         x.end_with?('llow')
       end
-      result.should == ['hello', 'mello']
+      expect(result).to eq ['hello', 'mello']
     end
     it 'returns empty array if none of the items for which the block evaluates to false' do
       result = items.reject do |x|
         x.include?('llo')
       end
-      result.should == []
+      expect(result).to eq []
     end
   end
-  context '- grep(x)' do
+  context '- grep(x) or grep(/x/)' do
     items = %w(hello mello yellow)
-    it 'returns all items in the collection for which x === item' do
+    it 'returns all items in the collection for which x === item (i.e exact match)' do
       result = items.grep('mello')
-      result.should == ['mello']
+      expect(result).to eq ['mello']
+    end
+    it 'returns all items in the collection for which x ~= item (i.e item.match(/x/) - example 1)' do
+      result = items.grep(/llo/)
+      expect(result).to eq ['hello','mello','yellow']
+    end
+    it 'returns all items in the collection for which x ~= item (i.e item.match(/x/) - example 2)' do
+      result = items.grep(/llow/)
+      expect(result).to eq ['yellow']
+    end
+    it 'returns all items in the collection for which x ~= item (i.e item.match(/x/) - example 3)' do
+      result = items.grep(/llo\b/)  # \b for word boundary
+      expect(result).to eq ['hello','mello']
     end
   end
 end
