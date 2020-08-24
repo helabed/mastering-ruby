@@ -23,6 +23,14 @@ RSpec.describe 'blocks, Procs and lambdas.' do
         l.call(99).should == 100
       end
     end
+    it 'can be created with the stabby proc operator -> and called just like Proc.new.call is called' do
+      stabby = -> (a) { a+1 }
+      expect(stabby.call(99)).to eq(100)
+    end
+    it 'can be created with the stabby proc operator -> and called using the square bracket syntax' do
+      stabby = -> (a) { a+1 }
+      expect(stabby[99]).to eq(100)
+    end
   end
   context "Proc.new is liberal in dealing with parameters passing - behaves like parallel assignemnt." do
     it 'runs fine when passed the exact number of arguments as it was defined' do
@@ -116,13 +124,13 @@ RSpec.describe 'blocks, Procs and lambdas.' do
       class Simple
         attr_accessor :ivar
         def initialize
-          @ivar = "I am alive"
+          @ivar = "an instance var"
         end
         def get_var(var)
           var
         end
         def give_me_the_binding(param)
-          var = "some variable"
+          var = "some local var"
           get_var(var)
           binding     # a kernel method
         end
@@ -132,9 +140,9 @@ RSpec.describe 'blocks, Procs and lambdas.' do
       s = Simple.new
       @the_binding = s.give_me_the_binding(99) { "block value" }
       eval('param',@the_binding).should == 99
-      eval('var',@the_binding).should == 'some variable'
+      eval('var',@the_binding).should == 'some local var'
       eval('@ivar',@the_binding).should == s.ivar
-      eval('@ivar',@the_binding).should == 'I am alive'
+      eval('@ivar',@the_binding).should == 'an instance var'
     end
     it 'should provide access to all associated block in this binding' do
       s = Simple.new
@@ -178,9 +186,10 @@ RSpec.describe 'blocks, Procs and lambdas.' do
     c = 0
     a = A.new(1) { c = 2 }
     c.should == 0
-    it "then the bloack can be called with the call method" do
+    it "then the block can be called with the call method" do
       a.b.call
       c.should == 2
     end
   end
 end
+
