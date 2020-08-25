@@ -280,60 +280,66 @@ describe 'trace method calls' do
       expect(Example_4.queue.shift).to eq "result = pushing cat"
     end
   end
-#   context '- fifth iteration' do
-#     it "should trace any existing class in Ruby 1.8 - try it with Time class" do
-#       module TraceMethodCalls_5
-#         def self.included(klass)
-#           method_hash = klass.const_set(:METHOD_HASH, {})
-#           # instance_methods(false) because we don't want inherited methods
-#           klass.instance_methods(false).sort.each do |meth|
-#             # meth is provided as a string and not a symbol ( a total inconsistency in Ruby)
-#             wrap_method(klass, meth.to_sym)
-#           end
-#           # inside body of method_added, self is set to klass
-#           def klass.method_added(name)
-#             return if @_adding_a_method
-#             @_adding_a_method = true
-#             TraceMethodCalls_5.wrap_method(self, name)
-#             @_adding_a_method = false
-#           end
-#         end
-#         def self.wrap_method(klass, name)
-#           method_hash = klass.const_get(:METHOD_HASH)
-#           method_hash[name] = klass.instance_method(name)
-#           # inside here, we are overwriting the method name with our own tracing method
-#           body = %{
-#             def #{name}(*args, &block)
-#               self.class.queue << "Calling method #{name} with \#{args.inspect}"
-#               result = METHOD_HASH[:#{name}].bind(self).call(*args, &block)
-#               self.class.queue << "result = \#{result}"
-#               result
-#             end
-#           }
-#           #puts body
-#           klass.class_eval body
-#         end
+  context '- fifth iteration' do
+    it "should trace any existing class in Ruby 1.8 - try it with Time class" do
+      module TraceMethodCalls_5
+        def self.included(klass)
+          method_hash = klass.const_set(:METHOD_HASH, {})
+          # instance_methods(false) because we don't want inherited methods
+          klass.instance_methods(false).sort.each do |meth|
+            # meth is provided as a string and not a symbol ( a total inconsistency in Ruby)
+            wrap_method(klass, meth.to_sym)
+          end
+          # inside body of method_added, self is set to klass
+          def klass.method_added(name)
+            return if @_adding_a_method
+            @_adding_a_method = true
+            TraceMethodCalls_5.wrap_method(self, name)
+            @_adding_a_method = false
+          end
+        end
+        def self.wrap_method(klass, name)
+          method_hash = klass.const_get(:METHOD_HASH)
+          method_hash[name] = klass.instance_method(name)
+          # inside here, we are overwriting the method name with our own tracing method
+          body = %{
+            def #{name}(*args, &block)
+              self.class.queue << "Calling method #{name} with \#{args.inspect}"
+              result = METHOD_HASH[:#{name}].bind(self).call(*args, &block)
+              self.class.queue << "result = \#{result}"
+              result
+            end
+          }
+          #puts body
+          klass.class_eval body
+        end
+      end
+
+      require 'time'
+      ex = Time.parse("Sun Mar 25 14:33:20 CDT 2012")
+      #puts ex.localtime
+
+#
+#     # opening existing Time class
+#     class Time
+#       include TraceMethodCalls_5
+#
+#       class << self
+#         attr_accessor :queue
 #       end
-#
-#       # opening existing Time class
-#       class Time
-#         include TraceMethodCalls_5
-#
-#         class << self
-#           attr_accessor :queue
-#         end
-#         @queue = []
-#       end
-#
-#       require 'time'
-#       ex = Time.parse("Sun Mar 25 14:33:20 CDT 2012")
-#       ex.localtime
-#       expect(Time.queue.shift).to eq "Calling method localtime with []"
-#       expect(Time.queue.shift).to eq "Calling method to_s with []"
-#       expect(#Time.queue.shift).to eq "result = Sun Mar 25 14:33:20 -0500 2012"
-#       expect(Time.queue.shift).to eq "result = 2012-03-25 14:33:20 -0500"
+#       @queue = []
 #     end
-#   end
+
+        # code below is crashing rspec 3.x and rspec running on coderpad.io/sandbox
+#     expect(OurTime.class).to eq "Array"
+#     expect(OurTime.queue.shift).to eq "Calling method localtime with []"
+#     expect(Time.queue.class).to eq "Array"
+#     expect(Time.queue.shift).to eq "Calling method localtime with []"
+#     expect(Time.queue.shift).to eq "Calling method to_s with []"
+#     expect(#Time.queue.shift).to eq "result = Sun Mar 25 14:33:20 -0500 2012"
+#     expect(Time.queue.shift).to eq "result = 2012-03-25 14:33:20 -0500"
+    end
+  end
   context '- sixth iteration' do
     it "should trace any existing class in Ruby 1.8 - try it with String class - turn tracing OFF for String class while doing the tracing" do
       module TraceMethodCalls_6
@@ -723,15 +729,6 @@ describe 'trace method calls' do
           99
         end
       end
-
-#     class Array
-#       include TraceMethodCalls_9
-#
-#       class << self
-#         attr_accessor :queue
-#       end
-#       @queue = []
-#     end
 
       AAOne.new.one
 
