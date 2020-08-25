@@ -26,8 +26,8 @@ describe 'ruby hook methods' do
             arg1 + arg2
           end
         end
-        ex = Example.new
-        Example.stack.pop.should == "added method a_method to class Example"
+        Example.new
+        expect(Example.stack.pop).to eq "added method a_method to class Example"
       end
     end
     context "singleton_method_added" do
@@ -78,8 +78,8 @@ describe 'ruby hook methods' do
         end
         class AnotherChild < Parent
         end
-        Parent.stack.pop.should == 'Parent was inherited by AnotherChild'
-        Parent.stack.pop.should == 'Parent was inherited by Child'
+        expect(Parent.stack.pop).to eq 'Parent was inherited by AnotherChild'
+        expect(Parent.stack.pop).to eq 'Parent was inherited by Child'
       end
       it "should show us who inherited from us with help of a queue" do
         class TheParent
@@ -96,8 +96,8 @@ describe 'ruby hook methods' do
         end
         class TheOtherChild < TheParent
         end
-        TheParent.queue.shift.should == 'TheParent was inherited by TheChild'
-        TheParent.queue.shift.should == 'TheParent was inherited by TheOtherChild'
+        expect(TheParent.queue.shift).to eq 'TheParent was inherited by TheChild'
+        expect(TheParent.queue.shift).to eq 'TheParent was inherited by TheOtherChild'
       end
     end
     context "append_features" do
@@ -140,7 +140,7 @@ describe 'ruby hook methods' do
           end
         end
         Module.call_ben
-        Module.stack.pop.should == 'Missing Ben'
+        expect(Module.stack.pop).to eq 'Missing Ben'
       end
       it "should do const_missing by using method alias chain and delegating to original when needed" do
         class Module
@@ -163,8 +163,8 @@ describe 'ruby hook methods' do
           end
         end
         Module.call_ben
-        Module.stack.pop.should == 'Missing Ben'
-        lambda {Francois}.should raise_error(NameError)
+        expect(Module.stack.pop).to eq 'Missing Ben'
+        expect {Francois}.to raise_error(NameError)
       end
       it "should be restricted to a single class or module when defined inside this class or module" do
         class Dave
@@ -181,8 +181,8 @@ describe 'ruby hook methods' do
           end
         end
         Dave.call_ben
-        Dave.stack.pop.should == 'Missing Ben in Dave'
-        lambda {Gamel}.should raise_error(NameError)
+        expect(Dave.stack.pop).to eq 'Missing Ben in Dave'
+        expect {Gamel}.to raise_error(NameError)
       end
     end
   end
@@ -256,7 +256,7 @@ describe 'ruby hook methods' do
         end
       end
       s = SomeClass.new
-      (s < 123).should == true
+      expect((s < 123)).to eq true
     end
     it "should trigger the Ruby built-in hook method included" do
       class Module
@@ -272,7 +272,7 @@ describe 'ruby hook methods' do
         end
       end
       s = OtherClass.new
-      (s < 123).should == true
+      expect((s < 123)).to eq true
     end
   end
 end
