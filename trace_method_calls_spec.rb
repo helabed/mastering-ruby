@@ -45,14 +45,14 @@ describe 'trace method calls' do
       end
       ex = Example_1.new
       ex.a_method(3,4)
-      Example_1.queue.shift.should == "Calling method a_method with [3, 4]"
-      Example_1.queue.shift.should == "result = 7"
+      expect(Example_1.queue.shift).to eq "Calling method a_method with [3, 4]"
+      expect(Example_1.queue.shift).to eq "result = 7"
       ex.another_method(50) { 2 }
-      Example_1.queue.shift.should == "Calling method another_method with [50]"
-      Example_1.queue.shift.should == "result = 100"
+      expect(Example_1.queue.shift).to eq "Calling method another_method with [50]"
+      expect(Example_1.queue.shift).to eq "result = 100"
       ex.empty_method
-      Example_1.queue.shift.should == "Calling method empty_method with []"
-      Example_1.queue.shift.should == "result = "
+      expect(Example_1.queue.shift).to eq "Calling method empty_method with []"
+      expect(Example_1.queue.shift).to eq "result = "
     end
   end
   context '- second iteration' do
@@ -105,14 +105,14 @@ describe 'trace method calls' do
       end
       ex = Example_2.new
       ex.a_method(3,4)
-      Example_2.queue.shift.should == "Calling method a_method with [3, 4]"
-      Example_2.queue.shift.should == "result = 7"
+      expect(Example_2.queue.shift).to eq "Calling method a_method with [3, 4]"
+      expect(Example_2.queue.shift).to eq "result = 7"
       ex.another_method(50) { 2 }
-      Example_2.queue.shift.should == "Calling method another_method with [50]"
-      Example_2.queue.shift.should == "result = 100"
+      expect(Example_2.queue.shift).to eq "Calling method another_method with [50]"
+      expect(Example_2.queue.shift).to eq "result = 100"
       ex.empty_method
-      Example_2.queue.shift.should == "Calling method empty_method with []"
-      Example_2.queue.shift.should == "result = "
+      expect(Example_2.queue.shift).to eq "Calling method empty_method with []"
+      expect(Example_2.queue.shift).to eq "result = "
     end
   end
   context '- third iteration' do
@@ -172,17 +172,17 @@ describe 'trace method calls' do
       end
       ex = Example_3.new
       ex.a_method(3,4)
-      Example_3.queue.shift.should == "Calling method a_method with [3, 4]"
-      Example_3.queue.shift.should == "result = 7"
+      expect(Example_3.queue.shift).to eq "Calling method a_method with [3, 4]"
+      expect(Example_3.queue.shift).to eq "result = 7"
       ex.another_method(50) { 2 }
-      Example_3.queue.shift.should == "Calling method another_method with [50]"
-      Example_3.queue.shift.should == "result = 100"
+      expect(Example_3.queue.shift).to eq "Calling method another_method with [50]"
+      expect(Example_3.queue.shift).to eq "result = 100"
       ex.name = 'fred'
-      Example_3.queue.shift.should == "Calling method name= with [\"fred\"]"
-      Example_3.queue.shift.should == "result = fred"
+      expect(Example_3.queue.shift).to eq "Calling method name= with [\"fred\"]"
+      expect(Example_3.queue.shift).to eq "result = fred"
       ex << 'cat'
-      Example_3.queue.shift.should == "Calling method << with [\"cat\"]"
-      Example_3.queue.shift.should == "result = pushing cat"
+      expect(Example_3.queue.shift).to eq "Calling method << with [\"cat\"]"
+      expect(Example_3.queue.shift).to eq "result = pushing cat"
     end
   end
   context '- sidenote - prove that a CONST is available from within both a Ruby class and its instance' do
@@ -191,18 +191,18 @@ describe 'trace method calls' do
     end
 
     it "should have access to the CONST at the class level" do
-      MyClass::MY_CONST[:my_var].should == 'var_1'
+      expect(MyClass::MY_CONST[:my_var]).to eq 'var_1'
     end
 
     it "should have access to the CONST from any instance of the class" do
       my_class = MyClass.new
       # one way of getting at the constant
-      my_class.class.const_get(:MY_CONST)[:my_var].should == 'var_1'
+      expect(my_class.class.const_get(:MY_CONST)[:my_var]).to eq 'var_1'
       # another way of getting at the constant
-      my_class.class::MY_CONST[:my_var].should == 'var_1'
+      expect(my_class.class::MY_CONST[:my_var]).to eq 'var_1'
       # yet another way of getting at the constant
-      my_class.instance_eval {
-        MyClass::MY_CONST[:my_var]}.should == 'var_1'
+      the_var = my_class.instance_eval { MyClass::MY_CONST[:my_var]}
+      expect(the_var).to eq 'var_1'
     end
   end
   context '- forth iteration' do
@@ -264,76 +264,76 @@ describe 'trace method calls' do
       end
       ex = Example_4.new
       ex.a_method(3,4)
-      Example_4.queue.shift.should == "Calling method a_method with [3, 4]"
-      Example_4.queue.shift.should == "result = 7"
+      expect(Example_4.queue.shift).to eq "Calling method a_method with [3, 4]"
+      expect(Example_4.queue.shift).to eq "result = 7"
       ex.another_method(50) { 2 }
-      Example_4.queue.shift.should == "Calling method another_method with [50]"
-      Example_4.queue.shift.should == "result = 100"
+      expect(Example_4.queue.shift).to eq "Calling method another_method with [50]"
+      expect(Example_4.queue.shift).to eq "result = 100"
       ex.empty_method
-      Example_4.queue.shift.should == "Calling method empty_method with []"
-      Example_4.queue.shift.should == "result = "
+      expect(Example_4.queue.shift).to eq "Calling method empty_method with []"
+      expect(Example_4.queue.shift).to eq "result = "
       ex.name = 'fred'
-      Example_4.queue.shift.should == "Calling method name= with [\"fred\"]"
-      Example_4.queue.shift.should == "result = fred"
+      expect(Example_4.queue.shift).to eq "Calling method name= with [\"fred\"]"
+      expect(Example_4.queue.shift).to eq "result = fred"
       ex << 'cat'
-      Example_4.queue.shift.should == "Calling method << with [\"cat\"]"
-      Example_4.queue.shift.should == "result = pushing cat"
+      expect(Example_4.queue.shift).to eq "Calling method << with [\"cat\"]"
+      expect(Example_4.queue.shift).to eq "result = pushing cat"
     end
   end
-  context '- fifth iteration' do
-    it "should trace any existing class in Ruby 1.8 - try it with Time class" do
-      module TraceMethodCalls_5
-        def self.included(klass)
-          method_hash = klass.const_set(:METHOD_HASH, {})
-          # instance_methods(false) because we don't want inherited methods
-          klass.instance_methods(false).sort.each do |meth|
-            # meth is provided as a string and not a symbol ( a total inconsistency in Ruby)
-            wrap_method(klass, meth.to_sym)
-          end
-          # inside body of method_added, self is set to klass
-          def klass.method_added(name)
-            return if @_adding_a_method
-            @_adding_a_method = true
-            TraceMethodCalls_5.wrap_method(self, name)
-            @_adding_a_method = false
-          end
-        end
-        def self.wrap_method(klass, name)
-          method_hash = klass.const_get(:METHOD_HASH)
-          method_hash[name] = klass.instance_method(name)
-          # inside here, we are overwriting the method name with our own tracing method
-          body = %{
-            def #{name}(*args, &block)
-              self.class.queue << "Calling method #{name} with \#{args.inspect}"
-              result = METHOD_HASH[:#{name}].bind(self).call(*args, &block)
-              self.class.queue << "result = \#{result}"
-              result
-            end
-          }
-          #puts body
-          klass.class_eval body
-        end
-      end
-
-      # opening existing Time class
-      class Time
-        include TraceMethodCalls_5
-
-        class << self
-          attr_accessor :queue
-        end
-        @queue = []
-      end
-
-      require 'time'
-      ex = Time.parse("Sun Mar 25 14:33:20 CDT 2012")
-      ex.localtime
-      Time.queue.shift.should == "Calling method localtime with []"
-      Time.queue.shift.should == "Calling method to_s with []"
-      #Time.queue.shift.should == "result = Sun Mar 25 14:33:20 -0500 2012"
-      Time.queue.shift.should == "result = 2012-03-25 14:33:20 -0500"
-    end
-  end
+#   context '- fifth iteration' do
+#     it "should trace any existing class in Ruby 1.8 - try it with Time class" do
+#       module TraceMethodCalls_5
+#         def self.included(klass)
+#           method_hash = klass.const_set(:METHOD_HASH, {})
+#           # instance_methods(false) because we don't want inherited methods
+#           klass.instance_methods(false).sort.each do |meth|
+#             # meth is provided as a string and not a symbol ( a total inconsistency in Ruby)
+#             wrap_method(klass, meth.to_sym)
+#           end
+#           # inside body of method_added, self is set to klass
+#           def klass.method_added(name)
+#             return if @_adding_a_method
+#             @_adding_a_method = true
+#             TraceMethodCalls_5.wrap_method(self, name)
+#             @_adding_a_method = false
+#           end
+#         end
+#         def self.wrap_method(klass, name)
+#           method_hash = klass.const_get(:METHOD_HASH)
+#           method_hash[name] = klass.instance_method(name)
+#           # inside here, we are overwriting the method name with our own tracing method
+#           body = %{
+#             def #{name}(*args, &block)
+#               self.class.queue << "Calling method #{name} with \#{args.inspect}"
+#               result = METHOD_HASH[:#{name}].bind(self).call(*args, &block)
+#               self.class.queue << "result = \#{result}"
+#               result
+#             end
+#           }
+#           #puts body
+#           klass.class_eval body
+#         end
+#       end
+#
+#       # opening existing Time class
+#       class Time
+#         include TraceMethodCalls_5
+#
+#         class << self
+#           attr_accessor :queue
+#         end
+#         @queue = []
+#       end
+#
+#       require 'time'
+#       ex = Time.parse("Sun Mar 25 14:33:20 CDT 2012")
+#       ex.localtime
+#       expect(Time.queue.shift).to eq "Calling method localtime with []"
+#       expect(Time.queue.shift).to eq "Calling method to_s with []"
+#       expect(#Time.queue.shift).to eq "result = Sun Mar 25 14:33:20 -0500 2012"
+#       expect(Time.queue.shift).to eq "result = 2012-03-25 14:33:20 -0500"
+#     end
+#   end
   context '- sixth iteration' do
     it "should trace any existing class in Ruby 1.8 - try it with String class - turn tracing OFF for String class while doing the tracing" do
       module TraceMethodCalls_6
@@ -399,10 +399,10 @@ describe 'trace method calls' do
 
       var = "hello " + "hani"
 
-      String.queue.shift.should == "Calling method String#inspect with []"
-      String.queue.shift.should == "String#inspect result = \"hani\""
-      String.queue.shift.should == "Calling method String#+ with [\"hani\"]"
-      String.queue.shift.should == "String#+ result = hello hani"
+      expect(String.queue.shift).to eq "Calling method String#inspect with []"
+      expect(String.queue.shift).to eq "String#inspect result = \"hani\""
+      expect(String.queue.shift).to eq "Calling method String#+ with [\"hani\"]"
+      expect(String.queue.shift).to eq "String#+ result = hello hani"
     end
   end
   context '- seventh iteration' do
@@ -487,10 +487,10 @@ describe 'trace method calls' do
 
       One.new.one
 
-      One.queue.shift.should == "Calling method One#one with []"
-      Two.queue.shift.should == "Calling method Two#two with []"
-      Two.queue.shift.should == "Two#two result = 99"
-      One.queue.shift.should == "One#one result = 99"
+      expect(One.queue.shift).to eq "Calling method One#one with []"
+      expect(Two.queue.shift).to eq "Calling method Two#two with []"
+      expect(Two.queue.shift).to eq "Two#two result = 99"
+      expect(One.queue.shift).to eq "One#one result = 99"
     end
   end
   context '- eighth iteration' do
@@ -611,10 +611,10 @@ describe 'trace method calls' do
 
       AOne.new.one
 
-      AOne.queue.shift.should == "Calling method AOne#one with []"
-      ATwo.queue.shift.should == "Calling method ATwo#two with []"
-      ATwo.queue.shift.should == "ATwo#two result = 99"
-      AOne.queue.shift.should == "AOne#one result = 99"
+      expect(AOne.queue.shift).to eq "Calling method AOne#one with []"
+      expect(ATwo.queue.shift).to eq "Calling method ATwo#two with []"
+      expect(ATwo.queue.shift).to eq "ATwo#two result = 99"
+      expect(AOne.queue.shift).to eq "AOne#one result = 99"
     end
   end
   context '- nineth iteration' do
@@ -735,10 +735,10 @@ describe 'trace method calls' do
 
       AAOne.new.one
 
-      AAOne.queue.shift.should == "==> Calling method AAOne#one with []"
-      AATwo.queue.shift.should == "==> Calling method AATwo#two with []"
-      AATwo.queue.shift.should == "<== AATwo#two result = 99"
-      AAOne.queue.shift.should == "<== AAOne#one result = 99"
+      expect(AAOne.queue.shift).to eq "==> Calling method AAOne#one with []"
+      expect(AATwo.queue.shift).to eq "==> Calling method AATwo#two with []"
+      expect(AATwo.queue.shift).to eq "<== AATwo#two result = 99"
+      expect(AAOne.queue.shift).to eq "<== AAOne#one result = 99"
 
       class Example_9
         include TraceMethodCalls_9
@@ -766,19 +766,18 @@ describe 'trace method calls' do
       end
       ex = Example_9.new
       ex.a_method(3,4)
-      Example_9.queue.shift.should == "==> Calling method Example_9#a_method with [3, 4]"
-      Example_9.queue.shift.should == "<== Example_9#a_method result = 7"
+      expect(Example_9.queue.shift).to eq "==> Calling method Example_9#a_method with [3, 4]"
+      expect(Example_9.queue.shift).to eq "<== Example_9#a_method result = 7"
       ex.another_method(50) { 2 }
-      Example_9.queue.shift.should == "==> Calling method Example_9#another_method with [50]"
-      Example_9.queue.shift.should == "<== Example_9#another_method result = 100"
+      expect(Example_9.queue.shift).to eq "==> Calling method Example_9#another_method with [50]"
+      expect(Example_9.queue.shift).to eq "<== Example_9#another_method result = 100"
       ex.name = 'fred'
-      Example_9.queue.shift.should == "==> Calling method Example_9#name= with [\"fred\"]"
-      Example_9.queue.shift.should == "<== Example_9#name= result = fred"
+      expect(Example_9.queue.shift).to eq "==> Calling method Example_9#name= with [\"fred\"]"
+      expect(Example_9.queue.shift).to eq "<== Example_9#name= result = fred"
       ex << 'cat'
-      Example_9.queue.shift.should == "==> Calling method Example_9#<< with [\"cat\"]"
-      Example_9.queue.shift.should == "<== Example_9#<< result = pushing cat"
+      expect(Example_9.queue.shift).to eq "==> Calling method Example_9#<< with [\"cat\"]"
+      expect(Example_9.queue.shift).to eq "<== Example_9#<< result = pushing cat"
 
     end
   end
 end
-
