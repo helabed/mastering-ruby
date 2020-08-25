@@ -1,5 +1,5 @@
 class ShippingOption   # Base class
-  @children = []  
+  @children = []
   def self.inherited(child)
     @children << child
   end
