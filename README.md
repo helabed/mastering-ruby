@@ -1,7 +1,7 @@
 mastering-ruby
 ==============
 
-my attempt at mastering ruby motivated by Dave Thomas video tutorials https://pragprog.com/screencasts/v-dtrubyom/the-ruby-object-model-and-metaprogramming
+my attempt at mastering ruby motivated by Dave Thomas video tutorials https://pragprog.com/screencasts/v-dtrubyom/the-ruby-object-model-and-metaprogramming (no longer available - as of August, 2020)
 
 <pre>
 helabed@hani-elabeds-MacBook-Pro:~/mastering-ruby(master) $ rspec ./*_spec.rb -f doc
