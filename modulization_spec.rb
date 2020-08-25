@@ -8,10 +8,10 @@ describe 'Modulization' do
     end
 
     it "should provide access to the module's constant" do
-      Math::ALMOST_PI.should == 22.0/7
+      expect(Math::ALMOST_PI).to eq 22.0/7
     end
     it "should provide access to the module's class" do
-      Math::Calculator.new.class.should == Math::Calculator
+      expect(Math::Calculator.new.class).to eq Math::Calculator
     end
   end
 
@@ -23,8 +23,8 @@ describe 'Modulization' do
     end
 
     it "should provide access to the module's methods" do
-      Math.is_even?(1).should == false
-      Math.is_even?(2).should == true
+      expect(Math.is_even?(1)).to eq false
+      expect(Math.is_even?(2)).to eq true
     end
   end
 
@@ -41,7 +41,7 @@ describe 'Modulization' do
 
     it "should provide access to the module's instance method" do
       a_truck = Truck.new
-      a_truck.log("hello").should == "hello"
+      expect(a_truck.log("hello")).to eq "hello"
     end
 
     it "should assert that to 'include' a module's instance method does not mean copying the method's body, but instead referencing the one and only copy of it" do
@@ -52,7 +52,7 @@ describe 'Modulization' do
           "go away"
         end
       end
-      a_truck.log("hello").should == "go away"
+      expect(a_truck.log("hello")).to eq "go away"
     end
 
     it "should be available for use from more than one class" do
@@ -67,9 +67,9 @@ describe 'Modulization' do
       end
 
       a_truck = Truck.new
-      a_truck.log("in Truck").should == "in Truck"
+      expect(a_truck.log("in Truck")).to eq "in Truck"
       a_ship = Ship.new
-      a_ship.log("in Ship").should == "in Ship"
+      expect(a_ship.log("in Ship")).to eq "in Ship"
     end
 
     it "should be available for use from an object with the 'extend' keyword" do
@@ -81,7 +81,7 @@ describe 'Modulization' do
 
       animal = "cat"
       animal.extend Logger
-      animal.log("Greetings from the cat").should == "Greetings from the cat"
+      expect(animal.log("Greetings from the cat")).to eq "Greetings from the cat"
     end
 
     it "should be available for use from an object by including the methods from the module into a singleton class using 'class << object' " do
@@ -95,7 +95,7 @@ describe 'Modulization' do
       class << animal
         include Logger
       end
-      animal.log("Greetings from the singleton cat").should == "Greetings from the singleton cat"
+      expect(animal.log("Greetings from the singleton cat")).to eq "Greetings from the singleton cat"
     end
   end
 
@@ -113,32 +113,33 @@ describe 'Modulization' do
     end
 
     it "should provide access to the module's instance method as a class method using a singleton class using 'class << self' " do
-      Truck.log("hello from the Truck class").should == "hello from the Truck class"
+      expect(Truck.log("hello from the Truck class")).to eq "hello from the Truck class"
     end
 
     it "should provide access to the module's instance method as a class method using the 'extend' keyword" do
 
       class Car
         extend Logger
-        #class << self
-        #  include Logger
-        #end
       end
 
-      Car.log("hello from the Car class").should == "hello from the Car class"
+      expect(Car.log("hello from the Car class")).to eq "hello from the Car class"
     end
 
     it "should provide access to the module's instance method as a class method using the 'extend' keyword and from within the extending class at the class level" do
 
       class Accessor
         extend Logger
-        #class << self
-        #  include Logger
-        #end
 
-        log("hello from inside the Accessor class").should == "hello from inside the Accessor class"
+        class << self
+          attr_accessor :the_message
+        end
+
+        @the_message = log("hello from inside the Accessor class")
+        # to avoid using '*.should == *' below (should is deprecated), had to set the_message as
+        # a class level instance variable. RSpec 3 'expect' was not visible from within Accessor
+        #log("hello from inside the Accessor class").should == "hello from inside the Accessor class"
       end
-
+      expect(Accessor.the_message).to eq "hello from inside the Accessor class"
     end
   end
 
@@ -165,11 +166,11 @@ describe 'Modulization' do
       context "must provide access to class methods and instance methods of the module" do
         it "should provide access to class methods" do
           p = Person.find
-          p.class.should == Person
+          expect(p.class).to eq Person
         end
         it "should provide access to instance methods" do
           p = Person.find
-          p.save.should == 'In save'
+          expect(p.save).to eq 'In save'
         end
       end
     end
@@ -188,11 +189,11 @@ describe 'Modulization' do
       context "must provide access to class methods and instance methods of the module" do
         it "should provide access to class methods" do
           p = Person.find
-          p.class.should == Person
+          expect(p.class).to eq Person
         end
         it "should provide access to instance methods" do
           p = Person.find
-          p.save.should == 'In save'
+          expect(p.save).to eq 'In save'
         end
       end
     end
@@ -217,7 +218,7 @@ describe 'Modulization' do
       it "does not work as intended because any included modules are searched for methods after the class's own methods" +
            " are searched, so you cannot directly overwrite a class's method by including a module" do
         C.send(:include, M)
-        C.new.test_method.should == "Test from C"
+        expect(C.new.test_method).to eq "Test from C"
       end
     end
     context "with a call to alias_method" do
@@ -227,9 +228,8 @@ describe 'Modulization' do
           alias_method  :test_method_from_c, :test_method
           alias_method  :test_method, :test_method_from_m
         end
-        C.new.test_method.should == "Test from M"
+        expect(C.new.test_method).to eq "Test from M"
       end
     end
   end
-
 end

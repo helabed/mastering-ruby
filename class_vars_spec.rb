@@ -15,8 +15,8 @@ describe 'Class Variables' do
     end
     it "should be called without an instance" do
       expect(David.count).to eq 0
-      d1 = David.new
-      d2 = David.new
+      David.new
+      David.new
       expect(David.count).to eq 2
     end
   end
@@ -35,8 +35,8 @@ describe 'Class Variables' do
     end
     it "should be called without an instance" do
       expect(Dave.count).to eq 0
-      d1 = Dave.new
-      d2 = Dave.new
+      Dave.new
+      Dave.new
       expect(Dave.count).to eq 2
     end
   end
