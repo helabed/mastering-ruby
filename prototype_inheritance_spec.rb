@@ -6,16 +6,15 @@ describe 'Object based inheritance or prototypal inheritance' do
     end
 
     it "methods can be called from the instance" do
-      animal.speak.should == "miaow"
+      expect(animal.speak).to eq "miaow"
     end
     it "a cloned object inherits the instance methods" do
       other_animal = animal.clone
-      other_animal.speak.should == "miaow"
+      expect(other_animal.speak).to eq "miaow"
     end
     it "a duplicated object does not inherit the instance methods" do
       other_animal = animal.dup
-      p = lambda { other_animal.speak }
-      p.should raise_error(NoMethodError, "undefined method `speak' for \"cat\":String")
+      expect { other_animal.speak }.to raise_error(NoMethodError, "undefined method `speak' for \"cat\":String")
     end
   end
   context "cloned objects also inherit the state of the cloned object" do
@@ -32,7 +31,7 @@ describe 'Object based inheritance or prototypal inheritance' do
 
     it "instance variables are cloned also" do
       felix = cat.clone
-      felix.number_of_feet.should == 4
+      expect(felix.number_of_feet).to eq 4
     end
   end
 end
