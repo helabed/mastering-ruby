@@ -1,4 +1,3 @@
-
 describe 'my_attr_accessor' do
   before(:each) do
     module Logger
@@ -27,7 +26,7 @@ describe 'my_attr_accessor' do
       # required 'include' instead of 'extend'
       extend MyAccessor
 
-      # we are accessing my_attr_accessor at the class level of Excample class
+      # we are accessing my_attr_accessor at the class level of the Example class
       my_attr_accessor :table
     end
   end
@@ -35,21 +34,20 @@ describe 'my_attr_accessor' do
   context "provides an alternative implementation of attr_accessor with logging support" do
     it "should allow us to use it from any class" do
       e = Example.new
-      e.table.should == nil
+      expect(e.table).to eq nil
       e.table= 'clients'
-      e.table.should == 'clients'
+      expect(e.table).to eq 'clients'
       e.table= 'Customers'
-      e.table.should == 'Customers'
+      expect(e.table).to eq 'Customers'
     end
   end
 
   context "a symbol is converted to string automatically when interpolated inside a string" do
     it "should produce a string class" do
       my_symbol = :ivar
-      my_symbol.class.should == Symbol
-      "#{my_symbol}".should == 'ivar'
-      "#{my_symbol}".class.should == String
+      expect(my_symbol.class).to eq Symbol
+      expect("#{my_symbol}").to eq 'ivar'
+      expect("#{my_symbol}".class).to eq String
     end
   end
 end
-
