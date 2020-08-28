@@ -1,16 +1,18 @@
-#require 'rspec/autorun'
-#require 'algorithms'
-#include Algorithms
-#require 'active_support/all'
+# require 'rspec/autorun'
+# require 'algorithms'
+#   include Algorithms
+# require 'active_support/all'
+# The above statements are useful when running in
+# coderpad.io/sandbox
 require 'securerandom'
 require 'set'
 
 RSpec.describe 'BubbleSort testing iteration 2' do
   it 'should sort any array' do
-    7.times do
+    3.times do
       bs = BubbleSort.new
 
-      n = 20
+      n = 7
       rand_array = Array.new(n) { SecureRandom.random_number(n) }
       sorted_array = rand_array.sort_by { |w| w }
 
@@ -52,8 +54,20 @@ class BubbleSort
   LOG_LEVEL_NONE  = false
   LOG_LEVEL = LOG_LEVEL_DEBUG
 
+  def debugging
+    LOG_LEVEL == LOG_LEVEL_DEBUG
+  end
+
+  def info
+    LOG_LEVEL == LOG_LEVEL_INFO
+  end
+
+  def quiet
+    LOG_LEVEL == LOG_LEVEL_NONE
+  end
+
   def log(msg, label='')
-    if LOG_LEVEL == LOG_LEVEL_DEBUG
+    if debugging
       print "-"*20
       print label
       print "-"*20
@@ -63,7 +77,7 @@ class BubbleSort
   end
   def print_success(rand_array, sorted_array, bubble_sorted_array)
     if bubble_sorted_array == sorted_array
-      if LOG_LEVEL == LOG_LEVEL_DEBUG
+      if debugging
         log "#{rand_array} ->  #{bubble_sorted_array}", "sorted array"
         puts ""
         puts "SUCCESS."
@@ -71,9 +85,9 @@ class BubbleSort
         puts ""
         puts ""
         sleep 5
-      elsif LOG_LEVEL == LOG_LEVEL_INFO
+      elsif info
         puts "#{rand_array} ->  #{bubble_sorted_array}"
-      elsif LOG_LEVEL == LOG_LEVEL_NONE
+      elsif quiet
         print '.'
       end
     end
@@ -87,7 +101,45 @@ class BubbleSort
     end
   end
 
+  def sort_w_array_only(ar)
+    i = 0
+    sorted = []
+    for el in ar do
+      log el, "element at location #{i}" if debugging
+      sleep 0.1
+      i += 1
+
+      if sorted.size == 0
+        sorted << el
+        next
+      elsif sorted.size == 1
+        sorted = swap(sorted[0],el)
+        next
+      end
+      log sorted, 'sorted' if debugging
+      element_inserted = false
+      sorted.dup.each_with_index do |item, index|
+        log "#{item} ->  #{sorted}", "sorted[#{index}] on element #{el}" if debugging
+
+        if el < item
+          log "inside if before inserting #{el}" if debugging
+          sorted.insert(index, el)
+          log sorted, 'sorted' if debugging
+          element_inserted = true
+          break
+        end
+      end
+      unless element_inserted
+        log "before pushing #{el}" if debugging
+        sorted.push(el)
+      end
+    end
+
+    return sorted
+  end
+
   def sort(ar)
+    #sort_w_array_only(ar)
     #sort_w_ruby(ar)
     sort_w_inject(ar)
   end
@@ -102,22 +154,20 @@ class BubbleSort
       log i, 'i'
       log ar, "injected_array"
       log val, "injected_val"
-      puts '' if LOG_LEVEL == LOG_LEVEL_DEBUG
-      puts '' if LOG_LEVEL == LOG_LEVEL_DEBUG
+      puts '' if debugging
+      puts '' if debugging
       if ar.size > 0
         if ar[i-1] <= val
           ar << val
-          sleep 1 if LOG_LEVEL == LOG_LEVEL_DEBUG
         elsif ar[i-1] > val
           # doing injected_array traversal and inserting val
           # on an array that is already sorted - i.e in-order insert
           log "doing in-order insert for #{val}", "injected array traversal"
           ar.dup.each_with_index do |item, index|
-            print "#{item} -> " if LOG_LEVEL == LOG_LEVEL_DEBUG
+            print "#{item} -> " if debugging
             if val <= item
               ar.insert(index, val)
-              puts "" if LOG_LEVEL == LOG_LEVEL_DEBUG
-              sleep 1 if LOG_LEVEL == LOG_LEVEL_DEBUG
+              puts "" if debugging
               break
             end
           end
