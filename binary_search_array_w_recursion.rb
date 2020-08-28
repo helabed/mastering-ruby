@@ -6,6 +6,7 @@
 # coderpad.io/sandbox
 require 'securerandom'
 require 'set'
+require 'active_support/all'
 
 RSpec.describe 'BinarySearch testing iteration 1' do
   it 'should search for an element on all edge conditions arrays' do
