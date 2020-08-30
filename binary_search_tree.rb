@@ -50,6 +50,12 @@ RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
         #rand_array = [84, 49, 46, 39, 63, 5, 0, 84, 62, 26]
         #item_to_search_for = 84
 
+        rand_array = [1, 86, 69, 28, 30, 51, 75, 24, 1, 35]
+        #item_to_search_for = 1
+        #item_to_search_for = 86
+        #item_to_search_for = 24
+        item_to_search_for = 30
+
         bst.log rand_array, 'the array'
         bst.log item_to_search_for, 'Will be searching for'
         bst.insert_into(rand_array)
@@ -130,7 +136,8 @@ class BinarySearchTree
   # delete element with 'value' from the BST
   def delete_from(value)
     log '', "Attempting to delete #{value} from BST"
-    outcome = @root_tree.delete_element(@root_tree, Node.new(value))
+    outcome, new_root = @root_tree.delete_element(@root_tree, Node.new(value))
+    @root_tree = new_root
     display_tree
     return outcome
   end
@@ -207,6 +214,7 @@ class BinarySearchTree
       @node.dispose        if @node
       @left_child.dispose  if @left_child
       @right_child.dispose if @right_child
+      @parent.dispose      if @parent
     end
 
     def to_s
@@ -337,46 +345,91 @@ class BinarySearchTree
 
       puts "Elemeent to be deleted was found: #{found}"
       puts "Sub-tree whose node has to be deleted: #{x}"
+      puts ""
       puts "Parent of sub-tree whose node has to be deleted: #{parent}"
-      puts
+      puts ""
 
-      return false if ! found  # no point in going further
+      return [false, tree] if ! found  # no point in going further
 
       if x.left_child && x.right_child
+        puts "item to be deleted #{item.data} has 2 children"
+        puts "left_child: #{x.left_child.node.data}"
+        puts "right_child: #{x.right_child.node.data}"
+        puts ""
         # item to be deleted has 2 children
         # find in-order successor (predecessor) and its parent
         # to do so as per book page 469 - start with right child of x
-        # and descend left as far as possible
+        # then descend left as far as possible
         x_successor = x.right_child
         parent      = x
-        while x_successor.left_child   # descending left until last left
+        puts "x_successor: #{x_successor.node.data}"
+        puts "parent:      #{parent.node.data}"
+        puts "---- descending left ---"
+        while x_successor.left_child   # descending left until last left child
           parent      = x_successor
           x_successor = x_successor.left_child
+          puts "x_successor: #{x_successor.node.data}"
+          puts "parent:      #{parent.node.data}"
         end
+        puts ""
 
         # move content of x_successor to x, and change x to point
         # to x_successor - which will be deleted after swap
         x.node.data = x_successor.node.data
         x = x_successor
+
+        puts "x data updated: #{x.node.data}"
       end
 
-      # now proceed with case a if we had 0 or 1 child - book p. 466
+      # now proceed with case as if we had 0 or 1 child - book p. 466
       subtree = x.left_child
       subtree ||= x.right_child  # if left child is nil, use right child
+      puts "subtree: #{subtree}"
+      puts ""
 
       if parent == nil
         # root is being deleted, the subtree becomes root
-        tree = subtree  # not sure if this is meaningful - changing a method argument param
+        tree = subtree  # changing root tree to be the subtree when returned
+        puts "root is being deleted subtree is new root: #{subtree}"
       elsif parent.left_child == x
         parent.left_child = subtree
+        puts "parent left child gets the subtree: #{parent.left_child}"
       else
         parent.right_child = subtree
+        puts "parent right child gets the subtree: #{parent.right_child}"
       end
 
       x.right_child = nil
-      x.left_child = nil
-      #x.dispose
-      return true # upon success ??
+      x.left_child  = nil
+      x.parent      = nil
+      x.node        = nil
+
+      update_parents_and_heights(tree)
+
+      return [true, tree]
+    end
+
+    def update_parents_and_heights(tree)
+      puts "--"
+      puts "--"
+      puts "update parents and heights"
+      puts "--"
+      in_order_traverse do |tree|
+
+        puts "inside tree: #{tree.node.data}"
+      end
+    end
+
+    def in_order_traverse(&block)
+      if self.node
+        if self.left_child
+          self.left_child.in_order_traverse(&block)
+        end
+        block.call(self)
+        if self.right_child
+          self.right_child.in_order_traverse(&block)
+        end
+      end
     end
   end
   # End of BinarySearchTree::Tree
