@@ -17,8 +17,8 @@ RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
     randomness_range = 100
     edge = [
       Array.new(total_num_of_items) { SecureRandom.random_number(randomness_range) },
-#     [1,2,2,3,3,33,113],
-#     [0,0,2,113,3],
+      #[1,2,2,3,3,33,113],
+      #[0,0,2,113,3],
     ]
 
     aggregate_failures "aggregate array for #{edge.size} arrays" do
@@ -31,7 +31,7 @@ RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
 
         puts ""
         puts ""
-        bs = BinarySearchTree.new
+        bst = BinarySearchTree.new
         # overriding above array for quick testing setup
         #rand_array = [30, 92, 36, 66, 33, 63]
         #item_to_search_for = 36
@@ -42,14 +42,16 @@ RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
         #rand_array = [40, 59, 4, 98, 98, 51, 15, 83, 92, 3, 19] # one array both lines
         #rand_array << [55, 25, 38, 65, 60, 42, 31, 36, 76, 38, 81, 64, 16, 47, 22]
         #item_to_search_for = 42
+        #rand_array = [90, 68, 93, 73, 40, 30, 47, 22, 5, 9]
+        #item_to_search_for = 73
 
-        rand_array = [90, 68, 93, 73, 40, 30, 47, 22, 5, 9]
-        item_to_search_for = 73
-        bs.log rand_array, 'the array'
-        bs.log item_to_search_for, 'Will be searching for'
-        bs.insert_into(rand_array)
-        bs.display_tree
-        bs.search_for(rand_array, item_to_search_for)
+        bst.log rand_array, 'the array'
+        bst.log item_to_search_for, 'Will be searching for'
+        bst.insert_into(rand_array)
+        bst.display_tree
+        found, data = bst.search_for(rand_array, item_to_search_for)
+        expect(found).to be true
+        expect(data).to eq item_to_search_for
       end
     end
   end
@@ -97,11 +99,22 @@ class BinarySearchTree
   end
 
   def search_for(arr,val)
-    log arr, "Finished Adding array -> BST"
-    log '', "Searching BST for -> #{val}"
-  end
-
-  def bst_search(ar, val)
+    if @root_tree
+      if debugging || info
+        log arr, "Finished Adding array -> BST"
+        log '', "Searching BST for -> #{val}"
+      end
+      found, locator, parent = @root_tree.bst_search(@root_tree, Node.new(val))
+      if debugging || info
+        if found
+          log parent, "Found 'parent' #{parent.node.data} in the BST"
+          log locator, "Found 'locator(sub-tree)' for #{locator.node.data}"
+        else
+          log '', "Did NOT find #{val} in the BST"
+        end
+      end
+      return found, locator.node.data
+    end
   end
 
   def display_tree
@@ -126,6 +139,10 @@ class BinarySearchTree
       puts "Node created with data #{data}" if debugging
     end
 
+    def dispose
+      @data = nil
+    end
+
     def display
       puts "Displaying Node with #{data}"
     end
@@ -136,14 +153,10 @@ class BinarySearchTree
 
     def to_s
       s = ''
-      s << "\nhash: #{(self.hash % 1000)}"
-      s << "\ndata: #{self.data}"
-      s << "\n"
+      s << "\n  hash: #{(self.hash % 1000)}"
+      s << "\n  data: #{self.data}"
+      s << "\n  --"
       return s
-    end
-
-    def dispose
-      @data = nil
     end
   end
   # End of BinarySearchTree::Node
@@ -170,6 +183,25 @@ class BinarySearchTree
       @parent = nil
       @height = nil
       @indent = nil
+    end
+
+    def dispose
+      @node.dispose        if @node
+      @left_child.dispose  if @left_child
+      @right_child.dispose if @right_child
+    end
+
+    def to_s
+      s = ''
+      s << "\nhash: #{(self.hash % 1000)}"
+      s << "\nheight: #{self.height}"
+      s << "\nindent: #{self.indent}"
+      s << "\nparent: "; if self.parent then "#{self.parent.node}" end
+      s << "\nnode: #{self.node}"
+      s << "\nleft_child: "; if self.left_child then "#{self.left_child}" end
+      s << "\nright_child: "; if self.right_child then "#{self.right_child}" end
+      s << "\n"
+      return s
     end
 
     def display_tree
@@ -199,19 +231,6 @@ class BinarySearchTree
           "(#{right_child.node.display_node})"
         @right_child.display
       end
-    end
-
-    def to_s
-      s = ''
-      s << "\nhash: #{(self.hash % 1000)}"
-      s << "\nheight: #{self.height}"
-      s << "\nindent: #{self.indent}"
-      s << "\nparent: "; if self.parent then "#{self.parent.node}" end
-      s << "\nnode: #{self.node}"
-      s << "\nleft_child: "; if self.left_child then "#{self.left_child}" end
-      s << "\nright_child: "; if self.right_child then "#{self.right_child}" end
-      s << "\n"
-      return s
     end
 
     def insert_element(node)
@@ -251,13 +270,27 @@ class BinarySearchTree
       end
     end
 
-    def delete_element(root, node)
+    def bst_search(tree, node)
+      locator = tree
+      parent = nil
+      found = false
+      while( !found && locator)
+        if node.data < locator.node.data
+          # descend left
+          parent = locator
+          locator = locator.left_child
+        elsif node.data > locator.node.data
+          # descend right
+          parent = locator
+          locator = locator.right_child
+        else
+          found = true
+        end
+      end
+      return found, locator, parent
     end
 
-    def dispose
-      @node.dispose        if @node
-      @left_child.dispose  if @left_child
-      @right_child.dispose if @right_child
+    def delete_element(tree, node)
     end
   end
   # End of BinarySearchTree::Tree
