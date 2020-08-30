@@ -42,6 +42,9 @@ RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
         #rand_array = [40, 59, 4, 98, 98, 51, 15, 83, 92, 3, 19] # one array both lines
         #rand_array << [55, 25, 38, 65, 60, 42, 31, 36, 76, 38, 81, 64, 16, 47, 22]
         #item_to_search_for = 42
+
+        rand_array = [90, 68, 93, 73, 40, 30, 47, 22, 5, 9]
+        item_to_search_for = 73
         bs.log rand_array, 'the array'
         bs.log item_to_search_for, 'Will be searching for'
         bs.insert_into(rand_array)
@@ -181,12 +184,14 @@ class BinarySearchTree
         corrected_indentation = @right_child.indent -
                                 @left_child.indent -
                                 approx_left_node_text_width
+        corrected_indentation < 0 ? 0 : corrected_indentation
         print "#{' '*corrected_indentation}R#{right_child.height}"+
           "(#{right_child.node.display_node})\n"
         @left_child.display
         @right_child.display
       elsif @left_child && @right_child == nil
-        puts "#{' '*@left_child.indent}L#{left_child.height}"+
+        non_neg_indent = (@left_child.indent < 0 ? 0 : @left_child.indent)
+        puts "#{' '*non_neg_indent}L#{left_child.height}"+
           "(#{left_child.node.display_node})"
         @left_child.display
       elsif @left_child == nil && @right_child
