@@ -47,6 +47,9 @@ RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
         #rand_array = [45, 78, 42, 97, 34, 61, 53, 47, 72, 92]
         #item_to_search_for = 45
 
+        #rand_array = [84, 49, 46, 39, 63, 5, 0, 84, 62, 26]
+        #item_to_search_for = 84
+
         bst.log rand_array, 'the array'
         bst.log item_to_search_for, 'Will be searching for'
         bst.insert_into(rand_array)
@@ -54,6 +57,8 @@ RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
         found, data = bst.search_for(rand_array, item_to_search_for)
         expect(found).to be true
         expect(data).to eq item_to_search_for
+        outcome = bst.delete_from(item_to_search_for)
+        expect(outcome).to be true
       end
     end
   end
@@ -100,6 +105,8 @@ class BinarySearchTree
     end
   end
 
+  # search BST for element with 'val'in the BST
+  #   original 'arr' provided just for logging/debugging
   def search_for(arr,val)
     if @root_tree
       if debugging || info
@@ -118,6 +125,14 @@ class BinarySearchTree
       return found, locator.node.data if found
       return found, nil if !found
     end
+  end
+
+  # delete element with 'value' from the BST
+  def delete_from(value)
+    log '', "Attempting to delete #{value} from BST"
+    outcome = @root_tree.delete_element(@root_tree, Node.new(value))
+    display_tree
+    return outcome
   end
 
   def display_tree
@@ -221,7 +236,8 @@ class BinarySearchTree
 
     def display
       if @left_child && @right_child
-        print "#{' '*@left_child.indent}L#{left_child.height}"+
+        non_neg_indent = (@left_child.indent < 0 ? 0 : @left_child.indent)
+        print "#{' '*non_neg_indent}L#{left_child.height}"+
           "(#{left_child.node.display_node})"
         approx_left_node_text_width = 6
         corrected_indentation = @right_child.indent -
@@ -281,6 +297,9 @@ class BinarySearchTree
       end
     end
 
+    # search for 'node' element in 'tree' sub-tree
+    #
+    # iterative implementation of binary search tree - search
     def bst_search(tree, node)
       locator = tree
       parent = nil
@@ -301,7 +320,63 @@ class BinarySearchTree
       return found, locator, parent
     end
 
-    def delete_element(tree, node)
+    # delete 'item' element from 'tree' sub-tree
+    #
+    # iterative implementation of binary search tree - delete
+    # Ref: Advanced Programming in Pascal w/Data Structures(1988)
+    #      Larry Nyhoff & Sanford Leestma (pages 466-471)
+    # variable names matches thoes in book (as much as possible)
+    def delete_element(tree, item)
+      x           = nil # sub-tree object containing node to be deleted
+      x_successor = nil # sub-tree object - in-order successor to x (or predecessor)
+      parent      = nil # sub-tree object - parent of x, or soon its successor
+      subtree     = nil # sub-tree object - subtree of x before deletion
+      found       = false
+
+      found, x, parent = bst_search(tree, item)
+
+      puts "Elemeent to be deleted was found: #{found}"
+      puts "Sub-tree whose node has to be deleted: #{x}"
+      puts "Parent of sub-tree whose node has to be deleted: #{parent}"
+      puts
+
+      return false if ! found  # no point in going further
+
+      if x.left_child && x.right_child
+        # item to be deleted has 2 children
+        # find in-order successor (predecessor) and its parent
+        # to do so as per book page 469 - start with right child of x
+        # and descend left as far as possible
+        x_successor = x.right_child
+        parent      = x
+        while x_successor.left_child   # descending left until last left
+          parent      = x_successor
+          x_successor = x_successor.left_child
+        end
+
+        # move content of x_successor to x, and change x to point
+        # to x_successor - which will be deleted after swap
+        x.node.data = x_successor.node.data
+        x = x_successor
+      end
+
+      # now proceed with case a if we had 0 or 1 child - book p. 466
+      subtree = x.left_child
+      subtree ||= x.right_child  # if left child is nil, use right child
+
+      if parent == nil
+        # root is being deleted, the subtree becomes root
+        tree = subtree  # not sure if this is meaningful - changing a method argument param
+      elsif parent.left_child == x
+        parent.left_child = subtree
+      else
+        parent.right_child = subtree
+      end
+
+      x.right_child = nil
+      x.left_child = nil
+      #x.dispose
+      return true # upon success ??
     end
   end
   # End of BinarySearchTree::Tree
