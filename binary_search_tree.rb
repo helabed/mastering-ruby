@@ -44,6 +44,8 @@ RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
         #item_to_search_for = 42
         #rand_array = [90, 68, 93, 73, 40, 30, 47, 22, 5, 9]
         #item_to_search_for = 73
+        #rand_array = [45, 78, 42, 97, 34, 61, 53, 47, 72, 92]
+        #item_to_search_for = 45
 
         bst.log rand_array, 'the array'
         bst.log item_to_search_for, 'Will be searching for'
@@ -107,13 +109,14 @@ class BinarySearchTree
       found, locator, parent = @root_tree.bst_search(@root_tree, Node.new(val))
       if debugging || info
         if found
-          log parent, "Found 'parent' #{parent.node.data} in the BST"
+          log parent, "Found 'parent' #{parent.node.data} in BST" if (parent && parent.node)
           log locator, "Found 'locator(sub-tree)' for #{locator.node.data}"
         else
           log '', "Did NOT find #{val} in the BST"
         end
       end
-      return found, locator.node.data
+      return found, locator.node.data if found
+      return found, nil if !found
     end
   end
 
@@ -196,10 +199,18 @@ class BinarySearchTree
       s << "\nhash: #{(self.hash % 1000)}"
       s << "\nheight: #{self.height}"
       s << "\nindent: #{self.indent}"
-      s << "\nparent: "; if self.parent then "#{self.parent.node}" end
-      s << "\nnode: #{self.node}"
-      s << "\nleft_child: "; if self.left_child then "#{self.left_child}" end
-      s << "\nright_child: "; if self.right_child then "#{self.right_child}" end
+      parent = self.parent.node.display_node if self.parent
+      parent ||= 'nil'
+      s << "\nparent: #{parent}"
+      s << "\nnode: #{self.node.display_node}" if self.node
+      if self.left_child && self.left_child.node
+        left_child_node = self.left_child.node.display_node
+      end
+      s << "\nleft_child: #{left_child_node}"
+      if self.right_child && self.right_child.node
+        right_child_node = self.right_child.node.display_node
+      end
+      s << "\nright_child: #{right_child_node}"
       s << "\n"
       return s
     end
@@ -243,8 +254,8 @@ class BinarySearchTree
         if @left_child == nil
           @left_child = Tree.new
           @left_child.parent = self
-          @left_child.height = self.height + 1 if self.height
-          @left_child.indent = self.indent - DISPLAY_SHIFT if self.indent
+          @left_child.height = self.height + 1              if self.height
+          @left_child.indent = self.indent - DISPLAY_SHIFT  if self.indent
         end
         @left_child.insert_element(node)
         if debugging
@@ -253,10 +264,10 @@ class BinarySearchTree
         end
       elsif node.data > @node.data
         if @right_child == nil
-          @right_child =Tree.new
+          @right_child = Tree.new
           @right_child.parent = self
-          @right_child.height = self.height + 1 if self.height
-          @right_child.indent = self.indent + DISPLAY_SHIFT if self.indent
+          @right_child.height = self.height + 1              if self.height
+          @right_child.indent = self.indent + DISPLAY_SHIFT  if self.indent
         end
         @right_child.insert_element(node)
         if debugging
