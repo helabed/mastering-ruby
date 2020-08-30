@@ -10,9 +10,10 @@ require 'active_support/all'
 require 'pry'
 require 'byebug'
 
+
 RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
   it 'should search for an element stored in BST' do
-    total_num_of_items = 25
+    total_num_of_items = 9
     randomness_range = 100
     edge = [
       Array.new(total_num_of_items) { SecureRandom.random_number(randomness_range) },
@@ -101,7 +102,7 @@ class BinarySearchTree
   end
 
   def display_tree
-    if @root_tree
+    if @root_tree && (debugging || info)
       log nil, "Displaying Tree"
       puts "#{' '*(@root_tree.indent)}RT(#{@root_tree.node.display_node})"
       @root_tree.display
@@ -115,9 +116,11 @@ class BinarySearchTree
   class Node
     attr_accessor :data
 
+    def debugging; LOG_LEVEL == LOG_LEVEL_DEBUG; end
+
     def initialize(data)
       @data = data
-      puts "Node created with data #{data}"
+      puts "Node created with data #{data}" if debugging
     end
 
     def display
@@ -154,6 +157,8 @@ class BinarySearchTree
     attr_accessor :parent
     attr_accessor :height
     attr_accessor :indent
+
+   def debugging; LOG_LEVEL == LOG_LEVEL_DEBUG; end
 
     def initialize
       @node = nil
@@ -207,7 +212,9 @@ class BinarySearchTree
     def insert_element(node)
       if @node == nil
         @node = node
-        puts "Tree at height #{self.height} inserted node #{node.display_node} into BST"
+        if debugging
+          puts "Tree at height #{self.height} inserted node #{node.display_node} into BST"
+        end
       elsif node.data < @node.data
         if @left_child == nil
           @left_child = Tree.new
@@ -216,8 +223,10 @@ class BinarySearchTree
           @left_child.indent = self.indent - DISPLAY_SHIFT if self.indent
         end
         @left_child.insert_element(node)
-        puts "  Tree w/node #{self.node.display_node} at height #{self.height} "+
-             "was traversed-left towards node #{@left_child.node.display_node}"
+        if debugging
+          puts "  Tree w/node #{self.node.display_node} at height #{self.height} "+
+               "was traversed-left towards node #{@left_child.node.display_node}"
+        end
       elsif node.data > @node.data
         if @right_child == nil
           @right_child =Tree.new
@@ -226,10 +235,14 @@ class BinarySearchTree
           @right_child.indent = self.indent + DISPLAY_SHIFT if self.indent
         end
         @right_child.insert_element(node)
-        puts "  Tree w/node #{self.node.display_node} at height #{self.height} "+
-             "was traversed-right towards node #{@right_child.node.display_node}"
+        if debugging
+          puts "  Tree w/node #{self.node.display_node} at height #{self.height} "+
+               "was traversed-right towards node #{@right_child.node.display_node}"
+        end
       else
-        puts "Node #{node.display_node} is already in tree - ignoring"
+        if debugging
+          puts "Node #{node.display_node} is already in tree - ignoring"
+        end
       end
     end
 
