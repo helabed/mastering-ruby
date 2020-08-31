@@ -11,7 +11,6 @@ require 'pry'
 require 'byebug'
 
 
-
 RSpec.describe 'Strings' do
   before(:all) do
     @string_array = ["Javascript advanced100%",
@@ -54,6 +53,67 @@ RSpec.describe 'Strings' do
     end
     it 'can replace the substring with new content using Regex' do
       expect('Ruby on Rails'.gsub(/^R/, 'T')).to eq 'Tuby on Rails'
+    end
+  end
+  context 'strip & strip! - to trim leading or trailing white space' do
+    it 'strips all white space in front and/or end of string' do
+      expect('  Ruby on Rails     '.strip).to eq 'Ruby on Rails'
+    end
+  end
+  context 'manually sorting a string' do
+    def sort(s)
+      sorted = []
+      s.each_char do |c|
+        sorted << c
+      end
+      sorted.sort.join('')
+    end
+    it 'manually sorts a string one char at a time by putting it in an array an sorting array' do
+      expect(sort('64321')).to eq '12346'
+    end
+  end
+  context 'removing duplicates words from a string' do
+    it 'removes duplicate words from a string with help of arrays' do
+      string_with_dups = 'this book is really really big'
+      def remove_dups(string_with_dups)
+        words = string_with_dups.split(' ')
+        h = {}
+        i = 1
+        words.each do |w|
+          h[w] = i
+          i += 1
+        end
+        #puts "h.keys = #{h.keys}"
+        #puts "h.values = #{h.values}"
+        #puts "h= #{h}"
+        #puts "h.to_a= #{h.to_a}"
+        h.keys.join(' ')
+      end
+      expect(remove_dups(string_with_dups)).to eq 'this book is really big'
+    end
+    it 'removes duplicate words from a string with help of arrays - the safe way (no Hash FIFO assumptions)' do
+      string_with_dups = 'this book is really really big'
+      def remove_dups(string_with_dups)
+        words = string_with_dups.split(' ')
+        h = {}
+        i = 1
+        words.each do |w|
+          h[w] = i
+          i += 1
+        end
+        #puts "h.keys = #{h.keys}"
+        #puts "h.values = #{h.values}"
+        #puts "h= #{h}"
+        #puts "h.to_a= #{h.to_a}"
+        # we are using value of hash to sort to guarantee that the element of hash are sorted
+        # in the order of values of each hash element when we inserted them.
+        #puts "h.to_a.sort_by {|a,b| a[1] <=> b[1]} = #{h.to_a.sort_by {|a,b| a[1] <=> b[1]}}"
+        # sort by value after converting hash to array of tupples, then sorting by 2nd element of these
+        # sub arrays(2 element arrays - tupples), then mapping only the first elements of these tupples
+        # then joining them.
+        h.to_a.sort_by {|a,b| a[1] <=> b[1]}.map {|e| e[0]}.join(' ')
+      end
+      expect(remove_dups(string_with_dups)).to eq 'this book is really big'
     end
   end
 end
