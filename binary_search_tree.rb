@@ -160,8 +160,7 @@ class BinarySearchTree
   def display_tree
     if @root_tree && (debugging || info)
       log nil, "Displaying Tree"
-      puts "#{' '*(@root_tree.indent)}RT(#{@root_tree.node.display_node})"
-      @root_tree.display
+      @root_tree.display(@root_tree)
     end
   end
 
@@ -307,7 +306,8 @@ class BinarySearchTree
       "w/hash: #{(self.hash % 1000)}"
     end
 
-    def display
+    def display(*root)
+      puts "#{' '*(root[0].indent)}RT(#{root[0].node.display_node})" if root[0]
       if @left_child && @right_child
         non_neg_indent = (@left_child.indent < 0 ? 0 : @left_child.indent)
         print "#{' '*non_neg_indent}L#{left_child.height}"+
@@ -646,7 +646,7 @@ class BinarySearchTree
       puts ""
       puts "--"
       puts "Ancestors traverse starting w/item #{item.data}"
-      puts "------------------"
+      puts "---------------------------------------"
       success =  ancestors_traverse(tree, item) do |tree|
         puts "inside tree: #{tree.node.data}"
         puts "--"
@@ -687,7 +687,7 @@ class BinarySearchTree
       puts ""
       puts "--"
       puts "Descendants traverse starting w/item #{item.data}"
-      puts "------------------"
+      puts "---------------------------------------"
       success =  descendants_traverse(tree, item) do |tree|
         puts "inside tree: #{tree.node.data}"
         puts "--"
