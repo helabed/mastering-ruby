@@ -65,6 +65,8 @@ RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
         expect(data).to eq item_to_search_for
         height = bst.height_of_tree
         expect(height).to eq(7)
+        bst.do_right_to_left_leaf_traverse
+
         outcome = bst.delete_from(item_to_search_for)
         expect(outcome).to be true
         bst.do_in_order_traverse
@@ -72,6 +74,7 @@ RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
         bst.do_post_in_order_traverse
         height = bst.height_of_tree
         expect(height).to eq(6)
+        bst.do_right_to_left_leaf_traverse
       end
     end
   end
@@ -183,6 +186,13 @@ class BinarySearchTree
       height = @root_tree.height_of_tree
       log nil, "Computed Height of Tree is #{height}"
       height
+    end
+  end
+
+  def do_right_to_left_leaf_traverse
+    if @root_tree && (debugging || info)
+      log nil, "Right To Left Leaf Traversal"
+      @root_tree.show_me_right_to_left_leaf_traverse(@root_tree)
     end
   end
 
@@ -543,6 +553,36 @@ class BinarySearchTree
         return right_child_height + 1
       else
         return left_child_height + 1
+      end
+    end
+
+    def show_me_right_to_left_leaf_traverse(tree)
+      puts ""
+      puts ""
+      puts ""
+      puts "--"
+      puts "right to left leaf traverse"
+      puts "------------------"
+      right_to_left_leaf_traverse do |tree|
+        puts "inside tree: #{tree.node.data}"
+        puts "--"
+        puts ""
+      end
+    end
+
+    def right_to_left_leaf_traverse(&block)
+      if self.node
+        if self.right_child
+          self.right_child.right_to_left_leaf_traverse(&block)
+        end
+
+        if self.right_child == nil && self.left_child == nil
+          block.call(self)
+        end
+
+        if self.left_child
+          self.left_child.right_to_left_leaf_traverse(&block)
+        end
       end
     end
   end
