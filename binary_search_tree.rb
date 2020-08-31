@@ -222,7 +222,7 @@ class BinarySearchTree
       s << "\nhash: #{(self.hash % 1000)}"
       s << "\nheight: #{self.height}"
       s << "\nindent: #{self.indent}"
-      parent = self.parent.node.display_node if self.parent
+      parent = self.parent.node.display_node if self.parent && self.parent.node
       parent ||= 'nil'
       s << "\nparent: #{parent}"
       s << "\nnode: #{self.node.display_node}" if self.node
@@ -391,12 +391,20 @@ class BinarySearchTree
         # root is being deleted, the subtree becomes root
         tree = subtree  # changing root tree to be the subtree when returned
         puts "root is being deleted subtree is new root: #{subtree}"
+        subtree.height = 1
+        subtree.parent = nil
       elsif parent.left_child == x
         parent.left_child = subtree
         puts "parent left child gets the subtree: #{parent.left_child}"
+        # consider removing 2 lines below - hard to maintain
+        subtree.height = parent.height + 1
+        subtree.parent = parent
       else
         parent.right_child = subtree
         puts "parent right child gets the subtree: #{parent.right_child}"
+        # consider removing 2 lines below - hard to maintain
+        subtree.height = parent.height + 1
+        subtree.parent = parent
       end
 
       x.right_child = nil
@@ -404,19 +412,77 @@ class BinarySearchTree
       x.parent      = nil
       x.node        = nil
 
+      # TODO: remove this
       update_parents_and_heights(tree)
 
-      return [true, tree]
+      return [true, tree] # tree is always the Root tree
     end
 
+    # TODO: find another quick way to get height of tree for a certain
+    # sub-tree on demand.
+    # we should NOT be doing this:
+    #   "a fool's erand anyone who attempts"
+    #   to keep and maintain additional redundant pointers in a BST
     def update_parents_and_heights(tree)
-      puts "--"
+      puts ""
+      puts ""
+      puts ""
       puts "--"
       puts "update parents and heights"
-      puts "--"
+      puts "--------------------------"
       in_order_traverse do |tree|
-
         puts "inside tree: #{tree.node.data}"
+        puts "tree:"
+        puts "   height: #{tree.height}"
+        puts "   parent: #{(tree.parent && tree.parent.node ? tree.parent.node.display_node : 'Root')}"
+        puts "--"
+        puts ""
+      end
+
+      show_me_in_order_traverse(tree)
+      show_me_pre_order_traverse(tree)
+      show_me_post_order_traverse(tree)
+    end
+
+    def show_me_in_order_traverse(tree)
+      puts ""
+      puts ""
+      puts ""
+      puts "--"
+      puts "in order traverse"
+      puts "------------------"
+      in_order_traverse do |tree|
+        puts "inside tree: #{tree.node.data}"
+        puts "--"
+        puts ""
+      end
+    end
+
+    def show_me_pre_order_traverse(tree)
+      puts ""
+      puts ""
+      puts ""
+      puts "--"
+      puts "pre order traverse"
+      puts "------------------"
+      pre_order_traverse do |tree|
+        puts "inside tree: #{tree.node.data}"
+        puts "--"
+        puts ""
+      end
+    end
+
+    def show_me_post_order_traverse(tree)
+      puts ""
+      puts ""
+      puts ""
+      puts "--"
+      puts "post order traverse"
+      puts "------------------"
+      post_order_traverse do |tree|
+        puts "inside tree: #{tree.node.data}"
+        puts "--"
+        puts ""
       end
     end
 
@@ -429,6 +495,30 @@ class BinarySearchTree
         if self.right_child
           self.right_child.in_order_traverse(&block)
         end
+      end
+    end
+
+    def pre_order_traverse(&block)
+      if self.node
+        block.call(self)
+        if self.left_child
+          self.left_child.pre_order_traverse(&block)
+        end
+        if self.right_child
+          self.right_child.pre_order_traverse(&block)
+        end
+      end
+    end
+
+    def post_order_traverse(&block)
+      if self.node
+        if self.left_child
+          self.left_child.post_order_traverse(&block)
+        end
+        if self.right_child
+          self.right_child.post_order_traverse(&block)
+        end
+        block.call(self)
       end
     end
   end
