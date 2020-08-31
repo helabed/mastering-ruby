@@ -55,6 +55,7 @@ RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
         #item_to_search_for = 86
         #item_to_search_for = 24
         item_to_search_for = 30
+        item_to_traverse_from = 28
 
         bst.log rand_array, 'the array'
         bst.log item_to_search_for, 'Will be searching for'
@@ -67,15 +68,17 @@ RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
         expect(height).to eq(7)
         bst.do_right_to_left_leaf_traverse
 
-        #outcome = bst.delete_from(item_to_search_for)
-        #expect(outcome).to be true
+        outcome = bst.delete_from(item_to_search_for)
+        expect(outcome).to be true
         bst.do_in_order_traverse
         bst.do_pre_in_order_traverse
         bst.do_post_in_order_traverse
-        #height = bst.height_of_tree
-        #expect(height).to eq(6)
+        height = bst.height_of_tree
+        expect(height).to eq(6)
         bst.do_right_to_left_leaf_traverse
-        outcome = bst.do_ancestors_traverse(item_to_search_for)
+        outcome = bst.do_ancestors_traverse(item_to_traverse_from)
+        expect(outcome).to be true
+        outcome = bst.do_descendants_traverse(item_to_traverse_from)
         expect(outcome).to be true
       end
     end
@@ -202,6 +205,13 @@ class BinarySearchTree
     if @root_tree && (debugging || info)
       log nil, "Ancestors Traversal"
       @root_tree.show_me_ancestors_traverse(@root_tree, Node.new(value))
+    end
+  end
+
+  def do_descendants_traverse(value)
+    if @root_tree && (debugging || info)
+      log nil, "Descendants Traversal"
+      @root_tree.show_me_descendants_traverse(@root_tree, Node.new(value))
     end
   end
 
@@ -597,10 +607,10 @@ class BinarySearchTree
 
     # Ancestors traverse for 'item' element in 'tree' sub-tree
     #
-    # first use search to find element, then descend to it
+    # first use search to find the element, then descend to it
     # from Root and print the ancestry nodes
     def ancestors_traverse(tree, item, &block)
-      x           = nil # sub-tree object containing node to confirm item exists
+      x           = nil # sub-tree object containing node to be located
       parent      = nil # sub-tree object - parent of x, or soon its successor
       found       = false
 
@@ -638,6 +648,47 @@ class BinarySearchTree
       puts "Ancestors traverse"
       puts "------------------"
       success =  ancestors_traverse(tree, item) do |tree|
+        puts "inside tree: #{tree.node.data}"
+        puts "--"
+        puts ""
+      end
+      return success
+    end
+
+    # Descendants traverse for 'item' element in 'tree' sub-tree
+    #
+    # first use search to find the element/item, then from it
+    # do a pre_order_traverse form that node and on.
+    def descendants_traverse(tree, item, &block)
+      x           = nil # sub-tree object containing node to be located
+      parent      = nil # sub-tree object - parent of x, or soon its successor
+      found       = false
+
+      found, x, parent = bst_search(tree, item)
+
+      return false if ! found  # no point in going further
+
+      locator     = x     # from the located node
+
+      if locator.left_child
+        locator.left_child.pre_order_traverse(&block)
+      end
+
+      if locator.right_child
+        locator.right_child.pre_order_traverse(&block)
+      end
+
+      return found
+    end
+
+    def show_me_descendants_traverse(tree, item)
+      puts ""
+      puts ""
+      puts ""
+      puts "--"
+      puts "Descendants traverse"
+      puts "------------------"
+      success =  descendants_traverse(tree, item) do |tree|
         puts "inside tree: #{tree.node.data}"
         puts "--"
         puts ""
