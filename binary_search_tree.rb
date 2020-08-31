@@ -67,14 +67,16 @@ RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
         expect(height).to eq(7)
         bst.do_right_to_left_leaf_traverse
 
-        outcome = bst.delete_from(item_to_search_for)
-        expect(outcome).to be true
+        #outcome = bst.delete_from(item_to_search_for)
+        #expect(outcome).to be true
         bst.do_in_order_traverse
         bst.do_pre_in_order_traverse
         bst.do_post_in_order_traverse
-        height = bst.height_of_tree
-        expect(height).to eq(6)
+        #height = bst.height_of_tree
+        #expect(height).to eq(6)
         bst.do_right_to_left_leaf_traverse
+        outcome = bst.do_ancestors_traverse(item_to_search_for)
+        expect(outcome).to be true
       end
     end
   end
@@ -193,6 +195,13 @@ class BinarySearchTree
     if @root_tree && (debugging || info)
       log nil, "Right To Left Leaf Traversal"
       @root_tree.show_me_right_to_left_leaf_traverse(@root_tree)
+    end
+  end
+
+  def do_ancestors_traverse(value)
+    if @root_tree && (debugging || info)
+      log nil, "Ancestors Traversal"
+      @root_tree.show_me_ancestors_traverse(@root_tree, Node.new(value))
     end
   end
 
@@ -389,7 +398,7 @@ class BinarySearchTree
 
       found, x, parent = bst_search(tree, item)
 
-      puts "Elemeent to be deleted was found: #{found}"
+      puts "Element to be deleted was found: #{found}"
       puts "Sub-tree whose node has to be deleted: #{x}"
       puts ""
       puts "Parent of sub-tree whose node has to be deleted: #{parent}"
@@ -584,6 +593,56 @@ class BinarySearchTree
           self.left_child.right_to_left_leaf_traverse(&block)
         end
       end
+    end
+
+    # Ancestors traverse for 'item' element in 'tree' sub-tree
+    #
+    # first use search to find element, then descend to it
+    # from Root and print the ancestry nodes
+    def ancestors_traverse(tree, item, &block)
+      x           = nil # sub-tree object containing node to confirm item exists
+      parent      = nil # sub-tree object - parent of x, or soon its successor
+      found       = false
+
+      found, x, parent = bst_search(tree, item)
+
+      return false if ! found  # no point in going further
+
+      locator     = tree
+      parent      = nil
+      found       = false
+
+      while( !found && locator)
+        if item.data < locator.node.data
+          # descend left
+          block.call(locator)
+          parent = locator
+          locator = locator.left_child
+        elsif item.data > locator.node.data
+          # descend right
+          block.call(locator)
+          parent = locator
+          locator = locator.right_child
+        else
+          found = true
+        end
+      end
+      return found
+    end
+
+    def show_me_ancestors_traverse(tree, item)
+      puts ""
+      puts ""
+      puts ""
+      puts "--"
+      puts "Ancestors traverse"
+      puts "------------------"
+      success =  ancestors_traverse(tree, item) do |tree|
+        puts "inside tree: #{tree.node.data}"
+        puts "--"
+        puts ""
+      end
+      return success
     end
   end
   # End of BinarySearchTree::Tree
