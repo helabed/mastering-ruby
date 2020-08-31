@@ -645,7 +645,7 @@ class BinarySearchTree
       puts ""
       puts ""
       puts "--"
-      puts "Ancestors traverse"
+      puts "Ancestors traverse starting w/item #{item.data}"
       puts "------------------"
       success =  ancestors_traverse(tree, item) do |tree|
         puts "inside tree: #{tree.node.data}"
@@ -686,7 +686,7 @@ class BinarySearchTree
       puts ""
       puts ""
       puts "--"
-      puts "Descendants traverse"
+      puts "Descendants traverse starting w/item #{item.data}"
       puts "------------------"
       success =  descendants_traverse(tree, item) do |tree|
         puts "inside tree: #{tree.node.data}"
