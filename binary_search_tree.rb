@@ -63,8 +63,15 @@ RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
         found, data = bst.search_for(rand_array, item_to_search_for)
         expect(found).to be true
         expect(data).to eq item_to_search_for
+        height = bst.height_of_tree
+        expect(height).to eq(7)
         outcome = bst.delete_from(item_to_search_for)
         expect(outcome).to be true
+        bst.do_in_order_traverse
+        bst.do_pre_in_order_traverse
+        bst.do_post_in_order_traverse
+        height = bst.height_of_tree
+        expect(height).to eq(6)
       end
     end
   end
@@ -147,6 +154,35 @@ class BinarySearchTree
       log nil, "Displaying Tree"
       puts "#{' '*(@root_tree.indent)}RT(#{@root_tree.node.display_node})"
       @root_tree.display
+    end
+  end
+
+  def do_in_order_traverse
+    if @root_tree && (debugging || info)
+      log nil, "In Order Tree Traversal"
+      @root_tree.show_me_in_order_traverse(@root_tree)
+    end
+  end
+
+  def do_pre_in_order_traverse
+    if @root_tree && (debugging || info)
+      log nil, "Pre Order Tree Traversal"
+      @root_tree.show_me_pre_order_traverse(@root_tree)
+    end
+  end
+
+  def do_post_in_order_traverse
+    if @root_tree && (debugging || info)
+      log nil, "Post Order Tree Traversal"
+      @root_tree.show_me_post_order_traverse(@root_tree)
+    end
+  end
+
+  def height_of_tree
+    if @root_tree && (debugging || info)
+      height = @root_tree.height_of_tree
+      log nil, "Computed Height of Tree is #{height}"
+      height
     end
   end
 
@@ -333,7 +369,7 @@ class BinarySearchTree
     # iterative implementation of binary search tree - delete
     # Ref: Advanced Programming in Pascal w/Data Structures(1988)
     #      Larry Nyhoff & Sanford Leestma (pages 466-471)
-    # variable names matches thoes in book (as much as possible)
+    # variable names match those in book (as much as possible)
     def delete_element(tree, item)
       x           = nil # sub-tree object containing node to be deleted
       x_successor = nil # sub-tree object - in-order successor to x (or predecessor)
@@ -396,15 +432,9 @@ class BinarySearchTree
       elsif parent.left_child == x
         parent.left_child = subtree
         puts "parent left child gets the subtree: #{parent.left_child}"
-        # consider removing 2 lines below - hard to maintain
-        subtree.height = parent.height + 1
-        subtree.parent = parent
       else
         parent.right_child = subtree
         puts "parent right child gets the subtree: #{parent.right_child}"
-        # consider removing 2 lines below - hard to maintain
-        subtree.height = parent.height + 1
-        subtree.parent = parent
       end
 
       x.right_child = nil
@@ -412,36 +442,7 @@ class BinarySearchTree
       x.parent      = nil
       x.node        = nil
 
-      # TODO: remove this
-      update_parents_and_heights(tree)
-
       return [true, tree] # tree is always the Root tree
-    end
-
-    # TODO: find another quick way to get height of tree for a certain
-    # sub-tree on demand.
-    # we should NOT be doing this:
-    #   "a fool's erand anyone who attempts"
-    #   to keep and maintain additional redundant pointers in a BST
-    def update_parents_and_heights(tree)
-      puts ""
-      puts ""
-      puts ""
-      puts "--"
-      puts "update parents and heights"
-      puts "--------------------------"
-      in_order_traverse do |tree|
-        puts "inside tree: #{tree.node.data}"
-        puts "tree:"
-        puts "   height: #{tree.height}"
-        puts "   parent: #{(tree.parent && tree.parent.node ? tree.parent.node.display_node : 'Root')}"
-        puts "--"
-        puts ""
-      end
-
-      show_me_in_order_traverse(tree)
-      show_me_pre_order_traverse(tree)
-      show_me_post_order_traverse(tree)
     end
 
     def show_me_in_order_traverse(tree)
@@ -519,6 +520,29 @@ class BinarySearchTree
           self.right_child.post_order_traverse(&block)
         end
         block.call(self)
+      end
+    end
+
+    def height_of_tree
+      left_child_height = 0
+      right_child_height = 0
+
+      if self.left_child
+        left_child_height = self.left_child.height_of_tree
+      else
+        left_child_height = 0  # left anchor
+      end
+
+      if self.right_child
+        right_child_height = self.right_child.height_of_tree
+      else
+        right_child_height = 0  # right anchor
+      end
+
+      if right_child_height >= left_child_height
+        return right_child_height + 1
+      else
+        return left_child_height + 1
       end
     end
   end
