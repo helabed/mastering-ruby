@@ -1,3 +1,5 @@
+require 'securerandom'
+
 describe 'Enumerable transformers' do
   context 'Enumerable methods' do
     Enumerable_methods = <<-METHODS
@@ -65,7 +67,7 @@ describe 'Enumerable transformers' do
     end
   end
   context 'reduce - same as inject' do
-    it 'reduces an array with the help of some binary opeation or block' do
+    it 'reduces an array with the help of some binary operation or block' do
       # Sum some numbers
       expect((5..10).reduce(:+)).to eq 45
       # Same using a block and inject
@@ -79,6 +81,92 @@ describe 'Enumerable transformers' do
         memo.length > word.length ? memo : word
       end
       expect(longest).to eq 'sheep'
+    end
+  end
+  context 'sort an array with reduce/inject - and in-order insert into new array' do
+    it 'sorts a literal array by reducing it and in-order inserting it into new array' do
+      array = [3,4,2,11,2,5,3]
+      array_copy = array.dup
+      sorted_array = array.inject([]) do |arr, e|
+        smallest = array_copy.inject do |min, x|
+          min < x ? min : x
+        end
+        #sleep 0.25
+        #puts "original: #{array_copy}"
+        array_copy.delete_at(array_copy.find_index(smallest))
+        arr << smallest
+        #puts "sorted: #{arr}"
+        arr
+      end
+      expect(sorted_array).to eq [2,2,3,3,4,5,11]
+    end
+    it 'sorts a random array by reducing it and in-order inserting it into new array' do
+      total_num_of_items = 13
+      randomness_range = 10
+      rand_array = Array.new(total_num_of_items) { SecureRandom.random_number(randomness_range) }
+      ruby_sorted_array = rand_array.sort_by { |w| w }
+
+      array = rand_array
+      array_copy = array.dup
+      sorted_array = array.inject([]) do |arr, e|
+        smallest = array_copy.inject do |min, x|
+          min < x ? min : x
+        end
+        array_copy.delete_at(array_copy.find_index(smallest))
+        arr << smallest
+        arr
+      end
+      expect(sorted_array).to eq ruby_sorted_array
+    end
+  end
+  context 'sort an array with looping and swapping - i.e a bubble sort' do
+    it 'sorts a literal array with a bubble sort' do
+      array = [3,4,2,11,2,5,3]
+      loop do
+        if array.length <= 1
+          break # array already sorted
+        end
+        swapping_occurred = false
+
+        (array.length-1).times do |i|
+          if array[i] > array[i+1]
+            array[i+1], array[i] = array[i], array[i+1]
+            #sleep 0.25
+            swapping_occurred = true
+          end
+          #puts "iteration #{i}, array: #{array}"
+        end
+
+        #puts "array: #{array}"
+        break if swapping_occurred == false
+      end
+      expect(array).to eq [2,2,3,3,4,5,11]
+    end
+    it 'sorts a random array with a bubble sort' do
+      total_num_of_items = 13
+      randomness_range = 10
+      rand_array = Array.new(total_num_of_items) { SecureRandom.random_number(randomness_range) }
+      ruby_sorted_array = rand_array.sort_by { |w| w }
+      array = rand_array
+      loop do
+        if array.length <= 1
+          break # array already sorted
+        end
+        swapping_occurred = false
+
+        (array.length-1).times do |i|
+          if array[i] > array[i+1]
+            array[i+1], array[i] = array[i], array[i+1]
+            #sleep 1
+            swapping_occurred = true
+          end
+          #puts "iteration #{i}, array: #{array}"
+        end
+
+        #puts "array: #{array}"
+        break if swapping_occurred == false
+      end
+      expect(array).to eq ruby_sorted_array
     end
   end
 end
