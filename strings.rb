@@ -116,8 +116,8 @@ RSpec.describe 'Strings' do
       expect(remove_dups(string_with_dups)).to eq 'this book is really big'
     end
   end
-context 'String methods' do
-  String_methods = <<-METHODS
+  context 'String methods' do
+    String_methods = <<-METHODS
     https://apidock.com/ruby/String
     String#methods:
       %                  byteslice    crypt                  encode!            include?  oct               scrub!         succ         tr

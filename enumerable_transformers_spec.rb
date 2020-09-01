@@ -41,4 +41,16 @@ describe 'Enumerable transformers' do
       expect(result).to eq ['fig', 'pear', 'apple']
     end
   end
+  context 'Enumerable methods' do
+    Enumerable_methods = <<-METHODS
+      https://apidock.com/ruby/Enumerable
+      Enumerable#methods:
+        all?         collect         drop_while        entries     find_all    group_by    lazy     min        partition     slice_after   take        uniq
+        any?         collect_concat  each_cons         exclude?    find_index  include?    many?    min_by     pluck         slice_before  take_while  without
+        as_json      count           each_entry        excluding   first       including   map      minmax     reduce        slice_when    tally       zip
+        chain        cycle           each_slice        filter      flat_map    index_by    max      minmax_by  reject        sort          to_a
+        chunk        detect          each_with_index   filter_map  grep        index_with  max_by   none?      reverse_each  sort_by       to_h
+        chunk_while  drop            each_with_object  find        grep_v      inject      member?  one?       select        sum           to_set
+    METHODS
+  end
 end
