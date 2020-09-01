@@ -35,4 +35,26 @@ RSpec.describe 'Arrays' do
       ]
     end
   end
+  context 'Array methods' do
+    Array_methods = <<-METHODS
+      https://apidock.com/ruby/Array
+      Array#methods:
+        &        bsearch        difference        find_index    intersection  pretty_print          sample          sum             transpose
+        *        bsearch_index  dig               first         join          pretty_print_cycle    second          take            union
+        +        clear          drop              flatten       keep_if       product               second_to_last  take_while      uniq
+        -        collect        drop_while        flatten!      last          push                  select          third           uniq!
+        <<       collect!       each              forty_two     length        rassoc                select!         third_to_last   unshift
+        <=>      combination    each_index        fourth        map           reject                shelljoin       to              values_at
+        ==       compact        empty?            from          map!          reject!               shift           to_a            without
+        []       compact!       eql?              hash          max           repeated_combination  shuffle         to_ary          zip
+        []=      concat         excluding         in_groups     min           repeated_permutation  shuffle!        to_default_s    |
+        all?     count          extract!          in_groups_of  minmax        replace               size            to_formatted_s
+        any?     cycle          extract_options!  include?      none?         reverse               slice           to_h
+        append   deconstruct    fetch             including     one?          reverse!              slice!          to_param
+        as_json  deep_dup       fifth             index         pack          reverse_each          sort            to_query
+        assoc    delete         fill              inquiry       permutation   rindex                sort!           to_s
+        at       delete_at      filter            insert        pop           rotate                sort_by!        to_sentence
+        blank?   delete_if      filter!           inspect       prepend       rotate!               split           to_xml
+    METHODS
+  end
 end

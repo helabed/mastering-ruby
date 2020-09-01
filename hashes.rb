@@ -58,86 +58,27 @@ RSpec.describe 'Hashes' do
   end
   context 'Hash methods' do
     Hash_methods = <<-METHODS
-      <=
-      ==
-      >
-      >=
-      []
-      []=
-      any?
-      assoc
-      clear
-      compact
-      compact!
-      compare_by_identity
-      compare_by_identity?
-      default
-      default=
-      default_proc
-      default_proc=
-      delete
-      delete_if
-      dig
-      each
-      each_key
-      each_pair
-      each_value
-      empty?
-      eql?
-      fetch
-      fetch_values
-      filter
-      filter!
-      flatten
-      hash
-      has_key?
-      has_value?
-      include?
-      index
-      indexes (<= v1_8_7_330)
-      indices (<= v1_8_7_330)
-      initialize_copy
-      inspect
-      invert
-      keep_if
-      key
-      key?
-      keys
-      length
-      member?
-      merge
-      merge!
-      pretty_print
-      pretty_print_cycle
-      rassoc
-      rehash
-      reject
-      reject!
-      replace
-      select
-      select!
-      shift
-      size
-      slice
-      sort (<= v1_8_7_330)
-      store
-      to_a
-      to_h
-      to_hash
-      to_proc
-      to_s
-      to_yaml (<= v1_9_1_378)
-      transform_keys
-      transform_keys!
-      transform_values
-      transform_values!
-      update
-      value?
-      values
-      values_at
-      yaml_initialize (<= v1_9_1_378)
-
-      Included modules
+      https://apidock.com/ruby/Hash
+      Hash#methods:
+        <                     deep_merge              each_pair             invert                           reverse_update   to_query
+        <=                    deep_merge!             each_value            keep_if                          select           to_s
+        ==                    deep_stringify_keys     empty?                key                              select!          to_xml
+        >                     deep_stringify_keys!    eql?                  key?                             shift            transform_keys
+        >=                    deep_symbolize_keys     except                keys                             size             transform_keys!
+        []                    deep_symbolize_keys!    except!               length                           slice            transform_values
+        []=                   deep_transform_keys     extract!              member?                          slice!           transform_values!
+        any?                  deep_transform_keys!    extractable_options?  merge                            store            update
+        as_json               deep_transform_values   fetch                 merge!                           stringify_keys   value?
+        assert_valid_keys     deep_transform_values!  fetch_values          nested_under_indifferent_access  stringify_keys!  values
+        assoc                 default                 filter                pretty_print                     symbolize_keys   values_at
+        blank?                default=                filter!               pretty_print_cycle               symbolize_keys!  with_defaults
+        clear                 default_proc            flatten               rassoc                           to_a             with_defaults!
+        compact               default_proc=           has_key?              rehash                           to_h             with_indifferent_access
+        compact!              delete                  has_value?            reject                           to_hash
+        compare_by_identity   delete_if               hash                  reject!                          to_options
+        compare_by_identity?  dig                     include?              replace                          to_options!
+        deconstruct_keys      each                    index                 reverse_merge                    to_param
+        deep_dup              each_key                inspect               reverse_merge!                   to_proc
     METHODS
   end
 end
