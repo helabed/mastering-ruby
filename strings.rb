@@ -12,6 +12,33 @@ require 'byebug'
 
 
 RSpec.describe 'Strings' do
+  context 'String methods' do
+    String_methods = <<-METHODS
+      https://ruby-doc.org/core-2.7.1/String.html
+      https://apidock.com/ruby/String
+      String#methods:
+        %                  byteslice    crypt                  encode!            include?  oct               scrub!         succ         tr
+        *                  camelcase    dasherize              encoding           indent    ord               setbyte        succ!        tr!
+        +                  camelize     deconstantize          end_with?          indent!   parameterize      shellescape    sum          tr_s
+        +@                 capitalize   delete                 ends_with?         index     partition         shellsplit     swapcase     tr_s!
+        -@                 capitalize!  delete!                eql?               inquiry   pluralize         singularize    swapcase!    truncate
+        <<                 casecmp      delete_prefix          exclude?           insert    prepend           size           tableize     truncate_bytes
+        <=>                casecmp?     delete_prefix!         first              inspect   pretty_print      slice          titlecase    truncate_words
+        ==                 center       delete_suffix          force_encoding     intern    remove            slice!         titleize     underscore
+        ===                chars        delete_suffix!         foreign_key        is_utf8?  remove!           split          to           undump
+        =~                 chomp        demodulize             freeze             last      replace           squeeze        to_c         unicode_normalize
+        []                 chomp!       downcase               from               length    reverse           squeeze!       to_d         unicode_normalize!
+        []=                chop         downcase!              getbyte            lines     reverse!          squish         to_date      unicode_normalized?
+        acts_like_string?  chop!        dump                   grapheme_clusters  ljust     rindex            squish!        to_datetime  unpack
+        as_json            chr          each_byte              gsub               lstrip    rjust             start_with?    to_f         unpack1
+        ascii_only?        classify     each_char              gsub!              lstrip!   rpartition        starts_with?   to_i         upcase
+        at                 clear        each_codepoint         hash               match     rstrip            strip          to_r         upcase!
+        b                  codepoints   each_grapheme_cluster  hex                match?    rstrip!           strip!         to_s         upcase_first
+        blank?             concat       each_line              html_safe          mb_chars  safe_constantize  strip_heredoc  to_str       upto
+        bytes              constantize  empty?                 humanize           next      scan              sub            to_sym       valid_encoding?
+        bytesize           count        encode                 in_time_zone       next!     scrub             sub!           to_time
+      METHODS
+  end
   before(:all) do
     @string_array = ["Javascript advanced100%",
       "Ruby on Rails 6.x Enterprise Edition80%",
@@ -115,31 +142,5 @@ RSpec.describe 'Strings' do
       end
       expect(remove_dups(string_with_dups)).to eq 'this book is really big'
     end
-  end
-  context 'String methods' do
-    String_methods = <<-METHODS
-    https://apidock.com/ruby/String
-    String#methods:
-      %                  byteslice    crypt                  encode!            include?  oct               scrub!         succ         tr
-      *                  camelcase    dasherize              encoding           indent    ord               setbyte        succ!        tr!
-      +                  camelize     deconstantize          end_with?          indent!   parameterize      shellescape    sum          tr_s
-      +@                 capitalize   delete                 ends_with?         index     partition         shellsplit     swapcase     tr_s!
-      -@                 capitalize!  delete!                eql?               inquiry   pluralize         singularize    swapcase!    truncate
-      <<                 casecmp      delete_prefix          exclude?           insert    prepend           size           tableize     truncate_bytes
-      <=>                casecmp?     delete_prefix!         first              inspect   pretty_print      slice          titlecase    truncate_words
-      ==                 center       delete_suffix          force_encoding     intern    remove            slice!         titleize     underscore
-      ===                chars        delete_suffix!         foreign_key        is_utf8?  remove!           split          to           undump
-      =~                 chomp        demodulize             freeze             last      replace           squeeze        to_c         unicode_normalize
-      []                 chomp!       downcase               from               length    reverse           squeeze!       to_d         unicode_normalize!
-      []=                chop         downcase!              getbyte            lines     reverse!          squish         to_date      unicode_normalized?
-      acts_like_string?  chop!        dump                   grapheme_clusters  ljust     rindex            squish!        to_datetime  unpack
-      as_json            chr          each_byte              gsub               lstrip    rjust             start_with?    to_f         unpack1
-      ascii_only?        classify     each_char              gsub!              lstrip!   rpartition        starts_with?   to_i         upcase
-      at                 clear        each_codepoint         hash               match     rstrip            strip          to_r         upcase!
-      b                  codepoints   each_grapheme_cluster  hex                match?    rstrip!           strip!         to_s         upcase_first
-      blank?             concat       each_line              html_safe          mb_chars  safe_constantize  strip_heredoc  to_str       upto
-      bytes              constantize  empty?                 humanize           next      scan              sub            to_sym       valid_encoding?
-      bytesize           count        encode                 in_time_zone       next!     scrub             sub!           to_time
-    METHODS
   end
 end

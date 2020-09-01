@@ -58,6 +58,7 @@ RSpec.describe 'Hashes' do
   end
   context 'Hash methods' do
     Hash_methods = <<-METHODS
+      https://ruby-doc.org/core-2.7.1/Hash.html
       https://apidock.com/ruby/Hash
       Hash#methods:
         <                     deep_merge              each_pair             invert                           reverse_update   to_query
