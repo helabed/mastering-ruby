@@ -1,4 +1,6 @@
 require 'securerandom'
+require 'set'
+require 'active_support/all'
 
 describe 'Enumerable transformers' do
   context 'Enumerable methods' do
@@ -167,6 +169,71 @@ describe 'Enumerable transformers' do
         break if swapping_occurred == false
       end
       expect(array).to eq ruby_sorted_array
+    end
+  end
+  context 'Factorials' do
+    def factorial(n)
+      return 0 if n == 0
+      return 1 if n == 1
+      n * factorial(n-1)
+    end
+    it 'calculate a factorial' do
+      n = 4
+      expect(factorial(0)).to eq 0
+      expect(factorial(1)).to eq 1
+      expect(factorial(2)).to eq 2
+      expect(factorial(3)).to eq 6
+      expect(factorial(4)).to eq 24
+    end
+  end
+  context 'use Set to remove duplicates from Array' do
+    def remove_dups(arr)
+      s = Set.new
+      arr.each do |e|
+        s << e
+      end
+      s.to_a
+    end
+    it 'removes dups using Set' do
+      array = [3,4,2,11,2,5,3]
+      expect(remove_dups(array)).to eq [3,4,2,11,5]
+    end
+  end
+  context 'use binary search to find element in Array' do
+    def is_element_in_array?(el, arr)
+      return false if (arr == nil || arr.size == 0)
+      return false if (arr.size == 1 && arr[0] != el)
+      sorted_arr = arr.sort
+      left_half, right_half = sorted_arr.in_groups(2)
+      left = left_half
+      right = right_half.compact
+      #puts "left_half: #{left}"
+      #puts "right_half: #{right}"
+      if el < left.last
+        # descend left
+        is_element_in_array?(el, left)
+      elsif el == left.last
+        # element found
+        return true
+      elsif el > right.first
+        # descend right
+        is_element_in_array?(el, right)
+      elsif el == right.first
+        # element found
+        return true
+      else
+        return false # not in array
+      end
+    end
+    it 'finds an element in array using binary search' do
+      array = [3,4,2,11,2,5,3]
+      in_array = is_element_in_array?(1, array)
+      expect(is_element_in_array?(3, array)).to eq true
+      expect(is_element_in_array?(4, array)).to eq true
+      expect(is_element_in_array?(2, array)).to eq true
+      expect(is_element_in_array?(5, array)).to eq true
+      expect(is_element_in_array?(11, array)).to eq true
+      expect(is_element_in_array?(1, array)).to eq false
     end
   end
 end
