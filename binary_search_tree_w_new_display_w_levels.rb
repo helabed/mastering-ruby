@@ -407,7 +407,6 @@ class BinarySearchTree
             middle_padding = trees[i+1].indent - t.indent - n_padd
             middle_padding = 0 if middle_padding < 0
             m_box = mp_char*middle_padding
-            puts "m_box: #{m_box}"
             accumulator << m_box
             boxes << [m_box]
             slashes << m_box
