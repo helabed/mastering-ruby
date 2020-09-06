@@ -11,7 +11,7 @@ require 'pry'
 require 'byebug'
 
 
-RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
+RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
   it 'should search for an element stored in BST' do
     total_num_of_items = 15
     randomness_range = 100
@@ -43,6 +43,8 @@ RSpec.describe 'BinarySearchTree (BST) testing iteration 1' do
         #item_to_delete = 30
         #rand_array = [79, 11, 24, 89, 64, 80, 20, 80]
         #rand_array = [79, 11, 24, 89, 83, 25, 83, 82]
+        #rand_array = [55, 10, 66, 27, 4, 2, 48, 37, 86, 71, 85, 90, 86, 60, 90, 17, 40, 14]
+
 
         bst.log rand_array, 'the array'
         bst.insert_into(rand_array)
@@ -86,7 +88,7 @@ class BinarySearchTree
   LOG_LEVEL_DEBUG = 2
   LOG_LEVEL_INFO  = 1
   LOG_LEVEL_NONE  = false
-  LOG_LEVEL = LOG_LEVEL_DEBUG
+  LOG_LEVEL = LOG_LEVEL_INFO
 
   def debugging; LOG_LEVEL == LOG_LEVEL_DEBUG; end
   def info;      LOG_LEVEL == LOG_LEVEL_INFO;  end
@@ -260,13 +262,6 @@ class BinarySearchTree
   # BinarySearchTree::Tree
   #
   class Tree
-#    BinarySearchTree::ROOT_NODE_INDENT = 35
-#    TREE_LIMB_INDENT = 6   # keep this always even so that we can divide by 2
-#    NODE_DATA_SIZE = 2
-#    NODE_DATA_PADDING = 1
-#    LEFT_NODE_INDENT  = 4
-#    RIGHT_NODE_INDENT = 4
-
     attr_accessor :node
     attr_accessor :left_child
     attr_accessor :right_child
@@ -318,9 +313,11 @@ class BinarySearchTree
       "w/hash: #{(self.hash % 1000)}"
     end
 
+    # declaring these here, close to where they are being used
     BinarySearchTree::ROOT_NODE_INDENT = 35
-    TREE_LIMB_INDENT = 9 # keep this always even so that we can divide by 2
-    NODE_DATA_SIZE = 2
+    INDENT_DECAY      = 2.10
+    TREE_LIMB_INDENT  = 12 # keep this always even so that we can divide by 2
+    NODE_DATA_SIZE    = 2
     NODE_DATA_PADDING = 1
     LEFT_NODE_INDENT  = 1
     RIGHT_NODE_INDENT = 1
@@ -351,19 +348,19 @@ class BinarySearchTree
       slashes_above_array = []
       slashes_above_array[0] = []
 
-      n_size =  NODE_DATA_SIZE    # = 2
-      n_padd =  NODE_DATA_PADDING # = 1
-      l_padd =  LEFT_NODE_INDENT  # = 1
-      r_padd =  RIGHT_NODE_INDENT # = 1
+      n_size =  NODE_DATA_SIZE
+      n_padd =  NODE_DATA_PADDING
+      l_padd =  LEFT_NODE_INDENT
+      r_padd =  RIGHT_NODE_INDENT
       lp_char = ' ' #'L'
       rp_char = ' ' #'R'
       mp_char = ' ' #'M'
 
       levels_and_nodes.each_pair do |level, trees|
-        puts "Level #{level}: #{trees.map {|t| t.node.data}}"
+        puts "Level #{level}: #{trees.map {|t| t.node.data}}"  if info
 
         trees.each_with_index {|t, i|
-          puts "tree at index[#{i}] has indent: #{t.indent}"
+          puts "tree at index[#{i}] has indent: #{t.indent}"   if debugging
         }
 
         accumulator = ''
@@ -448,7 +445,7 @@ class BinarySearchTree
           @left_child = Tree.new
           @left_child.parent = self
           @left_child.height = self.height + 1                 if self.height
-          more_indent = TREE_LIMB_INDENT - (self.height*2.0).floor
+          more_indent = TREE_LIMB_INDENT - (self.height*INDENT_DECAY).floor
           more_indent = 1 if more_indent < 1
           @left_child.indent = self.indent - LEFT_NODE_INDENT*more_indent  if self.indent
         end
@@ -460,7 +457,7 @@ class BinarySearchTree
           @right_child = Tree.new
           @right_child.parent = self
           @right_child.height = self.height + 1                  if self.height
-          more_indent = TREE_LIMB_INDENT - (self.height*2.0).floor
+          more_indent = TREE_LIMB_INDENT - (self.height*INDENT_DECAY).floor
           more_indent = 1 if more_indent < 1
           @right_child.indent = self.indent + RIGHT_NODE_INDENT*more_indent  if self.indent
         end
