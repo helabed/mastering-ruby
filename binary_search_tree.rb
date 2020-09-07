@@ -1,14 +1,12 @@
 ##comment out these 3 lines for standlone RSpec (i.e when NOT in coderpad)
-#require 'rspec/autorun'
-#require 'algorithms'
-#  include Algorithms
+require 'rspec/autorun'
 ##The above statements are useful when running in
 ##coderpad.io/sandbox - otherwise comment out
 require 'securerandom'
 require 'set'
 require 'active_support/all'
 require 'pry'
-require 'byebug'
+#require 'byebug'
 
 
 RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do

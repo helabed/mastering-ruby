@@ -1,14 +1,12 @@
-##comment out these 3 lines for standlone RSpec (i.e when NOT in coderpad)
-#require 'rspec/autorun'
-#require 'algorithms'
-#  include Algorithms
+#comment out these 3 lines for standlone RSpec (i.e when NOT in coderpad)
+require 'rspec/autorun'
 ##The above statements are useful when running in
 ##coderpad.io/sandbox - otherwise comment out
 require 'securerandom'
 require 'set'
 require 'active_support/all'
 require 'pry'
-require 'byebug'
+#require 'byebug'
 
 
 RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
@@ -47,6 +45,7 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
         #rand_array = [79, 11, 24, 89, 83, 25, 83, 82]
         #rand_array = [ 2, 79, 11, 24, 89, 83, 25, 83, 82]
         #rand_array = [ 99, 2, 79, 11, 24, 89, 83, 25, 83, 82]
+        #rand_array = [75, 15, 14, 6, 0, 26, 27, 48, 46, 56, 49, 50, 54, 72, 95, 86, 82]
 
         bst.log rand_array, 'the array'
         bst.insert_into(rand_array)
