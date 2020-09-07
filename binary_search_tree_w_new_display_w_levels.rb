@@ -312,13 +312,13 @@ class BinarySearchTree
       levels_and_nodes[1] << rt
 
       boxes_array = []
-      boxes_array[0] = []
+      boxes_array[0] = []  # we want to align array index with level, ignore 1st element
 
       slashes_array = []
-      slashes_array[0] = []
+      slashes_array[0] = []  # we want to align array index with levels
 
       slashes_above_array = []
-      slashes_above_array[0] = []
+      slashes_above_array[0] = []  # we want to align array index with levels
 
       n_size =  NODE_DATA_SIZE
       n_padd =  NODE_DATA_PADDING
@@ -362,7 +362,7 @@ class BinarySearchTree
             slashes <<   '/  \\'
           elsif  t.left_child                                # t has a left child
             slashes <<   '/ ' + ' '*n_padd + ' '*n_padd
-          elsif  t.right_child                               # t has a left child
+          elsif  t.right_child                               # t has a right  child
             slashes << ' '*n_padd + ' '*n_padd +  ' \\'
           elsif  t.right_child == nil && t.left_child == nil # t has no children
             slashes << ' '*n_padd +  '~~' + ' '*n_padd
@@ -374,7 +374,7 @@ class BinarySearchTree
             elsif  t.parent && t.parent.left_child == t        # t is the left child
               slashes_above <<  ' '*n_padd + ' '*n_padd + ' /'
             end
-          elsif level == 2  # special treatment for second level to pretty it up
+          elsif level == 2  # special treatment for second level to pretty display
             if  t.parent && t.parent.right_child == t          # t is the right child
               slashes_above <<  '--------\\ ' + ' '*n_padd + ' '*n_padd
             elsif  t.parent && t.parent.left_child == t        # t is the left child
@@ -386,20 +386,20 @@ class BinarySearchTree
           boxes << [data_box]
           if trees.size-1 > 0 && i < trees.size-1
             middle_padding = trees[i+1].indent - t.indent - n_padd*4
-            if level == 2  # special treatment for second level to pretty it up
+            if level == 2  # special treatment for second level to pretty display
               # to allow for /-------- -------\
               middle_padding_4_slashes_above = middle_padding - NUM_OF_DASHES*2
               middle_padding_4_slashes_above = 0 if middle_padding_4_slashes_above < 0
             end
             middle_padding = 0 if middle_padding < 0
             m_box = mp_char*middle_padding
-            if level == 2  # special treatment for second level to pretty it up
+            if level == 2  # special treatment for second level to pretty display
               m_box_above = mp_char*middle_padding_4_slashes_above
             end
             accumulator << m_box
             boxes << [m_box]
             slashes << m_box
-            if level == 2  # special treatment for second level to pretty it up
+            if level == 2  # special treatment for second level to pretty display
               slashes_above << m_box_above
             else
               slashes_above << m_box   if level > 1
