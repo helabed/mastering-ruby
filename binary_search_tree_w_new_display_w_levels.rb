@@ -44,41 +44,13 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
         #rand_array = [79, 11, 24, 89, 64, 80, 20, 80]
         #rand_array = [79, 11, 24, 89, 83, 25, 83, 82]
         #rand_array = [55, 10, 66, 27, 4, 2, 48, 37, 86, 71, 85, 90, 86, 60, 90, 17, 40, 14]
-
+        #rand_array = [79, 11, 24, 89, 83, 25, 83, 82]
+        #rand_array = [ 2, 79, 11, 24, 89, 83, 25, 83, 82]
+        #rand_array = [ 99, 2, 79, 11, 24, 89, 83, 25, 83, 82]
 
         bst.log rand_array, 'the array'
         bst.insert_into(rand_array)
         bst.display_tree
-#        sleep 5 if bst.debugging # see tree
-
-#        bst.log item_to_search_for, 'Will be searching for'
-#        found, data = bst.search_for(rand_array, item_to_search_for)
-#        expect(found).to be true
-#        expect(data).to eq item_to_search_for
-#
-#        height = bst.height_of_tree
-#        expect(height).to be < 30 # random high number
-#
-#        bst.log item_to_delete, 'Will be deleting'
-#        bst.display_tree
-#        sleep 5 if bst.debugging # see tree before deltion
-#        outcome = bst.delete_from(item_to_delete)
-#        expect(outcome).to be true
-#        sleep 10 if bst.debugging # see tree after deletion
-#
-#        bst.do_right_to_left_leaf_traverse
-#        bst.do_in_order_traverse
-#        bst.do_pre_in_order_traverse
-#        bst.do_post_in_order_traverse
-#
-#        bst.do_right_to_left_leaf_traverse
-#        outcome = bst.do_ancestors_traverse(item_to_traverse_from)
-#        expect(outcome).to be true
-#
-#        outcome = bst.do_descendants_traverse(item_to_traverse_from)
-#        expect(outcome).to be true
-#        bst.display_tree
-#        bst.log '', 'SUCCESS'
       end
     end
   end
@@ -88,7 +60,7 @@ class BinarySearchTree
   LOG_LEVEL_DEBUG = 2
   LOG_LEVEL_INFO  = 1
   LOG_LEVEL_NONE  = false
-  LOG_LEVEL = LOG_LEVEL_INFO
+  LOG_LEVEL = LOG_LEVEL_DEBUG
 
   def debugging; LOG_LEVEL == LOG_LEVEL_DEBUG; end
   def info;      LOG_LEVEL == LOG_LEVEL_INFO;  end
@@ -123,8 +95,8 @@ class BinarySearchTree
       log nil, "Inserting Element #{el} into BST" if debugging
       insert(Node.new(el))
       # to see elements being inserted
-      display_tree if debugging
-      sleep 1 if debugging
+      display_tree if debugging || info
+      sleep 0.25 if debugging || info
     end
   end
 
@@ -319,8 +291,9 @@ class BinarySearchTree
     TREE_LIMB_INDENT  = 12 # keep this always even so that we can divide by 2
     NODE_DATA_SIZE    = 2
     NODE_DATA_PADDING = 1
-    LEFT_NODE_INDENT  = 1
-    RIGHT_NODE_INDENT = 1
+    LEFT_NODE_INDENT  = 4
+    RIGHT_NODE_INDENT = 4
+    NUM_OF_DASHES = 8
 
     def display_tree_2D(*root)
       rt = root[0]
@@ -350,14 +323,12 @@ class BinarySearchTree
 
       n_size =  NODE_DATA_SIZE
       n_padd =  NODE_DATA_PADDING
-      l_padd =  LEFT_NODE_INDENT
-      r_padd =  RIGHT_NODE_INDENT
-      lp_char = ' ' #'L'
-      rp_char = ' ' #'R'
-      mp_char = ' ' #'M'
+      lp_char = ' ' #'L' # ' '
+      rp_char = ' ' #'R' # ' '
+      mp_char = ' ' #'M' # ' '
 
       levels_and_nodes.each_pair do |level, trees|
-        puts "Level #{level}: #{trees.map {|t| t.node.data}}"  if info
+        puts "Level #{level}: #{trees.map {|t| t.node.data}}"  if debugging
 
         trees.each_with_index {|t, i|
           puts "tree at index[#{i}] has indent: #{t.indent}"   if debugging
@@ -374,7 +345,15 @@ class BinarySearchTree
             l_box = lp_char*left_side_padding
             accumulator << l_box
             slashes << [l_box]
-            slashes_above << [l_box]   if level > 1
+            if level == 2 && t.parent.left_child == nil # our left sibling is nil
+              # special treatment for second level to pretty it up
+              l_padding = left_side_padding - NUM_OF_DASHES
+              l_padding = 0 if l_padding < 0
+              l_box_above = lp_char*l_padding
+              slashes_above << [l_box_above]
+            else
+              slashes_above << [l_box]   if level > 1
+            end
             boxes << [l_box]
           end
           data_size = n_padd + n_size + n_padd
@@ -390,24 +369,42 @@ class BinarySearchTree
             slashes << ' '*n_padd +  '~~' + ' '*n_padd
           end
 
-          if level > 1  # don't do it for root node
+          if level > 2  # don't do it for root node
             if  t.parent && t.parent.right_child == t          # t is the right child
               slashes_above <<  '\\ ' + ' '*n_padd + ' '*n_padd
             elsif  t.parent && t.parent.left_child == t        # t is the left child
               slashes_above <<  ' '*n_padd + ' '*n_padd + ' /'
+            end
+          elsif level == 2  # special treatment for second level to pretty it up
+            if  t.parent && t.parent.right_child == t          # t is the right child
+              slashes_above <<  '--------\\ ' + ' '*n_padd + ' '*n_padd
+            elsif  t.parent && t.parent.left_child == t        # t is the left child
+              slashes_above <<  ' '*n_padd + ' '*n_padd + ' /--------'
             end
           end
 
           accumulator << data_box
           boxes << [data_box]
           if trees.size-1 > 0 && i < trees.size-1
-            middle_padding = trees[i+1].indent - t.indent - n_padd
+            middle_padding = trees[i+1].indent - t.indent - n_padd*4
+            if level == 2  # special treatment for second level to pretty it up
+              # to allow for /-------- -------\
+              middle_padding_4_slashes_above = middle_padding - NUM_OF_DASHES*2
+              middle_padding_4_slashes_above = 0 if middle_padding_4_slashes_above < 0
+            end
             middle_padding = 0 if middle_padding < 0
             m_box = mp_char*middle_padding
+            if level == 2  # special treatment for second level to pretty it up
+              m_box_above = mp_char*middle_padding_4_slashes_above
+            end
             accumulator << m_box
             boxes << [m_box]
             slashes << m_box
-            slashes_above << m_box   if level > 1
+            if level == 2  # special treatment for second level to pretty it up
+              slashes_above << m_box_above
+            else
+              slashes_above << m_box   if level > 1
+            end
           end
           if i == trees.size - 1
             right_side_padding = (BinarySearchTree::ROOT_NODE_INDENT*2).floor -
@@ -426,6 +423,14 @@ class BinarySearchTree
         # 1234567890123456789012345678901234567890123456789012345678901234567890
 
         print "\n"
+      end
+      puts "The array we just inserted:"
+      if debugging || info
+        tmp_array = []
+        pre_order_traverse do |t|
+          tmp_array << t.node.data
+        end
+        puts "#{tmp_array}"
       end
       boxes_array.each_with_index do |a, i|
         puts slashes_above_array[i].join('')
@@ -446,7 +451,8 @@ class BinarySearchTree
           @left_child.parent = self
           @left_child.height = self.height + 1                 if self.height
           more_indent = TREE_LIMB_INDENT - (self.height*INDENT_DECAY).floor
-          more_indent = 1 if more_indent < 1
+          more_indent = 1 if self.height > 0
+          more_indent = 3 if self.height == 1
           @left_child.indent = self.indent - LEFT_NODE_INDENT*more_indent  if self.indent
         end
         @left_child.insert_element(node)
@@ -458,7 +464,8 @@ class BinarySearchTree
           @right_child.parent = self
           @right_child.height = self.height + 1                  if self.height
           more_indent = TREE_LIMB_INDENT - (self.height*INDENT_DECAY).floor
-          more_indent = 1 if more_indent < 1
+          more_indent = 1 if self.height > 0
+          more_indent = 3 if self.height == 1
           @right_child.indent = self.indent + RIGHT_NODE_INDENT*more_indent  if self.indent
         end
         @right_child.insert_element(node)
