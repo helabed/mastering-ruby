@@ -79,7 +79,7 @@ class BinarySearchTree
       @root_tree.height = 1
       @root_tree.indent = ROOT_NODE_INDENT
       @root_tree.parent = nil
-      log "", "Root Tree created #{@root_tree.display_tree}" if debugging
+      log "", "Root Tree created #{@root_tree.tree_id}" if debugging
     end
   end
 
@@ -280,7 +280,7 @@ class BinarySearchTree
       return s
     end
 
-    def display_tree
+    def tree_id
       "w/hash: #{(self.hash % 1000)}"
     end
 
