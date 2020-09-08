@@ -48,7 +48,7 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
         #rand_array = [75, 15, 14, 6, 0, 26, 27, 48, 46, 56, 49, 50, 54, 72, 95, 86, 82]
 
 
-        # all arrays below have node collisons
+        # all arrays below have node collisions
         # rand_array = [40, 0, 10, 5, 23, 31, 28, 89, 64, 47, 45, 73, 75, 90, 92]
         # rand_array = [44, 4, 34, 10, 21, 18, 28, 31, 94, 78, 76, 50, 74, 55, 73, 77]
         # rand_array = [64, 36, 22, 5, 14, 11, 24, 61, 51, 44, 42, 53, 76, 70, 98, 82, 97]
