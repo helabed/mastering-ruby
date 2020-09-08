@@ -47,6 +47,16 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
         #rand_array = [ 99, 2, 79, 11, 24, 89, 83, 25, 83, 82]
         #rand_array = [75, 15, 14, 6, 0, 26, 27, 48, 46, 56, 49, 50, 54, 72, 95, 86, 82]
 
+
+        # all arrays below have node collisons
+        # rand_array = [40, 0, 10, 5, 23, 31, 28, 89, 64, 47, 45, 73, 75, 90, 92]
+        # rand_array = [44, 4, 34, 10, 21, 18, 28, 31, 94, 78, 76, 50, 74, 55, 73, 77]
+        # rand_array = [64, 36, 22, 5, 14, 11, 24, 61, 51, 44, 42, 53, 76, 70, 98, 82, 97]
+        # rand_array = [70, 63, 32, 2, 15, 3, 16, 22, 25, 60, 83, 79, 80, 99, 90, 87]
+        # rand_array = [45, 35, 14, 0, 23, 41, 76, 47, 58, 66, 59, 69, 77, 99, 87, 90]
+        # rand_array = [52, 51, 44, 11, 4, 6, 27, 19, 15, 21, 43, 32, 39, 64, 72, 96, 92, 94]
+        # rand_array = [48, 14, 9, 7, 13, 23, 31, 25, 46, 73, 69, 50, 72, 89, 81, 77, 85]
+
         bst.log rand_array, 'the array'
         bst.insert_into(rand_array)
         bst.display_tree
@@ -775,9 +785,41 @@ class BinarySearchTree
     self.rp_char = ' ' #'R' # ' '
     self.mp_char = ' ' #'M' # ' '
 
+    def self.adjust_indentations_to_avoid_collision(rt, levels_and_trees)
+      levels_and_trees.each_pair do |level, trees|
+        trees.each_with_index do |t, i|
+
+          if i > 0  # start compare with second element
+            if trees[i].indent == trees[i-1].indent
+              if debug || info
+                puts ""
+                puts "*"*30
+                puts "Collision Detected"
+                puts "Level #{level}: #{trees.map {|tt| tt.node.data}}"
+                puts "tree with node #{t.node.data} has the same indent: #{t.indent}"
+                puts "as tree with node #{trees[i-1].node.data}"
+                puts "*"*30
+                puts ""
+                puts "-"*30
+              end
+              # do adjustment on all ancestors
+              rt.ancestors_traverse(rt, t.node) {|x| x.indent += 4 }
+              t.indent += 4   # do adjustment on current node
+              if debug || info
+                puts "New node in collision and its Ancestors indentation adjusted right by 4"
+                puts "-"*30
+                sleep 10
+              end
+            end
+          end
+        end
+      end
+    end
+
     def self.display_tree_2D(*root)
       rt = root[0]
       levels_with_trees = trees_grouped_by_level(rt)
+      adjust_indentations_to_avoid_collision(rt, levels_with_trees)
 
       boxes_array         = []
       slashes_array       = []
@@ -813,7 +855,7 @@ class BinarySearchTree
     end
 
     def self.add_slashes_below_node(t, slashes)
-      if  t.right_child && t.left_child                  # t has both children
+      if t.right_child && t.left_child                   # t has both children
         slashes <<   '/  \\'
       elsif  t.left_child                                # t has a left child
         slashes <<   '/ ' + ' '*n_padd + ' '*n_padd
@@ -841,7 +883,7 @@ class BinarySearchTree
     end
 
     def self.left_side_spacing(level, t, i, accumulator, boxes, slashes, slashes_above)
-      if i == 0
+      if i == 0  # do it only for left most (i.e first) element of each level
         left_side_padding = t.indent - (n_size/2).ceil - n_padd
         left_side_padding = 0 if left_side_padding < 0
         l_box = lp_char*left_side_padding
@@ -928,9 +970,9 @@ class BinarySearchTree
       if debug
         puts "Level #{level}: #{trees.map {|t| t.node.data}}"
 
-        trees.each_with_index {|t, i|
-           puts "tree at index[#{i}] has indent: #{t.indent}"
-        }
+        trees.each_with_index do |t, i|
+           puts "tree at index[#{i}] with node #{t.node.data} has indent: #{t.indent}"
+        end
       end
     end
   end
