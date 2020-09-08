@@ -738,31 +738,40 @@ class BinarySearchTree
     def self.debug; BinarySearchTree::LOG_LEVEL == BinarySearchTree::LOG_LEVEL_DEBUG; end
     def self.info;  BinarySearchTree::LOG_LEVEL == BinarySearchTree::LOG_LEVEL_INFO;  end
 
-    def self.display_tree_2D(*root)
-      rt = root[0]
+    def self.trees_grouped_by_level(root_tree)
+      rt = root_tree
+
       height = rt.height_of_tree if rt
       puts ""
-      levels_and_nodes = {}
+      levels_with_trees = {}
       height.times do |h|
         level = h+1
-        levels_and_nodes[level] = []
+        levels_with_trees[level] = []
         rt.descendants_traverse(rt, rt.node) do |t|
           if t.height == level
-            levels_and_nodes[level] << t
+            levels_with_trees[level] << t
           end
         end
       end
       # add root
-      levels_and_nodes[1] << rt
+      levels_with_trees[1] << rt
 
-      boxes_array = []
-      boxes_array[0] = []  # we want to align array index with level, ignore 1st element
+      levels_with_trees
+    end
 
-      slashes_array = []
-      slashes_array[0] = []  # we want to align array index with levels
+    def self.display_tree_2D(*root)
+      rt = root[0]
+      levels_with_trees = trees_grouped_by_level(rt)
 
+      boxes_array         = []
+      slashes_array       = []
       slashes_above_array = []
-      slashes_above_array[0] = []  # we want to align array index with levels
+
+      # we want to align the array index with the level,
+      # so ignore 1st element of array
+      boxes_array[0]         = []
+      slashes_array[0]       = []
+      slashes_above_array[0] = []
 
       n_size =  BinarySearchTree::Tree::NODE_DATA_SIZE
       n_padd =  BinarySearchTree::Tree::NODE_DATA_PADDING
@@ -771,16 +780,16 @@ class BinarySearchTree
       rp_char = ' ' #'R' # ' '
       mp_char = ' ' #'M' # ' '
 
-      levels_and_nodes.each_pair do |level, trees|
+      levels_with_trees.each_pair do |level, trees|
         puts "Level #{level}: #{trees.map {|t| t.node.data}}"  if debug
 
         trees.each_with_index {|t, i|
           puts "tree at index[#{i}] has indent: #{t.indent}"   if debug
         }
 
-        accumulator = ''
-        boxes = []
-        slashes = []
+        accumulator   = ''
+        boxes         = []
+        slashes       = []
         slashes_above = []
         trees.each_with_index {|t, i|
           if i == 0
@@ -788,17 +797,17 @@ class BinarySearchTree
             left_side_padding = 0 if left_side_padding < 0
             l_box = lp_char*left_side_padding
             accumulator << l_box
-            slashes << [l_box]
+            slashes << l_box
             if level == 2 && t.parent.left_child == nil # our left sibling is nil
               # special treatment for second level to pretty it up
               l_padding = left_side_padding - n_dash
               l_padding = 0 if l_padding < 0
               l_box_above = lp_char*l_padding
-              slashes_above << [l_box_above]
+              slashes_above << l_box_above
             else
-              slashes_above << [l_box]   if level > 1
+              slashes_above << l_box   if level > 1
             end
-            boxes << [l_box]
+            boxes << l_box
           end
           data_size = n_padd + n_size + n_padd
           data_box = ' '*n_padd + t.node.data.to_s + ' '*n_padd
@@ -828,7 +837,7 @@ class BinarySearchTree
           end
 
           accumulator << data_box
-          boxes << [data_box]
+          boxes << data_box
           if trees.size-1 > 0 && i < trees.size-1
             middle_padding = trees[i+1].indent - t.indent - n_padd*4
             if level == 2  # special treatment for second level to pretty display
@@ -842,7 +851,7 @@ class BinarySearchTree
               m_box_above = mp_char*middle_padding_4_slashes_above
             end
             accumulator << m_box
-            boxes << [m_box]
+            boxes << m_box
             slashes << m_box
             if level == 2  # special treatment for second level to pretty display
               slashes_above << m_box_above
@@ -856,7 +865,7 @@ class BinarySearchTree
             right_side_padding = 0 if right_side_padding < 0
             r_box = rp_char*right_side_padding
             accumulator << r_box
-            boxes << [r_box]
+            boxes << r_box
           end
         }
         boxes_array[level] = boxes
