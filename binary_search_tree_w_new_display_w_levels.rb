@@ -56,6 +56,12 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
         # rand_array = [45, 35, 14, 0, 23, 41, 76, 47, 58, 66, 59, 69, 77, 99, 87, 90]
         # rand_array = [52, 51, 44, 11, 4, 6, 27, 19, 15, 21, 43, 32, 39, 64, 72, 96, 92, 94]
         # rand_array = [48, 14, 9, 7, 13, 23, 31, 25, 46, 73, 69, 50, 72, 89, 81, 77, 85]
+        # rand_array = [44, 20, 1, 0, 43, 25, 97, 83, 55, 45, 72, 59, 85, 84, 95]
+        # rand_array = [52, 9, 6, 3, 8, 10, 36, 25, 33, 42, 41, 63, 61, 59, 92, 79, 77, 78]
+        # rand_array = [16, 9, 8, 15, 83, 36, 27, 76, 59, 61, 66, 64, 81, 79, 82, 98, 93]
+        # rand_array = [74, 8, 39, 22, 14, 37, 69, 47, 46, 41, 84, 81, 98, 87, 89]
+        # rand_array = [74, 8, 39, 22, 37, 69, 47, 46, 41, 84, 81, 98, 87, 89]
+        # rand_array = [82, 4, 75, 17, 50, 33, 66, 10, 49, 67, 52, 80, 58, 17, 15, 85, 3, 66]
 
         bst.log rand_array, 'the array'
         bst.insert_into(rand_array)
@@ -82,6 +88,7 @@ class BinarySearchTree
   end
 
   attr_accessor :root_tree
+  attr_accessor :random_array
 
   def initialize
     if @root_tree == nil
@@ -100,7 +107,9 @@ class BinarySearchTree
   def insert_into(arr)
     puts "" if debugging
     log arr, "Inserting Array Elements into BST" if debugging
+    @random_array = arr
     arr.each do |el|
+      puts "" if debugging || info
       log nil, "Inserting Element #{el} into BST" if debugging
       insert(Node.new(el))
       # to see elements being inserted
@@ -144,6 +153,7 @@ class BinarySearchTree
     if @root_tree && (debugging || info)
       log nil, "Displaying Tree"
       TreeDisplayer.display_tree_2D(@root_tree)
+      log @random_array, "The inserted array is:" if debugging
     end
   end
 
@@ -794,19 +804,24 @@ class BinarySearchTree
               if debug || info
                 puts ""
                 puts "*"*30
-                puts "Collision Detected"
+                puts "Collision Detected - Node #{t.node.data} & Node #{trees[i-1].node.data}"
+                puts ""
                 puts "Level #{level}: #{trees.map {|tt| tt.node.data}}"
-                puts "tree with node #{t.node.data} has the same indent: #{t.indent}"
-                puts "as tree with node #{trees[i-1].node.data}"
+                puts "Indent: #{t.indent}"
                 puts "*"*30
                 puts ""
                 puts "-"*30
               end
               # do adjustment on all ancestors
-              rt.ancestors_traverse(rt, t.node) {|x| x.indent += 4 }
-              t.indent += 4   # do adjustment on current node
+              rt.ancestors_traverse(rt, t.node) do |tree|
+                tree.indent += 4
+                #rt.descendants_traverse(rt, t.parent.node) {|x| x.indent += 4 }
+              end
+              #t.indent += 4   # do adjustment on current node
+              rt.descendants_traverse(rt, t.parent.node) {|x| x.indent += 4 }
               if debug || info
-                puts "New node in collision and its Ancestors indentation adjusted right by 4"
+                puts "Node #{t.node.data} and its ancestors and all their"
+                puts "right hand descendants indentation were adjusted right by 4"
                 puts "-"*30
                 sleep 10
               end
@@ -850,7 +865,7 @@ class BinarySearchTree
         slashes_array[level] = slashes
         slashes_above_array[level] = slashes_above
       end
-      display_original_array(rt)
+      #display_original_array(rt)
       display_complete_tree(boxes_array, slashes_array, slashes_above_array)
     end
 
@@ -905,6 +920,7 @@ class BinarySearchTree
 
     def self.add_data_box(t, accumulator, boxes)
       data_box = ' '*n_padd + t.node.data.to_s + ' '*n_padd
+      data_box = ' ' + data_box if t.node.data < 10  # to deal with 1 digit numbers
       accumulator << data_box
       boxes << data_box
       return accumulator
