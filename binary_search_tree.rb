@@ -81,6 +81,7 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
   end
 end
 
+
 class BinarySearchTree
   LOG_LEVEL_DEBUG = 2
   LOG_LEVEL_INFO  = 1
@@ -98,6 +99,7 @@ class BinarySearchTree
   end
 
   attr_accessor :root_tree
+  attr_accessor :random_array
 
   def initialize
     if @root_tree == nil
@@ -116,7 +118,9 @@ class BinarySearchTree
   def insert_into(arr)
     puts "" if debugging
     log arr, "Inserting Array Elements into BST" if debugging
+    @random_array = arr
     arr.each do |el|
+      puts "" if debugging || info
       log nil, "Inserting Element #{el} into BST" if debugging
       insert(Node.new(el))
       # to see elements being inserted
@@ -159,7 +163,8 @@ class BinarySearchTree
   def display_tree
     if @root_tree && (debugging || info)
       log nil, "Displaying Tree"
-      @root_tree.display_tree_2D(@root_tree)
+      TreeDisplayer.display_tree_2D(@root_tree)
+      log @random_array, "The inserted array is:" if debugging
     end
   end
 
@@ -259,6 +264,15 @@ class BinarySearchTree
   # BinarySearchTree::Tree
   #
   class Tree
+    BinarySearchTree::ROOT_NODE_INDENT = 35
+    INDENT_DECAY      = 2.10
+    TREE_LIMB_INDENT  = 12 # keep this always even so that we can divide by 2
+    NODE_DATA_SIZE    = 2
+    NODE_DATA_PADDING = 1
+    LEFT_NODE_INDENT  = 4
+    RIGHT_NODE_INDENT = 4
+    NUM_OF_DASHES = 8
+
     attr_accessor :node
     attr_accessor :left_child
     attr_accessor :right_child
@@ -308,161 +322,6 @@ class BinarySearchTree
 
     def tree_id
       "w/hash: #{(self.hash % 1000)}"
-    end
-
-    # declaring these here, close to where they are being used
-    BinarySearchTree::ROOT_NODE_INDENT = 35
-    INDENT_DECAY      = 2.10
-    TREE_LIMB_INDENT  = 12 # keep this always even so that we can divide by 2
-    NODE_DATA_SIZE    = 2
-    NODE_DATA_PADDING = 1
-    LEFT_NODE_INDENT  = 4
-    RIGHT_NODE_INDENT = 4
-    NUM_OF_DASHES = 8
-
-    def display_tree_2D(*root)
-      rt = root[0]
-      height = rt.height_of_tree if rt
-      puts ""
-      levels_and_nodes = {}
-      height.times do |h|
-        level = h+1
-        levels_and_nodes[level] = []
-        descendants_traverse(rt, rt.node) do |t|
-          if t.height == level
-            levels_and_nodes[level] << t
-          end
-        end
-      end
-      # add root
-      levels_and_nodes[1] << rt
-
-      boxes_array = []
-      boxes_array[0] = []
-
-      slashes_array = []
-      slashes_array[0] = []
-
-      slashes_above_array = []
-      slashes_above_array[0] = []
-
-      n_size =  NODE_DATA_SIZE
-      n_padd =  NODE_DATA_PADDING
-      lp_char = ' ' #'L' # ' '
-      rp_char = ' ' #'R' # ' '
-      mp_char = ' ' #'M' # ' '
-
-      levels_and_nodes.each_pair do |level, trees|
-        puts "Level #{level}: #{trees.map {|t| t.node.data}}"  if debugging
-
-        trees.each_with_index {|t, i|
-          puts "tree at index[#{i}] has indent: #{t.indent}"   if debugging
-        }
-
-        accumulator = ''
-        boxes = []
-        slashes = []
-        slashes_above = []
-        trees.each_with_index {|t, i|
-          if i == 0
-            left_side_padding = t.indent - (n_size/2).ceil - n_padd
-            left_side_padding = 0 if left_side_padding < 0
-            l_box = lp_char*left_side_padding
-            accumulator << l_box
-            slashes << [l_box]
-            if level == 2 && t.parent.left_child == nil # our left sibling is nil
-              # special treatment for second level to pretty it up
-              l_padding = left_side_padding - NUM_OF_DASHES
-              l_padding = 0 if l_padding < 0
-              l_box_above = lp_char*l_padding
-              slashes_above << [l_box_above]
-            else
-              slashes_above << [l_box]   if level > 1
-            end
-            boxes << [l_box]
-          end
-          data_size = n_padd + n_size + n_padd
-          data_box = ' '*n_padd + t.node.data.to_s + ' '*n_padd
-
-          if  t.right_child && t.left_child                  # t has both children
-            slashes <<   '/  \\'
-          elsif  t.left_child                                # t has a left child
-            slashes <<   '/ ' + ' '*n_padd + ' '*n_padd
-          elsif  t.right_child                               # t has a right  child
-            slashes << ' '*n_padd + ' '*n_padd +  ' \\'
-          elsif  t.right_child == nil && t.left_child == nil # t has no children
-            slashes << ' '*n_padd +  '~~' + ' '*n_padd
-          end
-
-          if level > 2  # don't do it for root node
-            if  t.parent && t.parent.right_child == t          # t is the right child
-              slashes_above <<  '\\ ' + ' '*n_padd + ' '*n_padd
-            elsif  t.parent && t.parent.left_child == t        # t is the left child
-              slashes_above <<  ' '*n_padd + ' '*n_padd + ' /'
-            end
-          elsif level == 2  # special treatment for second level to pretty display
-            if  t.parent && t.parent.right_child == t          # t is the right child
-              slashes_above <<  '--------\\ ' + ' '*n_padd + ' '*n_padd
-            elsif  t.parent && t.parent.left_child == t        # t is the left child
-              slashes_above <<  ' '*n_padd + ' '*n_padd + ' /--------'
-            end
-          end
-
-          accumulator << data_box
-          boxes << [data_box]
-          if trees.size-1 > 0 && i < trees.size-1
-            middle_padding = trees[i+1].indent - t.indent - n_padd*4
-            if level == 2  # special treatment for second level to pretty display
-              # to allow for /-------- -------\
-              middle_padding_4_slashes_above = middle_padding - NUM_OF_DASHES*2
-              middle_padding_4_slashes_above = 0 if middle_padding_4_slashes_above < 0
-            end
-            middle_padding = 0 if middle_padding < 0
-            m_box = mp_char*middle_padding
-            if level == 2  # special treatment for second level to pretty display
-              m_box_above = mp_char*middle_padding_4_slashes_above
-            end
-            accumulator << m_box
-            boxes << [m_box]
-            slashes << m_box
-            if level == 2  # special treatment for second level to pretty display
-              slashes_above << m_box_above
-            else
-              slashes_above << m_box   if level > 1
-            end
-          end
-          if i == trees.size - 1
-            right_side_padding = (BinarySearchTree::ROOT_NODE_INDENT*2).floor -
-              accumulator.size - (n_size/2).ceil
-            right_side_padding = 0 if right_side_padding < 0
-            r_box = rp_char*right_side_padding
-            accumulator << r_box
-            boxes << [r_box]
-          end
-        }
-        boxes_array[level] = boxes
-        slashes_array[level] = slashes
-        slashes_above_array[level] = slashes_above
-
-        # my beloved measuring stick
-        # 1234567890123456789012345678901234567890123456789012345678901234567890
-
-        print "\n"
-      end
-      puts "The array we just inserted:"
-      if debugging || info
-        tmp_array = []
-        pre_order_traverse do |t|
-          tmp_array << t.node.data
-        end
-        puts "#{tmp_array}"
-      end
-      boxes_array.each_with_index do |a, i|
-        puts slashes_above_array[i].join('')
-        puts a.join('')
-        puts slashes_array[i].join('')
-      end
-      puts ""
     end
 
     def insert_element(node)
@@ -901,4 +760,253 @@ class BinarySearchTree
     end
   end
   # End of BinarySearchTree::Tree
+
+  #
+  #
+  # BinarySearchTree::TreeDisplayer
+  #
+  class TreeDisplayer
+    def self.debug; BinarySearchTree::LOG_LEVEL == BinarySearchTree::LOG_LEVEL_DEBUG; end
+    def self.info;  BinarySearchTree::LOG_LEVEL == BinarySearchTree::LOG_LEVEL_INFO;  end
+
+    def self.trees_grouped_by_level(root_tree)
+      rt = root_tree
+      height = rt.height_of_tree if rt
+      puts ""
+      levels_with_trees = {}
+      height.times do |h|
+        level = h+1
+        levels_with_trees[level] = []
+        rt.descendants_traverse(rt, rt.node) do |t|
+          if t.height == level
+            levels_with_trees[level] << t
+          end
+        end
+      end
+      # add root
+      levels_with_trees[1] << rt
+      levels_with_trees
+    end
+
+    # delcaring and setting class level attributes for
+    # later access by many class level methods.
+    class << self
+      attr_accessor :n_size
+      attr_accessor :n_padd
+      attr_accessor :n_dash
+      attr_accessor :lp_char
+      attr_accessor :rp_char
+      attr_accessor :mp_char
+    end
+
+    self.n_size  =  BinarySearchTree::Tree::NODE_DATA_SIZE
+    self.n_padd  =  BinarySearchTree::Tree::NODE_DATA_PADDING
+    self.n_dash  =  BinarySearchTree::Tree::NUM_OF_DASHES
+    self.lp_char = ' ' #'L' # ' '
+    self.rp_char = ' ' #'R' # ' '
+    self.mp_char = ' ' #'M' # ' '
+
+    def self.adjust_indentations_to_avoid_collision(rt, levels_and_trees)
+      levels_and_trees.each_pair do |level, trees|
+        trees.each_with_index do |t, i|
+
+          if i > 0  # start compare with second element
+            if trees[i].indent <= trees[i-1].indent
+              if debug || info
+                puts ""
+                puts "*"*30
+                puts "Collision Detected - Node #{t.node.data} & Node #{trees[i-1].node.data}"
+                puts ""
+                puts "Level #{level}: #{trees.map {|tt| tt.node.data}}"
+                puts "Indent: #{t.indent}"
+                puts "*"*30
+                puts ""
+                puts "-"*30
+              end
+
+              # do adjustment on all ancestors
+              rt.ancestors_traverse(rt, t.node) do |tree|
+                tree.indent += 4
+              end
+
+              rt.descendants_traverse(rt, t.parent.node) {|x| x.indent += 4 }
+              if debug || info
+                puts "Node #{t.node.data} and its ancestors and all its"
+                puts "parent descendants indentation were adjusted right by 4"
+                puts "-"*30
+                puts "sleeping.... 2 seconds so that you can read ^^^"
+                puts "-"*30
+                sleep 2
+              end
+            end
+          end
+        end
+      end
+    end
+
+    def self.display_tree_2D(*root)
+      rt = root[0]
+      levels_with_trees = trees_grouped_by_level(rt)
+      adjust_indentations_to_avoid_collision(rt, levels_with_trees)
+
+      boxes_array         = []
+      slashes_array       = []
+      slashes_above_array = []
+
+      # we want to align the array index with the level,
+      # so ignore 1st element of array
+      boxes_array[0]         = []
+      slashes_array[0]       = []
+      slashes_above_array[0] = []
+
+      levels_with_trees.each_pair do |level, trees|
+        log_levels_and_trees(level, trees)
+
+        accumulator   = ''
+        boxes         = []
+        slashes       = []
+        slashes_above = []
+        trees.each_with_index do |t, i|
+          accumulator = left_side_spacing(level, t, i, accumulator, boxes, slashes, slashes_above)
+          add_slashes_below_node(t, slashes)
+          add_slashes_above_node(level, t, slashes_above)
+          accumulator = add_data_box(t, accumulator, boxes)
+          accumulator = middle_spacing(level, t, i, accumulator, boxes, slashes, slashes_above, trees)
+          accumulator = right_side_spacing(level, t, i, accumulator, boxes, trees)
+        end
+        boxes_array[level] = boxes
+        slashes_array[level] = slashes
+        slashes_above_array[level] = slashes_above
+      end
+      #display_original_array(rt)
+      display_complete_tree(boxes_array, slashes_array, slashes_above_array)
+    end
+
+    def self.add_slashes_below_node(t, slashes)
+      if t.right_child && t.left_child                   # t has both children
+        slashes <<   '/  \\'
+      elsif  t.left_child                                # t has a left child
+        slashes <<   '/ ' + ' '*n_padd + ' '*n_padd
+      elsif  t.right_child                               # t has a right  child
+        slashes << ' '*n_padd + ' '*n_padd +  ' \\'
+      elsif  t.right_child == nil && t.left_child == nil # t has no children
+        slashes << ' '*n_padd +  '~~' + ' '*n_padd
+      end
+    end
+
+    def self.add_slashes_above_node(level, t, slashes_above)
+      if level > 2  # don't do it for root node
+        if  t.parent && t.parent.right_child == t          # t is the right child
+          slashes_above <<  '\\ ' + ' '*n_padd + ' '*n_padd
+        elsif  t.parent && t.parent.left_child == t        # t is the left child
+          slashes_above <<  ' '*n_padd + ' '*n_padd + ' /'
+        end
+      elsif level == 2  # special treatment for second level to pretty display
+        if  t.parent && t.parent.right_child == t          # t is the right child
+          slashes_above <<  '--------\\ ' + ' '*n_padd + ' '*n_padd
+        elsif  t.parent && t.parent.left_child == t        # t is the left child
+          slashes_above <<  ' '*n_padd + ' '*n_padd + ' /--------'
+        end
+      end
+    end
+
+    def self.left_side_spacing(level, t, i, accumulator, boxes, slashes, slashes_above)
+      if i == 0  # do it only for left most (i.e first) element of each level
+        left_side_padding = t.indent - (n_size/2).ceil - n_padd
+        left_side_padding = 0 if left_side_padding < 0
+        l_box = lp_char*left_side_padding
+        accumulator << l_box
+        slashes << l_box
+        if level == 2 && t.parent.left_child == nil # our left sibling is nil
+          # special treatment for second level to pretty it up
+          l_padding = left_side_padding - n_dash
+          l_padding = 0 if l_padding < 0
+          l_box_above = lp_char*l_padding
+          slashes_above << l_box_above
+        else
+          slashes_above << l_box   if level > 1
+        end
+        boxes << l_box
+      end
+      return accumulator
+    end
+
+    def self.add_data_box(t, accumulator, boxes)
+      data_box = ' '*n_padd + t.node.data.to_s + ' '*n_padd
+      data_box = ' ' + data_box if t.node.data < 10  # to deal with 1 digit numbers
+      accumulator << data_box
+      boxes << data_box
+      return accumulator
+    end
+
+    def self.middle_spacing(level, t, i, accumulator, boxes, slashes, slashes_above, trees)
+      if trees.size-1 > 0 && i < trees.size-1
+        middle_padding = trees[i+1].indent - t.indent - n_padd*4
+        if level == 2  # special treatment for second level to pretty display
+          # to allow for /-------- -------\
+          middle_padding_4_slashes_above = middle_padding - n_dash*2
+          middle_padding_4_slashes_above = 0 if middle_padding_4_slashes_above < 0
+        end
+        middle_padding = 0 if middle_padding < 0
+        m_box = mp_char*middle_padding
+        if level == 2  # special treatment for second level to pretty display
+          m_box_above = mp_char*middle_padding_4_slashes_above
+        end
+        accumulator << m_box
+        boxes << m_box
+        slashes << m_box
+        if level == 2  # special treatment for second level to pretty display
+          slashes_above << m_box_above
+        else
+          slashes_above << m_box   if level > 1
+        end
+      end
+      return accumulator
+    end
+
+    def self.right_side_spacing(level, t, i, accumulator, boxes, trees)
+      if i == trees.size - 1
+        right_side_padding = (BinarySearchTree::ROOT_NODE_INDENT*2).floor -
+          accumulator.size - (n_size/2).ceil
+        right_side_padding = 0 if right_side_padding < 0
+        r_box = rp_char*right_side_padding
+        accumulator << r_box
+        boxes << r_box
+      end
+      return accumulator
+    end
+
+    def self.display_complete_tree(boxes_array, slashes_array, slashes_above_array)
+      boxes_array.each_with_index do |a, i|
+        puts slashes_above_array[i].join('')
+        puts a.join('')
+        puts slashes_array[i].join('')
+      end
+    end
+
+    def self.display_original_array(rt)
+      if debug || info
+        puts "The array we just inserted:"
+        tmp_array = []
+        rt.pre_order_traverse do |t|
+          tmp_array << t.node.data
+        end
+        puts "#{tmp_array}"
+      end
+    end
+
+    def self.log_levels_and_trees(level, trees)
+      if debug
+        puts "Level #{level}: #{trees.map {|t| t.node.data}}"
+
+        trees.each_with_index do |t, i|
+           puts "tree at index[#{i}] with node #{t.node.data} has indent: #{t.indent}"
+        end
+      end
+    end
+  end
+  # my beloved measuring stick
+  # 1234567890123456789012345678901234567890123456789012345678901234567890
+  #
+  # End of BinarySearchTree::TreeDisplayer
 end

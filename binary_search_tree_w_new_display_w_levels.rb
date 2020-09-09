@@ -48,7 +48,7 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
         #rand_array = [75, 15, 14, 6, 0, 26, 27, 48, 46, 56, 49, 50, 54, 72, 95, 86, 82]
 
 
-        # all arrays below have node collisions
+        # all arrays below have node collisons
         # rand_array = [40, 0, 10, 5, 23, 31, 28, 89, 64, 47, 45, 73, 75, 90, 92]
         # rand_array = [44, 4, 34, 10, 21, 18, 28, 31, 94, 78, 76, 50, 74, 55, 73, 77]
         # rand_array = [64, 36, 22, 5, 14, 11, 24, 61, 51, 44, 42, 53, 76, 70, 98, 82, 97]
@@ -61,7 +61,10 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
         # rand_array = [16, 9, 8, 15, 83, 36, 27, 76, 59, 61, 66, 64, 81, 79, 82, 98, 93]
         # rand_array = [74, 8, 39, 22, 14, 37, 69, 47, 46, 41, 84, 81, 98, 87, 89]
         # rand_array = [74, 8, 39, 22, 37, 69, 47, 46, 41, 84, 81, 98, 87, 89]
-        # rand_array = [82, 4, 75, 17, 50, 33, 66, 10, 49, 67, 52, 80, 58, 17, 15, 85, 3, 66]
+
+        #rand_array = [82, 4, 75, 17, 50, 33, 66, 10, 49, 67, 52, 80, 58, 17, 15, 85, 3, 66]
+        #rand_array = [99, 52, 43, 8, 13, 89, 18, 96, 69, 10, 55, 7, 6, 10, 91, 64, 61, 64]
+        #rand_array = [63, 59, 79, 97, 88, 30, 75, 34, 30, 18, 85, 62, 52, 71, 32, 72, 22, 34]
 
         bst.log rand_array, 'the array'
         bst.insert_into(rand_array)
@@ -75,7 +78,7 @@ class BinarySearchTree
   LOG_LEVEL_DEBUG = 2
   LOG_LEVEL_INFO  = 1
   LOG_LEVEL_NONE  = false
-  LOG_LEVEL = LOG_LEVEL_DEBUG
+  LOG_LEVEL = LOG_LEVEL_INFO
 
   def debugging; LOG_LEVEL == LOG_LEVEL_DEBUG; end
   def info;      LOG_LEVEL == LOG_LEVEL_INFO;  end
@@ -800,7 +803,7 @@ class BinarySearchTree
         trees.each_with_index do |t, i|
 
           if i > 0  # start compare with second element
-            if trees[i].indent == trees[i-1].indent
+            if trees[i].indent <= trees[i-1].indent
               if debug || info
                 puts ""
                 puts "*"*30
@@ -812,18 +815,20 @@ class BinarySearchTree
                 puts ""
                 puts "-"*30
               end
+
               # do adjustment on all ancestors
               rt.ancestors_traverse(rt, t.node) do |tree|
                 tree.indent += 4
-                #rt.descendants_traverse(rt, t.parent.node) {|x| x.indent += 4 }
               end
-              #t.indent += 4   # do adjustment on current node
+
               rt.descendants_traverse(rt, t.parent.node) {|x| x.indent += 4 }
               if debug || info
-                puts "Node #{t.node.data} and its ancestors and all their"
-                puts "right hand descendants indentation were adjusted right by 4"
+                puts "Node #{t.node.data} and its ancestors and all its"
+                puts "parent descendants indentation were adjusted right by 4"
                 puts "-"*30
-                sleep 10
+                puts "sleeping.... 2 seconds so that you can read ^^^"
+                puts "-"*30
+                sleep 2
               end
             end
           end
