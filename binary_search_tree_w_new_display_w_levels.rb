@@ -11,7 +11,7 @@ require 'pry'
 
 RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
   it 'should search for an element stored in BST' do
-    total_num_of_items = 15
+    total_num_of_items = 80
     randomness_range = 100
     edge = [
       Array.new(total_num_of_items) { SecureRandom.random_number(randomness_range) },
@@ -59,12 +59,15 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
         # rand_array = [44, 20, 1, 0, 43, 25, 97, 83, 55, 45, 72, 59, 85, 84, 95]
         # rand_array = [52, 9, 6, 3, 8, 10, 36, 25, 33, 42, 41, 63, 61, 59, 92, 79, 77, 78]
         # rand_array = [16, 9, 8, 15, 83, 36, 27, 76, 59, 61, 66, 64, 81, 79, 82, 98, 93]
-        # rand_array = [74, 8, 39, 22, 14, 37, 69, 47, 46, 41, 84, 81, 98, 87, 89]
-        # rand_array = [74, 8, 39, 22, 37, 69, 47, 46, 41, 84, 81, 98, 87, 89]
+        #rand_array = [74, 8, 39, 22, 14, 37, 69, 47, 46, 41, 84, 81, 98, 87, 89]
+        #rand_array = [74, 8, 39, 22, 37, 69, 47, 46, 41, 84, 81, 98, 87, 89]
 
         #rand_array = [82, 4, 75, 17, 50, 33, 66, 10, 49, 67, 52, 80, 58, 17, 15, 85, 3, 66]
         #rand_array = [99, 52, 43, 8, 13, 89, 18, 96, 69, 10, 55, 7, 6, 10, 91, 64, 61, 64]
         #rand_array = [63, 59, 79, 97, 88, 30, 75, 34, 30, 18, 85, 62, 52, 71, 32, 72, 22, 34]
+        #rand_array = [30, 85, 55, 99, 31, 80, 95, 75, 3, 77, 63, 23, 39, 0, 34, 59, 28, 69]
+        #rand_array = [52, 2, 95, 48, 74, 44, 55, 90, 71, 54, 7, 86, 21, 99, 97, 0, 72, 35]
+        #rand_array = [0, 86, 24, 17, 26, 65, 38, 55, 95, 95, 34, 26, 49, 61, 87, 20, 60, 24, 4, 34, 54, 23, 6]
 
         bst.log rand_array, 'the array'
         bst.insert_into(rand_array)
@@ -78,7 +81,7 @@ class BinarySearchTree
   LOG_LEVEL_DEBUG = 2
   LOG_LEVEL_INFO  = 1
   LOG_LEVEL_NONE  = false
-  LOG_LEVEL = LOG_LEVEL_INFO
+  LOG_LEVEL = LOG_LEVEL_DEBUG
 
   def debugging; LOG_LEVEL == LOG_LEVEL_DEBUG; end
   def info;      LOG_LEVEL == LOG_LEVEL_INFO;  end
@@ -789,6 +792,7 @@ class BinarySearchTree
       attr_accessor :lp_char
       attr_accessor :rp_char
       attr_accessor :mp_char
+      attr_accessor :l_indent
     end
 
     self.n_size  =  BinarySearchTree::Tree::NODE_DATA_SIZE
@@ -797,6 +801,8 @@ class BinarySearchTree
     self.lp_char = ' ' #'L' # ' '
     self.rp_char = ' ' #'R' # ' '
     self.mp_char = ' ' #'M' # ' '
+    self.l_indent  =  BinarySearchTree::Tree::LEFT_NODE_INDENT
+
 
     def self.adjust_indentations_to_avoid_collision(rt, levels_and_trees)
       levels_and_trees.each_pair do |level, trees|
@@ -816,19 +822,46 @@ class BinarySearchTree
                 puts "-"*30
               end
 
+              ancestors = []
+              rt.ancestors_traverse(rt, t.node) {|ttt| ancestors << ttt}
+              ancestors << t
+              #puts "ancestors: #{ancestors.map {|x| x.node.data}}"
+              #binding.pry
+
               # do adjustment on all ancestors
               rt.ancestors_traverse(rt, t.node) do |tree|
-                tree.indent += 4
+                #puts "tree: #{tree.node.data}"
+                tree.indent += l_indent
+                #binding.pry
+                if tree.parent && #tree.parent.height == 2 &&
+                      tree.parent.right_child &&
+                      tree.parent.right_child != trees[i].parent &&
+                      ! ancestors.include?(tree.parent.right_child)
+                  #puts "tree.parent: #{tree.parent.node.data}"
+                  #puts "tree.parent.right_child: #{tree.parent.right_child.node.data}"
+                  #binding.pry
+                  tree.parent.right_child.indent += l_indent
+                  tree.parent.right_child.descendants_traverse(rt, tree.parent.right_child.node) do |x|
+                    if ! ancestors.include?(x)
+                      #binding.pry
+                      x.indent += l_indent
+                    end
+                  end
+                else
+                  #
+                end
               end
 
-              rt.descendants_traverse(rt, t.parent.node) {|x| x.indent += 4 }
+              rt.descendants_traverse(rt, t.parent.node) {|x| x.indent += l_indent }
               if debug || info
                 puts "Node #{t.node.data} and its ancestors and all its"
-                puts "parent descendants indentation were adjusted right by 4"
+                puts "parent descendants indentation were adjusted right by l_indent(4)"
                 puts "-"*30
-                puts "sleeping.... 2 seconds so that you can read ^^^"
+                puts "sleeping.... 2 to 12 seconds so that you can read ^^^"
                 puts "-"*30
-                sleep 2
+                sleep 2 if info
+                #sleep 12 if debug
+                sleep 2 if debug
               end
             end
           end
@@ -876,14 +909,33 @@ class BinarySearchTree
 
     def self.add_slashes_below_node(t, slashes)
       if t.right_child && t.left_child                   # t has both children
+        shift = calculate_collision_avoidance_shift(t, t.left_child)
+        slashes << '_'*shift if shift > 0
         slashes <<   '/  \\'
       elsif  t.left_child                                # t has a left child
+        shift = calculate_collision_avoidance_shift(t, t.left_child)
+        slashes << '_'*shift if shift > 0
         slashes <<   '/ ' + ' '*n_padd + ' '*n_padd
       elsif  t.right_child                               # t has a right  child
         slashes << ' '*n_padd + ' '*n_padd +  ' \\'
       elsif  t.right_child == nil && t.left_child == nil # t has no children
         slashes << ' '*n_padd +  '~~' + ' '*n_padd
       end
+    end
+
+    def self.calculate_collision_avoidance_shift(parent_tree, child_tree)
+      #return 0 if parent_tree.height == 1
+      #return 0 if parent_tree.height > 2
+      #return 0 unless (parent_tree.node && [95, 74, 52].include?(parent_tree.node.data))
+      if parent_tree && child_tree && parent_tree.left_child &&
+              parent_tree.left_child == child_tree # only do left side correction
+        shift = parent_tree.indent - child_tree.indent - l_indent
+        shift = 0 if shift < 0
+      else
+        shift = 0
+      end
+      return shift
+      #return 0
     end
 
     def self.add_slashes_above_node(level, t, slashes_above)
@@ -897,7 +949,12 @@ class BinarySearchTree
         if  t.parent && t.parent.right_child == t          # t is the right child
           slashes_above <<  '--------\\ ' + ' '*n_padd + ' '*n_padd
         elsif  t.parent && t.parent.left_child == t        # t is the left child
-          slashes_above <<  ' '*n_padd + ' '*n_padd + ' /--------'
+          shift = calculate_collision_avoidance_shift(t.parent, t)
+          if shift > 0
+            slashes_above <<  ' '*n_padd + ' '*n_padd + ' /        '
+          else
+            slashes_above <<  ' '*n_padd + ' '*n_padd + ' /--------'
+          end
         end
       end
     end
@@ -908,7 +965,24 @@ class BinarySearchTree
         left_side_padding = 0 if left_side_padding < 0
         l_box = lp_char*left_side_padding
         accumulator << l_box
-        slashes << l_box
+
+
+
+        shift = calculate_collision_avoidance_shift(t, t.left_child)
+        if shift > 0
+          left_padding_4_slashes_below = left_side_padding - shift
+          left_padding_4_slashes_below = 0 if left_padding_4_slashes_below < 0
+          l_box_below = lp_char*left_padding_4_slashes_below
+          slashes << l_box_below
+        else
+          slashes << l_box
+        end
+
+
+        #slashes << l_box
+
+
+
         if level == 2 && t.parent.left_child == nil # our left sibling is nil
           # special treatment for second level to pretty it up
           l_padding = left_side_padding - n_dash
@@ -933,7 +1007,7 @@ class BinarySearchTree
 
     def self.middle_spacing(level, t, i, accumulator, boxes, slashes, slashes_above, trees)
       if trees.size-1 > 0 && i < trees.size-1
-        middle_padding = trees[i+1].indent - t.indent - n_padd*4
+        middle_padding = trees[i+1].indent - t.indent - n_padd*4 # 4 == 2 for digits + 2 for side padding
         if level == 2  # special treatment for second level to pretty display
           # to allow for /-------- -------\
           middle_padding_4_slashes_above = middle_padding - n_dash*2
@@ -946,7 +1020,15 @@ class BinarySearchTree
         end
         accumulator << m_box
         boxes << m_box
-        slashes << m_box
+        shift = calculate_collision_avoidance_shift(trees[i+1], trees[i+1].left_child)
+        if shift > 0
+          middle_padding_4_slashes_below = middle_padding - shift
+          middle_padding_4_slashes_below = 0 if middle_padding_4_slashes_below < 0
+          m_box_below = mp_char*middle_padding_4_slashes_below
+          slashes << m_box_below
+        else
+          slashes << m_box
+        end
         if level == 2  # special treatment for second level to pretty display
           slashes_above << m_box_above
         else
