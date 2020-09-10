@@ -11,8 +11,7 @@ require 'pry'
 
 RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
   it 'should search for an element stored in BST' do
-    total_num_of_items = 30
-    #total_num_of_items = 200
+    total_num_of_items = 20
     randomness_range = 100
     edge = [
       Array.new(total_num_of_items) { SecureRandom.random_number(randomness_range) },
