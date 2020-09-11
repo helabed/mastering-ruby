@@ -161,7 +161,7 @@ class BinarySearchTree
     if @root_tree && (debugging || info)
       log nil, "Displaying Tree"
       TreeDisplayer.display_tree_2D(@root_tree)
-      log @random_array, "The inserted array is:" if debugging
+      log @random_array, "The original random array is:" if debugging
     end
   end
 
