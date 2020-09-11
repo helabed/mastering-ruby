@@ -76,7 +76,6 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
         # rand_array = [82, 35, 97, 32, 30, 41, 40, 21, 54, 79, 75, 20, 54, 47, 72, 31, 44, 15, 99, 22, 83, 12, 25, 70, 33, 71, 40, 6, 28, 67, 57, 6, 86, 61, 49, 58, 12, 88, 5, 0, 33, 7, 93, 8, 68, 1, 52, 63, 14, 64, 46, 89, 34, 59, 10, 11, 51, 46, 46, 52, 25, 17, 38, 78, 1, 58, 77, 58, 43, 23, 27, 91, 12, 68, 75, 10, 56, 60, 56, 78, 0, 79, 25, 35, 67, 40, 1, 30, 25, 75, 38, 52, 58, 81, 99, 26, 40, 73, 72, 50, 28, 58, 73, 82, 9, 23, 90, 20, 32, 53, 67, 87, 57, 69, 4, 27, 85, 33, 42, 11, 48, 30, 0, 41, 8, 93, 0, 95, 71, 22, 16, 58, 18, 95, 22, 97, 85, 9, 15, 92, 54, 57, 78, 88, 65, 2, 31, 52, 68, 14, 60, 56, 70, 42, 12, 34, 51, 85, 62, 80, 92, 48, 56, 91, 31, 97, 53, 38, 69, 20, 57, 96, 14, 33, 74, 17, 5, 57, 64, 10, 75, 84, 22, 96, 81, 16, 66, 38, 46, 37, 60, 92, 20, 75, 51, 47, 28, 57, 18, 77, 53, 80, 83]
 
 
-
         bst.log rand_array, 'the array'
         bst.insert_into(rand_array)
         bst.display_tree
@@ -84,6 +83,7 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
     end
   end
 end
+
 
 class BinarySearchTree
   LOG_LEVEL_DEBUG = 2
@@ -816,7 +816,7 @@ class BinarySearchTree
       levels_and_trees.each_pair do |level, trees|
         trees.each_with_index do |t, i|
 
-          if i > 0  # start compare with second element
+          if i > 0  # start compare with second element of each level
             if trees[i].indent <= trees[i-1].indent
               if debug || info
                 puts ""
@@ -832,47 +832,78 @@ class BinarySearchTree
 
               ancestors = []
               rt.ancestors_traverse(rt, t.node) {|ttt| ancestors << ttt}
+              # build ancestor to t, including t
               ancestors << t
-              #puts "ancestors: #{ancestors.map {|x| x.node.data}}"
-              #binding.pry
 
-              # do adjustment on all ancestors
               rt.ancestors_traverse(rt, t.node) do |tree|
-                #puts "tree: #{tree.node.data}"
+                # do indentation adjustment on all ancestors of t
                 tree.indent += l_indent
-                #binding.pry
-                if tree.parent && #tree.parent.height == 2 &&
+                # also adjust the parent's right child(and its descendants) as long as it is not
+                # the node being moved, and is not part of the inclusive ancestors[] array we've built.
+                if tree.parent &&
                       tree.parent.right_child &&
                       tree.parent.right_child != trees[i].parent &&
                       ! ancestors.include?(tree.parent.right_child)
-                  #puts "tree.parent: #{tree.parent.node.data}"
-                  #puts "tree.parent.right_child: #{tree.parent.right_child.node.data}"
-                  #binding.pry
                   tree.parent.right_child.indent += l_indent
                   tree.parent.right_child.descendants_traverse(rt, tree.parent.right_child.node) do |x|
+                    # belts and suspenders here, to make sure it happens only once.
                     if ! ancestors.include?(x)
-                      #binding.pry
                       x.indent += l_indent
                     end
                   end
-                else
-                  #
                 end
               end
 
+              # do indentation adjustment on all descendants of t (node being moved)
               rt.descendants_traverse(rt, t.parent.node) {|x| x.indent += l_indent }
               if debug || info
                 puts "Node #{t.node.data} and its ancestors and all its"
                 puts "parent descendants indentation were adjusted right by l_indent(4)"
                 puts "-"*30
-                puts "sleeping.... 2 to 12 seconds so that you can read ^^^"
+                puts "sleeping... 1 to 12 seconds so that you can read ^^^"
                 puts "-"*30
-                sleep 0 if info
-                #sleep 12 if debug
-                sleep 0 if debug
+                sleep 1 if info
+                sleep 3 if debug
               end
             end
           end
+        end
+      end
+    end
+
+    def self.adjust_indentations_to_avoid_left_screen_edge(rt, levels_and_trees)
+      left_screen_edge_crossed = false
+      levels_and_trees.each_pair do |level, trees|
+        trees.each_with_index do |t, i|
+
+          if t.indent <= 0
+            left_screen_edge_crossed = true
+            if debug || info
+              puts ""
+              puts "*"*30
+              puts "Left edge overflow; Node #{t.node.data}"
+              puts ""
+              puts "Level #{level}: #{trees.map {|tt| tt.node.data}}"
+              puts "Indent: #{t.indent}"
+              puts "*"*30
+              puts "sleeping... 1 to 12 seconds so that you can read ^^^"
+              puts "-"*30
+              sleep 1 if info
+              sleep 3 if debug
+            end
+          end
+        end
+      end
+
+      if left_screen_edge_crossed
+        rt.in_order_traverse {|x| x.indent += l_indent }
+        if debug || info
+          puts "finished moving whole tree to the right by one indentation(4)"
+          puts "-"*30
+          puts "sleeping... 1 to 12 seconds so that you can read ^^^"
+          puts "-"*30
+          sleep 1 if info
+          sleep 3 if debug
         end
       end
     end
@@ -881,6 +912,7 @@ class BinarySearchTree
       rt = root[0]
       levels_with_trees = trees_grouped_by_level(rt)
       adjust_indentations_to_avoid_collision(rt, levels_with_trees)
+      adjust_indentations_to_avoid_left_screen_edge(rt, levels_with_trees)
 
       boxes_array         = []
       slashes_array       = []
@@ -932,9 +964,6 @@ class BinarySearchTree
     end
 
     def self.calculate_collision_avoidance_shift(parent_tree, child_tree)
-      #return 0 if parent_tree.height == 1
-      #return 0 if parent_tree.height > 2
-      #return 0 unless (parent_tree.node && [95, 74, 52].include?(parent_tree.node.data))
       if parent_tree && child_tree && parent_tree.left_child &&
               parent_tree.left_child == child_tree # only do left side correction
         shift = parent_tree.indent - child_tree.indent - l_indent
@@ -943,7 +972,6 @@ class BinarySearchTree
         shift = 0
       end
       return shift
-      #return 0
     end
 
     def self.add_slashes_above_node(level, t, slashes_above)
@@ -974,8 +1002,6 @@ class BinarySearchTree
         l_box = lp_char*left_side_padding
         accumulator << l_box
 
-
-
         shift = calculate_collision_avoidance_shift(t, t.left_child)
         if shift > 0
           left_padding_4_slashes_below = left_side_padding - shift
@@ -985,11 +1011,6 @@ class BinarySearchTree
         else
           slashes << l_box
         end
-
-
-        #slashes << l_box
-
-
 
         if level == 2 && t.parent.left_child == nil # our left sibling is nil
           # special treatment for second level to pretty it up
