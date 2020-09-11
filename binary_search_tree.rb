@@ -937,7 +937,7 @@ class BinarySearchTree
         slashes_array[level] = slashes
         slashes_above_array[level] = slashes_above
       end
-      #display_original_array(rt)
+      display_original_array(rt)
       display_complete_tree(boxes_array, slashes_array, slashes_above_array)
     end
 

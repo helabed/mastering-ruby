@@ -945,7 +945,7 @@ class BinarySearchTree
         slashes_array[level] = slashes
         slashes_above_array[level] = slashes_above
       end
-      #display_original_array(rt)
+      display_original_array(rt)
       display_complete_tree(boxes_array, slashes_array, slashes_above_array)
     end
 
@@ -1105,7 +1105,7 @@ class BinarySearchTree
         puts "Level #{level}: #{trees.map {|t| t.node.data}}"
 
         trees.each_with_index do |t, i|
-           puts "tree at index[#{i}] with node #{t.node.data} has indent: #{t.indent}"
+          puts "tree at index[#{i}] with node #{t.node.data} has indent: #{t.indent}"
         end
       end
     end
