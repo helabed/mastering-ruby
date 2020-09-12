@@ -1,5 +1,5 @@
 #comment out these 3 lines for standlone RSpec (i.e when NOT in coderpad)
-require 'rspec/autorun'
+#require 'rspec/autorun'
 ##The above statements are useful when running in
 ##coderpad.io/sandbox - otherwise comment out
 require 'securerandom'
@@ -69,14 +69,18 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
         #rand_array = [52, 2, 95, 48, 74, 44, 55, 90, 71, 54, 7, 86, 21, 99, 97, 0, 72, 35]
         #rand_array = [0, 86, 24, 17, 26, 65, 38, 55, 95, 95, 34, 26, 49, 61, 87, 20, 60, 24, 4, 34, 54, 23, 6]
 
-        # this one has an edge condition
-        # rand_array = [22, 26, 59, 7, 27, 40, 95, 56, 14, 0, 76, 83, 58, 44, 11, 39, 73, 41, 34, 39, 59, 98, 4, 27, 71, 72, 63, 87, 47, 5, 25, 66, 28, 46, 14, 87, 11, 58, 77, 69, 4, 66, 28, 2, 33, 13, 16, 90, 57, 11, 17, 58, 74, 19, 50, 84, 6, 98, 75, 92, 57, 88, 9, 31, 98, 7, 57, 82, 35, 60, 51, 53, 70, 35, 40, 79, 70, 20, 2, 59, 68, 53, 66, 78, 86, 29, 10, 32, 10, 10, 80, 91, 74, 44, 87, 32, 80, 6, 46, 5, 86, 5, 63]
-        # rand_array = [98, 37, 59, 96, 0, 52, 86, 61, 12, 64, 89, 9, 63, 81, 70, 13, 87, 91, 82, 92, 31, 55, 22, 43, 85, 66, 39, 73, 28, 31, 14, 83, 72, 72, 70, 75, 1, 0, 7, 35, 24, 24, 64, 40, 23, 41, 89, 32, 95, 57, 44, 59, 99, 6, 8, 87, 99, 87, 18, 80, 54, 6, 77, 97, 40, 9, 4, 1, 16, 62, 61, 83, 85, 69, 67, 26, 60, 31, 77, 37, 4, 77, 38, 35, 2, 83, 49, 48, 76, 95, 57, 75, 59, 25, 32, 9, 39, 32, 1, 28, 30, 12, 75, 64, 22, 0, 30, 5, 43, 43, 83, 29, 41, 51, 80, 24, 74, 71, 4, 57, 62, 20, 68, 54, 4, 38, 6, 0, 21, 82, 95, 70, 87, 23, 79, 97, 22, 35, 90, 1, 28, 16, 92, 80, 5, 0, 22, 6, 62, 46, 23, 23, 69, 87, 26, 44, 69, 87, 97, 27, 53, 49, 78, 7, 97, 77, 44, 27, 58, 4, 64, 79, 53, 57, 43, 42, 57, 53, 4, 88, 81, 61, 66, 67, 18, 78, 66, 83, 7, 70, 35, 59, 84, 57, 5, 66, 19, 8, 17, 93, 92, 9, 16]
 
-        # rand_array = [82, 35, 97, 32, 30, 41, 40, 21, 54, 79, 75, 20, 54, 47, 72, 31, 44, 15, 99, 22, 83, 12, 25, 70, 33, 71, 40, 6, 28, 67, 57, 6, 86, 61, 49, 58, 12, 88, 5, 0, 33, 7, 93, 8, 68, 1, 52, 63, 14, 64, 46, 89, 34, 59, 10, 11, 51, 46, 46, 52, 25, 17, 38, 78, 1, 58, 77, 58, 43, 23, 27, 91, 12, 68, 75, 10, 56, 60, 56, 78, 0, 79, 25, 35, 67, 40, 1, 30, 25, 75, 38, 52, 58, 81, 99, 26, 40, 73, 72, 50, 28, 58, 73, 82, 9, 23, 90, 20, 32, 53, 67, 87, 57, 69, 4, 27, 85, 33, 42, 11, 48, 30, 0, 41, 8, 93, 0, 95, 71, 22, 16, 58, 18, 95, 22, 97, 85, 9, 15, 92, 54, 57, 78, 88, 65, 2, 31, 52, 68, 14, 60, 56, 70, 42, 12, 34, 51, 85, 62, 80, 92, 48, 56, 91, 31, 97, 53, 38, 69, 20, 57, 96, 14, 33, 74, 17, 5, 57, 64, 10, 75, 84, 22, 96, 81, 16, 66, 38, 46, 37, 60, 92, 20, 75, 51, 47, 28, 57, 18, 77, 53, 80, 83]
+        #rand_array = (1..99).to_a.shuffle
 
-       # rand_array = [66, 93, 73, 44, 88, 22, 32, 91, 62, 59, 88, 12, 37, 3, 87, 90, 91, 69]
+        #rand_array =[33, 49, 95, 46, 21, 74, 7, 24, 17, 81, 87, 78, 80, 42, 76, 34, 62, 20, 64, 50, 53, 1, 2, 10, 54, 85, 96, 22, 68]
 
+        #rand_array = [33, 21, 7, 1, 2, 6, 17, 10, 20, 24, 22, 49, 46, 42, 34, 48, 95, 74, 62, 50, 53, 54, 64, 68, 81, 78, 76, 80, 87, 85, 96, 98]
+
+
+        # these 2 below - fix issue of many underscores shifting to right
+        #rand_array = [33, 49, 95, 46, 21, 74, 7, 24, 17, 81, 87, 78, 80, 42, 76, 34, 62, 20, 64, 50, 53, 1, 2, 10, 54, 85, 96, 22, 68, 98, 48] #, 6]#, 45] #, 77]
+        #rand_array = [0, 86, 24, 17, 26, 65, 38, 55, 95, 95, 34, 26, 49, 61, 87, 20, 60, 24, 4, 34, 54, 23, 6]
+        rand_array = (1..99).to_a.shuffle
 
         bst.log rand_array, 'the array'
         bst.insert_into(rand_array)
@@ -91,7 +95,7 @@ class BinarySearchTree
   LOG_LEVEL_DEBUG = 2
   LOG_LEVEL_INFO  = 1
   LOG_LEVEL_NONE  = false
-  LOG_LEVEL = LOG_LEVEL_DEBUG
+  LOG_LEVEL = LOG_LEVEL_INFO
 
   def debugging; LOG_LEVEL == LOG_LEVEL_DEBUG; end
   def info;      LOG_LEVEL == LOG_LEVEL_INFO;  end
@@ -130,7 +134,7 @@ class BinarySearchTree
       insert(Node.new(el))
       # to see elements being inserted
       display_tree if debugging || info
-      sleep 0.25 if debugging || info
+      sleep 0.10 if debugging || info
     end
   end
 
@@ -169,7 +173,8 @@ class BinarySearchTree
     if @root_tree && (debugging || info)
       log nil, "Displaying Tree"
       TreeDisplayer.display_tree_2D(@root_tree)
-      log @random_array, "The original random array is:" if debugging
+      puts "The random array (w/ possible duplicates):" if debugging || info
+      puts "#{@random_array}" if debugging || info
     end
   end
 
@@ -864,8 +869,8 @@ class BinarySearchTree
                 puts "-"*30
                 puts "sleeping... 1 to 12 seconds so that you can read ^^^"
                 puts "-"*30
-                sleep 1 if info
-                sleep 3 if debug
+                sleep 0 if info
+                sleep 0 if debug
               end
             end
           end
@@ -890,8 +895,8 @@ class BinarySearchTree
               puts "*"*30
               puts "sleeping... 1 to 12 seconds so that you can read ^^^"
               puts "-"*30
-              sleep 1 if info
-              sleep 3 if debug
+              sleep 0 if info
+              sleep 0 if debug
             end
           end
         end
@@ -904,8 +909,8 @@ class BinarySearchTree
           puts "-"*30
           puts "sleeping... 1 to 12 seconds so that you can read ^^^"
           puts "-"*30
-          sleep 1 if info
-          sleep 3 if debug
+          sleep 0 if info
+          sleep 0 if debug
         end
       end
     end
@@ -935,7 +940,7 @@ class BinarySearchTree
         slashes_above = []
         trees.each_with_index do |t, i|
           accumulator = left_side_spacing(level, t, i, accumulator, boxes, slashes, slashes_above)
-          add_slashes_below_node(t, slashes)
+          add_slashes_below_node(t, slashes, trees, i)
           add_slashes_above_node(level, t, slashes_above)
           accumulator = add_data_box(t, accumulator, boxes)
           accumulator = middle_spacing(level, t, i, accumulator, boxes, slashes, slashes_above, trees)
@@ -949,7 +954,7 @@ class BinarySearchTree
       display_complete_tree(boxes_array, slashes_array, slashes_above_array)
     end
 
-    def self.add_slashes_below_node(t, slashes)
+    def self.add_slashes_below_node(t, slashes, trees, i)
       if t.right_child && t.left_child                   # t has both children
         shift = calculate_collision_avoidance_shift(t, t.left_child)
         slashes << '_'*shift if shift > 0
@@ -961,7 +966,20 @@ class BinarySearchTree
       elsif  t.right_child                               # t has a right  child
         slashes << ' '*n_padd + ' '*n_padd +  ' \\'
       elsif  t.right_child == nil && t.left_child == nil # t has no children
-        slashes << ' '*n_padd +  '~~' + ' '*n_padd
+        shift = 0
+        if i < trees.size - 1 && trees[i+1] && trees[i+1].left_child
+          # do this for the same level sibling
+          shift = calculate_collision_avoidance_shift(trees[i+1], trees[i+1].left_child)
+          if trees[i+1].left_child.indent >= t.indent # nodes are apart, no need to correct.
+            shift = 0 # reverse correction if anny
+          end
+        end
+        if shift > 0
+          # commented out to avoid edge conditions - see 2 rand_array (s) that were triggering bug
+          #slashes << '_'*(shift-l_indent)
+        else
+          slashes << ' '*n_padd +  '~~' + ' '*n_padd
+        end
       end
     end
 

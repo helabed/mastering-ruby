@@ -83,7 +83,7 @@ class BinarySearchTree
   LOG_LEVEL_DEBUG = 2
   LOG_LEVEL_INFO  = 1
   LOG_LEVEL_NONE  = false
-  LOG_LEVEL = LOG_LEVEL_DEBUG
+  LOG_LEVEL = LOG_LEVEL_INFO
 
   def debugging; LOG_LEVEL == LOG_LEVEL_DEBUG; end
   def info;      LOG_LEVEL == LOG_LEVEL_INFO;  end
@@ -122,7 +122,7 @@ class BinarySearchTree
       insert(Node.new(el))
       # to see elements being inserted
       display_tree if debugging || info
-      sleep 0.25 if debugging || info
+      sleep 0.15 if debugging || info
     end
   end
 
@@ -161,7 +161,7 @@ class BinarySearchTree
     if @root_tree && (debugging || info)
       log nil, "Displaying Tree"
       TreeDisplayer.display_tree_2D(@root_tree)
-      log @random_array, "The original random array is:" if debugging
+      log @random_array, "The random array (w/ possible duplicates):" if debugging
     end
   end
 
@@ -856,8 +856,8 @@ class BinarySearchTree
                 puts "-"*30
                 puts "sleeping... 1 to 12 seconds so that you can read ^^^"
                 puts "-"*30
-                sleep 1 if info
-                sleep 3 if debug
+                sleep 0 if info
+                sleep 0 if debug
               end
             end
           end
@@ -882,8 +882,8 @@ class BinarySearchTree
               puts "*"*30
               puts "sleeping... 1 to 12 seconds so that you can read ^^^"
               puts "-"*30
-              sleep 1 if info
-              sleep 3 if debug
+              sleep 0 if info
+              sleep 0 if debug
             end
           end
         end
@@ -896,8 +896,8 @@ class BinarySearchTree
           puts "-"*30
           puts "sleeping... 1 to 12 seconds so that you can read ^^^"
           puts "-"*30
-          sleep 1 if info
-          sleep 3 if debug
+          sleep 0 if info
+          sleep 0 if debug
         end
       end
     end
@@ -927,7 +927,7 @@ class BinarySearchTree
         slashes_above = []
         trees.each_with_index do |t, i|
           accumulator = left_side_spacing(level, t, i, accumulator, boxes, slashes, slashes_above)
-          add_slashes_below_node(t, slashes)
+          add_slashes_below_node(t, slashes, trees, i)
           add_slashes_above_node(level, t, slashes_above)
           accumulator = add_data_box(t, accumulator, boxes)
           accumulator = middle_spacing(level, t, i, accumulator, boxes, slashes, slashes_above, trees)
@@ -941,7 +941,7 @@ class BinarySearchTree
       display_complete_tree(boxes_array, slashes_array, slashes_above_array)
     end
 
-    def self.add_slashes_below_node(t, slashes)
+    def self.add_slashes_below_node(t, slashes, trees, i)
       if t.right_child && t.left_child                   # t has both children
         shift = calculate_collision_avoidance_shift(t, t.left_child)
         slashes << '_'*shift if shift > 0
@@ -953,7 +953,20 @@ class BinarySearchTree
       elsif  t.right_child                               # t has a right  child
         slashes << ' '*n_padd + ' '*n_padd +  ' \\'
       elsif  t.right_child == nil && t.left_child == nil # t has no children
-        slashes << ' '*n_padd +  '~~' + ' '*n_padd
+        shift = 0
+        if i < trees.size - 1 && trees[i+1] && trees[i+1].left_child
+          # do this for the same level sibling
+          shift = calculate_collision_avoidance_shift(trees[i+1], trees[i+1].left_child)
+          if trees[i+1].left_child.indent >= t.indent # nodes are apart, no need to correct.
+            shift = 0 # reverse correction if anny
+          end
+        end
+        if shift > 0
+          # commented out to avoid edge conditions - see 2 rand_array (s) that were triggering bug
+          #slashes << '_'*(shift-l_indent)
+        else
+          slashes << ' '*n_padd +  '~~' + ' '*n_padd
+        end
       end
     end
 
@@ -1097,7 +1110,7 @@ class BinarySearchTree
         puts "Level #{level}: #{trees.map {|t| t.node.data}}"
 
         trees.each_with_index do |t, i|
-           puts "tree at index[#{i}] with node #{t.node.data} has indent: #{t.indent}"
+          puts "tree at index[#{i}] with node #{t.node.data} has indent: #{t.indent}"
         end
       end
     end
