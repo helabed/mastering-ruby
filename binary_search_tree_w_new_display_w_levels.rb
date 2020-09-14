@@ -1,4 +1,4 @@
-#comment out these 3 lines for standlone RSpec (i.e when NOT in coderpad)
+#comment out this line for standlone RSpec (i.e when NOT in coderpad)
 require 'rspec/autorun'
 ##The above statements are useful when running in
 ##coderpad.io/sandbox - otherwise comment out
@@ -8,10 +8,12 @@ require 'active_support/all'
 require 'pry'
 #require 'byebug'
 
+# you can run this file 25 times or more/less with this bash loop
+# for i in {1..25}; do rspec binary_search_tree_w_new_display_w_levels.rb; done
 
 RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
   it 'should search for an element stored in BST' do
-    total_num_of_items = 20
+    total_num_of_items = 15
     randomness_range = 100
     edge = [
       Array.new(total_num_of_items) { SecureRandom.random_number(randomness_range) },
@@ -26,62 +28,19 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
         rand_array << item_to_search_for    # adds it because we want to search for it
         rand_array << item_to_traverse_from # adds it because we want to use it
         rand_array << item_to_delete        # adds it because we want to delete it
-
         rand_array.shuffle!
 
         puts ""
-        puts ""
         bst = BinarySearchTree.new
 
-        # overriding above array/values in case we need to debug/fix failing test, or
-        # for quick hard coded testing setup
-        #rand_array = [30, 92, 36, 66, 33, 28, 63]
-        #item_to_search_for = 30
-        #item_to_traverse_from = 28
-        #item_to_delete = 30
-        #rand_array = [79, 11, 24, 89, 64, 80, 20, 80]
-        #rand_array = [79, 11, 24, 89, 83, 25, 83, 82]
-        #rand_array = [55, 10, 66, 27, 4, 2, 48, 37, 86, 71, 85, 90, 86, 60, 90, 17, 40, 14]
-        #rand_array = [79, 11, 24, 89, 83, 25, 83, 82]
-        #rand_array = [ 2, 79, 11, 24, 89, 83, 25, 83, 82]
-        #rand_array = [ 99, 2, 79, 11, 24, 89, 83, 25, 83, 82]
-        #rand_array = [75, 15, 14, 6, 0, 26, 27, 48, 46, 56, 49, 50, 54, 72, 95, 86, 82]
+        # un-comment rand_array below to suit your needs
+        # without adjustment, rand_array below demonstrate node/tree collision
+        #rand_array = [8, 87, 69, 63, 18, 42, 29, 27, 28, 39, 49, 45, 58, 65, 72]
+        # without adjustment, rand_array below demonstrate left edge overflow
+        #rand_array = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
 
-
-        # all arrays below have node collisons
-        # rand_array = [40, 0, 10, 5, 23, 31, 28, 89, 64, 47, 45, 73, 75, 90, 92]
-        # rand_array = [44, 4, 34, 10, 21, 18, 28, 31, 94, 78, 76, 50, 74, 55, 73, 77]
-        # rand_array = [64, 36, 22, 5, 14, 11, 24, 61, 51, 44, 42, 53, 76, 70, 98, 82, 97]
-        # rand_array = [70, 63, 32, 2, 15, 3, 16, 22, 25, 60, 83, 79, 80, 99, 90, 87]
-        # rand_array = [45, 35, 14, 0, 23, 41, 76, 47, 58, 66, 59, 69, 77, 99, 87, 90]
-        # rand_array = [52, 51, 44, 11, 4, 6, 27, 19, 15, 21, 43, 32, 39, 64, 72, 96, 92, 94]
-        # rand_array = [48, 14, 9, 7, 13, 23, 31, 25, 46, 73, 69, 50, 72, 89, 81, 77, 85]
-        # rand_array = [44, 20, 1, 0, 43, 25, 97, 83, 55, 45, 72, 59, 85, 84, 95]
-        # rand_array = [52, 9, 6, 3, 8, 10, 36, 25, 33, 42, 41, 63, 61, 59, 92, 79, 77, 78]
-        # rand_array = [16, 9, 8, 15, 83, 36, 27, 76, 59, 61, 66, 64, 81, 79, 82, 98, 93]
-        #rand_array = [74, 8, 39, 22, 14, 37, 69, 47, 46, 41, 84, 81, 98, 87, 89]
-        #rand_array = [74, 8, 39, 22, 37, 69, 47, 46, 41, 84, 81, 98, 87, 89]
-
-        #rand_array = [82, 4, 75, 17, 50, 33, 66, 10, 49, 67, 52, 80, 58, 17, 15, 85, 3, 66]
-        #rand_array = [99, 52, 43, 8, 13, 89, 18, 96, 69, 10, 55, 7, 6, 10, 91, 64, 61, 64]
-        #rand_array = [63, 59, 79, 97, 88, 30, 75, 34, 30, 18, 85, 62, 52, 71, 32, 72, 22, 34]
-        #rand_array = [30, 85, 55, 99, 31, 80, 95, 75, 3, 77, 63, 23, 39, 0, 34, 59, 28, 69]
-        #rand_array = [52, 2, 95, 48, 74, 44, 55, 90, 71, 54, 7, 86, 21, 99, 97, 0, 72, 35]
-        #rand_array = [0, 86, 24, 17, 26, 65, 38, 55, 95, 95, 34, 26, 49, 61, 87, 20, 60, 24, 4, 34, 54, 23, 6]
-
-
+        # to display the maximum number of nodes with 2-digits, un-comment rand_array below
         #rand_array = (1..99).to_a.shuffle
-
-        #rand_array =[33, 49, 95, 46, 21, 74, 7, 24, 17, 81, 87, 78, 80, 42, 76, 34, 62, 20, 64, 50, 53, 1, 2, 10, 54, 85, 96, 22, 68]
-
-        #rand_array = [33, 21, 7, 1, 2, 6, 17, 10, 20, 24, 22, 49, 46, 42, 34, 48, 95, 74, 62, 50, 53, 54, 64, 68, 81, 78, 76, 80, 87, 85, 96, 98]
-
-
-        # these 2 below - fix issue of many underscores shifting to right
-        #rand_array = [33, 49, 95, 46, 21, 74, 7, 24, 17, 81, 87, 78, 80, 42, 76, 34, 62, 20, 64, 50, 53, 1, 2, 10, 54, 85, 96, 22, 68, 98, 48] #, 6]#, 45] #, 77]
-        #rand_array = [0, 86, 24, 17, 26, 65, 38, 55, 95, 95, 34, 26, 49, 61, 87, 20, 60, 24, 4, 34, 54, 23, 6]
-        rand_array = (1..99).to_a.shuffle
-
         bst.log rand_array, 'the array'
         bst.insert_into(rand_array)
         bst.display_tree
@@ -134,7 +93,7 @@ class BinarySearchTree
       insert(Node.new(el))
       # to see elements being inserted
       display_tree if debugging || info
-      sleep 0.10 if debugging || info
+      sleep 0.11 if debugging || info
     end
   end
 
