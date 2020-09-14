@@ -269,9 +269,6 @@ class BinarySearchTree
     attr_accessor :height
     attr_accessor :indent
 
-   def debugging; LOG_LEVEL == LOG_LEVEL_DEBUG; end
-   def info;      LOG_LEVEL == LOG_LEVEL_INFO;  end
-
     def initialize
       @node = nil
       @left_child = nil
