@@ -28,26 +28,19 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
         rand_array << item_to_delete        # adds it because we want to delete it
 
         rand_array.shuffle!
+        # to display the maximum number of nodes with 2-digits, un-comment rand_array below
+        #rand_array = (1..99).to_a.shuffle
 
         puts ""
         puts ""
         bst = BinarySearchTree.new
+        L = Logger
 
-        # commented line below can be used to override random array above
-        # overriding above array/values in case we need to debug/fix failing test, or
-        # for quick hard coded testing setup
-        #rand_array = [30, 92, 36, 66, 33, 28, 63]
-        #rand_array = [ 2, 79, 11, 24, 89, 83, 25, 83, 82]
-        #rand_array = [ 99, 2, 79, 11, 24, 89, 83, 25, 83, 82]
-        #item_to_search_for = 30
-        #item_to_traverse_from = 28
-        #item_to_delete = 30
-
-        bst.log rand_array, 'the array'
+        L.log rand_array, 'the array'
         bst.insert_into(rand_array)
         bst.display_tree
 
-        bst.log item_to_search_for, 'Will be searching for'
+        L.log item_to_search_for, 'Will be searching for'
         found, data = bst.search_for(rand_array, item_to_search_for)
         expect(found).to be true
         expect(data).to eq item_to_search_for
@@ -55,7 +48,7 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
         height = bst.height_of_tree
         expect(height).to be < 30 # random high number
 
-        bst.log item_to_delete, 'Will be deleting'
+        L.log item_to_delete, 'Will be deleting'
         bst.display_tree
         outcome = bst.delete_from(item_to_delete)
         expect(outcome).to be true
@@ -72,29 +65,43 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
         outcome = bst.do_descendants_traverse(item_to_traverse_from)
         expect(outcome).to be true
         bst.display_tree
-        bst.log '', 'SUCCESS'
+        L.log '', 'SUCCESS'
       end
     end
   end
 end
 
 
-class BinarySearchTree
+#
+#
+# Logger
+#
+class Logger
   LOG_LEVEL_DEBUG = 2
   LOG_LEVEL_INFO  = 1
   LOG_LEVEL_NONE  = false
   LOG_LEVEL = LOG_LEVEL_INFO
 
-  def debugging; LOG_LEVEL == LOG_LEVEL_DEBUG; end
-  def info;      LOG_LEVEL == LOG_LEVEL_INFO;  end
-  def quiet;     LOG_LEVEL == LOG_LEVEL_NONE;  end
+  def self.debugging; LOG_LEVEL == LOG_LEVEL_DEBUG; end
+  def self.info;      LOG_LEVEL == LOG_LEVEL_INFO;  end
+  def self.quiet;     LOG_LEVEL == LOG_LEVEL_NONE;  end
 
-  def log(msg, label='')
+  def self.log(msg, label='')
     if debugging
       print "-"*20; print label; print "-"*20; print "\n"; print "#{msg}\n" if msg
     end
   end
 
+end
+# End of Logger
+
+
+#
+#
+# BinarySearchTree
+#
+class BinarySearchTree
+  L = Logger
   attr_accessor :root_tree
   attr_accessor :random_array
 
@@ -102,9 +109,9 @@ class BinarySearchTree
     if @root_tree == nil
       @root_tree = Tree.new
       @root_tree.height = 1
-      @root_tree.indent = ROOT_NODE_INDENT
+      @root_tree.indent = Constants::ROOT_NODE_INDENT
       @root_tree.parent = nil
-      log "", "Root Tree created #{@root_tree.tree_id}" if debugging
+      L.log "", "Root Tree created #{@root_tree.tree_id}" if L.debugging
     end
   end
 
@@ -113,16 +120,16 @@ class BinarySearchTree
   end
 
   def insert_into(arr)
-    puts "" if debugging
-    log arr, "Inserting Array Elements into BST" if debugging
+    puts "" if L.debugging
+    L.log arr, "Inserting Array Elements into BST" if L.debugging
     @random_array = arr
     arr.each do |el|
-      puts "" if debugging || info
-      log nil, "Inserting Element #{el} into BST" if debugging
+      puts "" if L.debugging || L.info
+      L.log nil, "Inserting Element #{el} into BST" if L.debugging
       insert(Node.new(el))
       # to see elements being inserted
-      display_tree if debugging || info
-      sleep 0.15 if debugging || info
+      display_tree if L.debugging || L.info
+      sleep 0.11 if L.debugging || L.info
     end
   end
 
@@ -130,17 +137,17 @@ class BinarySearchTree
   #   original 'arr' provided just for logging/debugging
   def search_for(arr,val)
     if @root_tree
-      if debugging || info
-        log arr, "Finished Adding array -> BST"
-        log '', "Searching BST for -> #{val}"
+      if L.debugging || L.info
+         L.log arr, "Finished Adding array -> BST"
+         L.log '', "Searching BST for -> #{val}"
       end
       found, locator, parent = @root_tree.bst_search(@root_tree, Node.new(val))
-      if debugging || info
+      if L.debugging || L.info
         if found
-          log parent, "Found 'parent' #{parent.node.data} in BST" if (parent && parent.node)
-          log locator, "Found 'locator(sub-tree)' for #{locator.node.data}"
+           L.log parent, "Found 'parent' #{parent.node.data} in BST" if (parent && parent.node)
+           L.log locator, "Found 'locator(sub-tree)' for #{locator.node.data}"
         else
-          log '', "Did NOT find #{val} in the BST"
+           L.log '', "Did NOT find #{val} in the BST"
         end
       end
       return found, locator.node.data if found
@@ -150,7 +157,7 @@ class BinarySearchTree
 
   # delete element with 'value' from the BST
   def delete_from(value)
-    log '', "Attempting to delete #{value} from BST"
+     L.log '', "Attempting to delete #{value} from BST"
     outcome, new_root = @root_tree.delete_element(@root_tree, Node.new(value))
     @root_tree = new_root
     display_tree
@@ -158,30 +165,31 @@ class BinarySearchTree
   end
 
   def display_tree
-    if @root_tree && (debugging || info)
-      log nil, "Displaying Tree"
+    if @root_tree && (L.debugging || L.info)
+       L.log nil, "Displaying Tree"
       TreeDisplayer.display_tree_2D(@root_tree)
-      log @random_array, "The random array (w/ possible duplicates):" if debugging
+      puts "The random array (w/ possible duplicates):" if L.debugging || L.info
+      puts "#{@random_array}" if L.debugging || L.info
     end
   end
 
   def do_in_order_traverse
-    if @root_tree && (debugging || info)
-      log nil, "In Order Tree Traversal"
+    if @root_tree && (L.debugging || L.info)
+       L.log nil, "In Order Tree Traversal"
       @root_tree.show_me_in_order_traverse(@root_tree)
     end
   end
 
   def do_pre_in_order_traverse
-    if @root_tree && (debugging || info)
-      log nil, "Pre Order Tree Traversal"
+    if @root_tree && (L.debugging || L.info)
+       L.log nil, "Pre Order Tree Traversal"
       @root_tree.show_me_pre_order_traverse(@root_tree)
     end
   end
 
   def do_post_in_order_traverse
-    if @root_tree && (debugging || info)
-      log nil, "Post Order Tree Traversal"
+    if @root_tree && (L.debugging || L.info)
+       L.log nil, "Post Order Tree Traversal"
       @root_tree.show_me_post_order_traverse(@root_tree)
     end
   end
@@ -189,30 +197,30 @@ class BinarySearchTree
   def height_of_tree
     if @root_tree
       height = @root_tree.height_of_tree
-      if @root_tree && (debugging || info)
-        log nil, "Computed Height of Tree is #{height}"
+      if @root_tree && (L.debugging || L.info)
+         L.log nil, "Computed Height of Tree is #{height}"
       end
       height
     end
   end
 
   def do_right_to_left_leaf_traverse
-    if @root_tree && (debugging || info)
-      log nil, "Right To Left Leaf Traversal"
+    if @root_tree && (L.debugging || L.info)
+       L.log nil, "Right To Left Leaf Traversal"
       @root_tree.show_me_right_to_left_leaf_traverse(@root_tree)
     end
   end
 
   def do_ancestors_traverse(value)
-    if debugging || info
-      log nil, "Ancestors Traversal"
+    if L.debugging || L.info
+       L.log nil, "Ancestors Traversal"
     end
     @root_tree.show_me_ancestors_traverse(@root_tree, Node.new(value))
   end
 
   def do_descendants_traverse(value)
-    if debugging || info
-      log nil, "Descendants Traversal"
+    if L.debugging || L.info
+       L.log nil, "Descendants Traversal"
     end
     @root_tree.show_me_descendants_traverse(@root_tree, Node.new(value))
   end
@@ -223,18 +231,15 @@ class BinarySearchTree
   #
   class Node
     attr_accessor :data
-    attr_accessor :display_indent
 
     def debugging; LOG_LEVEL == LOG_LEVEL_DEBUG; end
 
     def initialize(data)
       @data = data
-      @display_indent = 0
     end
 
     def dispose
       @data = nil
-      @display_indent = 0
     end
 
     def display
@@ -249,7 +254,6 @@ class BinarySearchTree
       s = ''
       s << "\n  hash: #{(self.hash % 1000)}"
       s << "\n  data: #{self.data}"
-      s << "\n  display_indent: #{self.display_indent}"
       s << "\n  --"
       return s
     end
@@ -258,10 +262,10 @@ class BinarySearchTree
 
   #
   #
-  # BinarySearchTree::Tree
+  # BinarySearchTree::Constants
   #
-  class Tree
-    BinarySearchTree::ROOT_NODE_INDENT = 35
+  module Constants
+    ROOT_NODE_INDENT  = 35
     INDENT_DECAY      = 2.10
     TREE_LIMB_INDENT  = 12 # keep this always even so that we can divide by 2
     NODE_DATA_SIZE    = 2
@@ -269,6 +273,15 @@ class BinarySearchTree
     LEFT_NODE_INDENT  = 4
     RIGHT_NODE_INDENT = 4
     NUM_OF_DASHES = 8
+  end
+  # End of BinarySearchTree::Constants
+
+  #
+  #
+  # BinarySearchTree::Tree
+  #
+  class Tree
+    C = BinarySearchTree::Constants
 
     attr_accessor :node
     attr_accessor :left_child
@@ -325,35 +338,35 @@ class BinarySearchTree
       if @node == nil
         @node = node
         puts "Tree at height #{self.height} inserted node #{node.display_node} "+
-          "into BST" if debugging
+          "into BST" if L.debugging
       elsif node.data < @node.data
         if @left_child == nil
           @left_child = Tree.new
           @left_child.parent = self
           @left_child.height = self.height + 1                 if self.height
-          more_indent = TREE_LIMB_INDENT - (self.height*INDENT_DECAY).floor
+          more_indent = C::TREE_LIMB_INDENT - (self.height*C::INDENT_DECAY).floor
           more_indent = 1 if self.height > 0
           more_indent = 3 if self.height == 1
-          @left_child.indent = self.indent - LEFT_NODE_INDENT*more_indent  if self.indent
+          @left_child.indent = self.indent - C::LEFT_NODE_INDENT*more_indent  if self.indent
         end
         @left_child.insert_element(node)
         puts "  Tree w/node #{self.node.display_node} at height #{self.height} "+
-          "was traversed-left towards node #{@left_child.node.display_node}" if debugging
+          "was traversed-left towards node #{@left_child.node.display_node}" if L.debugging
       elsif node.data > @node.data
         if @right_child == nil
           @right_child = Tree.new
           @right_child.parent = self
-          @right_child.height = self.height + 1                  if self.height
-          more_indent = TREE_LIMB_INDENT - (self.height*INDENT_DECAY).floor
+          @right_child.height = self.height + 1                if self.height
+          more_indent = C::TREE_LIMB_INDENT - (self.height*C::INDENT_DECAY).floor
           more_indent = 1 if self.height > 0
           more_indent = 3 if self.height == 1
-          @right_child.indent = self.indent + RIGHT_NODE_INDENT*more_indent  if self.indent
+          @right_child.indent = self.indent + C::RIGHT_NODE_INDENT*more_indent  if self.indent
         end
         @right_child.insert_element(node)
         puts "  Tree w/node #{self.node.display_node} at height #{self.height} "+
-          "was traversed-right towards node #{@right_child.node.display_node}" if debugging
+          "was traversed-right towards node #{@right_child.node.display_node}" if L.debugging
       else
-        puts "Node #{node.display_node} is already in tree - ignoring" if debugging
+        puts "Node #{node.display_node} is already in tree - ignoring" if L.debugging
       end
     end
 
@@ -396,7 +409,7 @@ class BinarySearchTree
 
       found, x, parent = bst_search(tree, item)
 
-      if debugging && verbose_delete
+      if L.debugging && verbose_delete
         puts "Element to be deleted was found: #{found}"
         puts "Sub-tree whose node has to be deleted: #{x}"
         puts ""
@@ -407,7 +420,7 @@ class BinarySearchTree
       return [false, tree] if ! found  # no point in going further
 
       if x.left_child && x.right_child
-        if debugging && verbose_delete
+        if L.debugging && verbose_delete
           puts "item to be deleted #{item.data} has 2 children"
           puts "left_child: #{x.left_child.node.data}"
           puts "right_child: #{x.right_child.node.data}"
@@ -419,7 +432,7 @@ class BinarySearchTree
         # then descend left as far as possible
         x_successor = x.right_child
         parent      = x
-        if debugging && verbose_delete
+        if L.debugging && verbose_delete
           puts "x_successor: #{x_successor.node.data}"
           puts "parent:      #{parent.node.data}"
           puts "---- descending left ---"
@@ -427,7 +440,7 @@ class BinarySearchTree
         while x_successor.left_child   # descending left until last left child
           parent      = x_successor
           x_successor = x_successor.left_child
-          if debugging && verbose_delete
+          if L.debugging && verbose_delete
             puts "x_successor: #{x_successor.node.data}"
             puts "parent:      #{parent.node.data}"
           end
@@ -438,7 +451,7 @@ class BinarySearchTree
         x.node.data = x_successor.node.data
         x = x_successor
 
-        if debugging && verbose_delete
+        if L.debugging && verbose_delete
           puts "x data updated: #{x.node.data}"
         end
       end
@@ -446,7 +459,7 @@ class BinarySearchTree
       # now proceed with case as if we had 0 or 1 child - book p. 466
       subtree = x.left_child
       subtree ||= x.right_child  # if left child is nil, use right child
-      if debugging && verbose_delete
+      if L.debugging && verbose_delete
         puts "subtree: #{subtree}"
         puts ""
       end
@@ -456,18 +469,18 @@ class BinarySearchTree
         tree = subtree  # changing root tree to be the subtree when returned
         tree.height = 1
         tree.parent = nil
-        if debugging && verbose_delete
+        if L.debugging && verbose_delete
           puts "root is being deleted subtree is new root(updated values): #{subtree}"
           tree.show_me_descendants_traverse(tree, tree.node)
         end
         tree.descendants_traverse(tree, tree.node) do |t|
-          if debugging && verbose_delete
+          if L.debugging && verbose_delete
             puts "////"
             puts "inside tree: #{t.node.data}"
             puts "inside tree old height: #{t.height}"
           end
           t.height = t.parent.height+1 if t.parent
-          if debugging && verbose_delete
+          if L.debugging && verbose_delete
             puts "inside tree new height: #{t.height}"
             puts "////"
           end
@@ -477,18 +490,18 @@ class BinarySearchTree
         if parent.left_child  # the subtree could be nil
           parent.left_child.parent = parent
           parent.left_child.height = parent.height+1
-          if debugging && verbose_delete
+          if L.debugging && verbose_delete
             puts "parent left child gets the subtree(updated values): #{parent.left_child}"
             parent.show_me_descendants_traverse(parent, parent.node)
           end
           parent.descendants_traverse(parent, parent.node) do |t|
-            if debugging && verbose_delete
+            if L.debugging && verbose_delete
               puts "////"
               puts "inside tree: #{t.node.data}"
               puts "inside tree old height: #{t.height}"
             end
             t.height = t.parent.height+1
-            if debugging && verbose_delete
+            if L.debugging && verbose_delete
                puts "inside tree new height: #{t.height}"
                puts "////"
             end
@@ -499,18 +512,18 @@ class BinarySearchTree
         if parent.right_child  # the subtree could be nil
           parent.right_child.parent = parent
           parent.right_child.height = parent.height+1
-          if debugging && verbose_delete
+          if L.debugging && verbose_delete
             puts "parent right child gets the subtree(updated values): #{parent.right_child}"
             parent.show_me_descendants_traverse(parent, parent.node)
           end
           parent.descendants_traverse(parent, parent.node) do |t|
-            if debugging && verbose_delete
+            if L.debugging && verbose_delete
               puts "////"
               puts "inside tree: #{t.node.data}"
               puts "inside tree old height: #{t.height}"
             end
             t.height = t.parent.height+1
-            if debugging && verbose_delete
+            if L.debugging && verbose_delete
               puts "inside tree new height: #{t.height}"
               puts "////"
             end
@@ -693,7 +706,7 @@ class BinarySearchTree
     end
 
     def show_me_ancestors_traverse(tree, item)
-      if debugging || info
+      if L.debugging || L.info
         puts ""
         puts ""
         puts ""
@@ -738,7 +751,7 @@ class BinarySearchTree
     end
 
     def show_me_descendants_traverse(tree, item)
-      if debugging || info
+      if L.debugging || L.info
         puts ""
         puts ""
         puts ""
@@ -763,8 +776,7 @@ class BinarySearchTree
   # BinarySearchTree::TreeDisplayer
   #
   class TreeDisplayer
-    def self.debug; BinarySearchTree::LOG_LEVEL == BinarySearchTree::LOG_LEVEL_DEBUG; end
-    def self.info;  BinarySearchTree::LOG_LEVEL == BinarySearchTree::LOG_LEVEL_INFO;  end
+    C = BinarySearchTree::Constants
 
     def self.trees_grouped_by_level(root_tree)
       rt = root_tree
@@ -797,13 +809,13 @@ class BinarySearchTree
       attr_accessor :l_indent
     end
 
-    self.n_size  =  BinarySearchTree::Tree::NODE_DATA_SIZE
-    self.n_padd  =  BinarySearchTree::Tree::NODE_DATA_PADDING
-    self.n_dash  =  BinarySearchTree::Tree::NUM_OF_DASHES
+    self.n_size  =  C::NODE_DATA_SIZE
+    self.n_padd  =  C::NODE_DATA_PADDING
+    self.n_dash  =  C::NUM_OF_DASHES
     self.lp_char = ' ' #'L' # ' '
     self.rp_char = ' ' #'R' # ' '
     self.mp_char = ' ' #'M' # ' '
-    self.l_indent  =  BinarySearchTree::Tree::LEFT_NODE_INDENT
+    self.l_indent  = C::LEFT_NODE_INDENT
 
 
     def self.adjust_indentations_to_avoid_collision(rt, levels_and_trees)
@@ -812,7 +824,7 @@ class BinarySearchTree
 
           if i > 0  # start compare with second element of each level
             if trees[i].indent <= trees[i-1].indent
-              if debug || info
+              if L.debugging || L.info
                 puts ""
                 puts "*"*30
                 puts "Collision Detected - Node #{t.node.data} & Node #{trees[i-1].node.data}"
@@ -850,14 +862,14 @@ class BinarySearchTree
 
               # do indentation adjustment on all descendants of t (node being moved)
               rt.descendants_traverse(rt, t.parent.node) {|x| x.indent += l_indent }
-              if debug || info
+              if L.debugging || L.info
                 puts "Node #{t.node.data} and its ancestors and all its"
                 puts "parent descendants indentation were adjusted right by l_indent(4)"
                 puts "-"*30
                 puts "sleeping... 1 to 12 seconds so that you can read ^^^"
                 puts "-"*30
-                sleep 0 if info
-                sleep 0 if debug
+                sleep 0 if L.info
+                sleep 0 if L.debugging
               end
             end
           end
@@ -872,7 +884,7 @@ class BinarySearchTree
 
           if t.indent <= 0
             left_screen_edge_crossed = true
-            if debug || info
+            if L.debugging || L.info
               puts ""
               puts "*"*30
               puts "Left edge overflow; Node #{t.node.data}"
@@ -882,8 +894,8 @@ class BinarySearchTree
               puts "*"*30
               puts "sleeping... 1 to 12 seconds so that you can read ^^^"
               puts "-"*30
-              sleep 0 if info
-              sleep 0 if debug
+              sleep 0 if L.info
+              sleep 0 if L.debugging
             end
           end
         end
@@ -891,13 +903,13 @@ class BinarySearchTree
 
       if left_screen_edge_crossed
         rt.in_order_traverse {|x| x.indent += l_indent }
-        if debug || info
+        if L.debugging || L.info
           puts "finished moving whole tree to the right by one indentation(4)"
           puts "-"*30
           puts "sleeping... 1 to 12 seconds so that you can read ^^^"
           puts "-"*30
-          sleep 0 if info
-          sleep 0 if debug
+          sleep 0 if L.info
+          sleep 0 if L.debugging
         end
       end
     end
@@ -1076,7 +1088,7 @@ class BinarySearchTree
 
     def self.right_side_spacing(level, t, i, accumulator, boxes, trees)
       if i == trees.size - 1
-        right_side_padding = (BinarySearchTree::ROOT_NODE_INDENT*2).floor -
+        right_side_padding = (C::ROOT_NODE_INDENT*2).floor -
           accumulator.size - (n_size/2).ceil
         right_side_padding = 0 if right_side_padding < 0
         r_box = rp_char*right_side_padding
@@ -1095,7 +1107,7 @@ class BinarySearchTree
     end
 
     def self.display_original_array(rt)
-      if debug || info
+      if L.debugging || L.info
         puts "The array we just inserted:"
         tmp_array = []
         rt.pre_order_traverse do |t|
@@ -1106,7 +1118,7 @@ class BinarySearchTree
     end
 
     def self.log_levels_and_trees(level, trees)
-      if debug
+      if L.debugging
         puts "Level #{level}: #{trees.map {|t| t.node.data}}"
 
         trees.each_with_index do |t, i|
