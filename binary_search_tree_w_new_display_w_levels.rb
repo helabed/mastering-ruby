@@ -195,18 +195,15 @@ class BinarySearchTree
   #
   class Node
     attr_accessor :data
-    attr_accessor :display_indent
 
     def debugging; LOG_LEVEL == LOG_LEVEL_DEBUG; end
 
     def initialize(data)
       @data = data
-      @display_indent = 0
     end
 
     def dispose
       @data = nil
-      @display_indent = 0
     end
 
     def display
@@ -221,7 +218,6 @@ class BinarySearchTree
       s = ''
       s << "\n  hash: #{(self.hash % 1000)}"
       s << "\n  data: #{self.data}"
-      s << "\n  display_indent: #{self.display_indent}"
       s << "\n  --"
       return s
     end
