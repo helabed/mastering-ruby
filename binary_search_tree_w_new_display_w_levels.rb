@@ -51,6 +51,7 @@ end
 
 
 class BinarySearchTree
+
   LOG_LEVEL_DEBUG = 2
   LOG_LEVEL_INFO  = 1
   LOG_LEVEL_NONE  = false
@@ -73,7 +74,7 @@ class BinarySearchTree
     if @root_tree == nil
       @root_tree = Tree.new
       @root_tree.height = 1
-      @root_tree.indent = ROOT_NODE_INDENT
+      @root_tree.indent = Constants::ROOT_NODE_INDENT
       @root_tree.parent = nil
       log "", "Root Tree created #{@root_tree.tree_id}" if debugging
     end
@@ -226,10 +227,10 @@ class BinarySearchTree
 
   #
   #
-  # BinarySearchTree::Tree
+  # BinarySearchTree::Constants
   #
-  class Tree
-    BinarySearchTree::ROOT_NODE_INDENT = 35
+  module Constants
+    ROOT_NODE_INDENT  = 35
     INDENT_DECAY      = 2.10
     TREE_LIMB_INDENT  = 12 # keep this always even so that we can divide by 2
     NODE_DATA_SIZE    = 2
@@ -237,6 +238,15 @@ class BinarySearchTree
     LEFT_NODE_INDENT  = 4
     RIGHT_NODE_INDENT = 4
     NUM_OF_DASHES = 8
+  end
+  # End of BinarySearchTree::Constants
+
+  #
+  #
+  # BinarySearchTree::Tree
+  #
+  class Tree
+    C = BinarySearchTree::Constants
 
     attr_accessor :node
     attr_accessor :left_child
@@ -299,10 +309,10 @@ class BinarySearchTree
           @left_child = Tree.new
           @left_child.parent = self
           @left_child.height = self.height + 1                 if self.height
-          more_indent = TREE_LIMB_INDENT - (self.height*INDENT_DECAY).floor
+          more_indent = C::TREE_LIMB_INDENT - (self.height*C::INDENT_DECAY).floor
           more_indent = 1 if self.height > 0
           more_indent = 3 if self.height == 1
-          @left_child.indent = self.indent - LEFT_NODE_INDENT*more_indent  if self.indent
+          @left_child.indent = self.indent - C::LEFT_NODE_INDENT*more_indent  if self.indent
         end
         @left_child.insert_element(node)
         puts "  Tree w/node #{self.node.display_node} at height #{self.height} "+
@@ -311,11 +321,11 @@ class BinarySearchTree
         if @right_child == nil
           @right_child = Tree.new
           @right_child.parent = self
-          @right_child.height = self.height + 1                  if self.height
-          more_indent = TREE_LIMB_INDENT - (self.height*INDENT_DECAY).floor
+          @right_child.height = self.height + 1                if self.height
+          more_indent = C::TREE_LIMB_INDENT - (self.height*C::INDENT_DECAY).floor
           more_indent = 1 if self.height > 0
           more_indent = 3 if self.height == 1
-          @right_child.indent = self.indent + RIGHT_NODE_INDENT*more_indent  if self.indent
+          @right_child.indent = self.indent + C::RIGHT_NODE_INDENT*more_indent  if self.indent
         end
         @right_child.insert_element(node)
         puts "  Tree w/node #{self.node.display_node} at height #{self.height} "+
@@ -731,6 +741,8 @@ class BinarySearchTree
   # BinarySearchTree::TreeDisplayer
   #
   class TreeDisplayer
+    C = BinarySearchTree::Constants
+
     def self.debug; BinarySearchTree::LOG_LEVEL == BinarySearchTree::LOG_LEVEL_DEBUG; end
     def self.info;  BinarySearchTree::LOG_LEVEL == BinarySearchTree::LOG_LEVEL_INFO;  end
 
@@ -765,13 +777,13 @@ class BinarySearchTree
       attr_accessor :l_indent
     end
 
-    self.n_size  =  BinarySearchTree::Tree::NODE_DATA_SIZE
-    self.n_padd  =  BinarySearchTree::Tree::NODE_DATA_PADDING
-    self.n_dash  =  BinarySearchTree::Tree::NUM_OF_DASHES
+    self.n_size  =  C::NODE_DATA_SIZE
+    self.n_padd  =  C::NODE_DATA_PADDING
+    self.n_dash  =  C::NUM_OF_DASHES
     self.lp_char = ' ' #'L' # ' '
     self.rp_char = ' ' #'R' # ' '
     self.mp_char = ' ' #'M' # ' '
-    self.l_indent  =  BinarySearchTree::Tree::LEFT_NODE_INDENT
+    self.l_indent  = C::LEFT_NODE_INDENT
 
 
     def self.adjust_indentations_to_avoid_collision(rt, levels_and_trees)
@@ -1044,7 +1056,7 @@ class BinarySearchTree
 
     def self.right_side_spacing(level, t, i, accumulator, boxes, trees)
       if i == trees.size - 1
-        right_side_padding = (BinarySearchTree::ROOT_NODE_INDENT*2).floor -
+        right_side_padding = (C::ROOT_NODE_INDENT*2).floor -
           accumulator.size - (n_size/2).ceil
         right_side_padding = 0 if right_side_padding < 0
         r_box = rp_char*right_side_padding
