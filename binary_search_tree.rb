@@ -5,16 +5,23 @@ class Logger
   LOG_LEVEL_DEBUG = 2
   LOG_LEVEL_INFO  = 1
   LOG_LEVEL_NONE  = false
-  LOG_LEVEL = LOG_LEVEL_INFO
+  class << self
+    attr_accessor :log_level
+  end
+  self.log_level = LOG_LEVEL_INFO
 
-  def self.debugging; LOG_LEVEL == LOG_LEVEL_DEBUG; end
-  def self.info;      LOG_LEVEL == LOG_LEVEL_INFO;  end
-  def self.quiet;     LOG_LEVEL == LOG_LEVEL_NONE;  end
+  def self.debugging; log_level == LOG_LEVEL_DEBUG; end
+  def self.info;      log_level == LOG_LEVEL_INFO;  end
+  def self.quiet;     log_level == LOG_LEVEL_NONE;  end
 
   def self.log(msg, label='')
     if debugging
       print "-"*20; print label; print "-"*20; print "\n"; print "#{msg}\n" if msg
     end
+  end
+
+  def self.set_level(level)
+    self.log_level = level
   end
 end
 # End of Logger
@@ -154,8 +161,8 @@ class BinarySearchTree
   #
   class Node
     attr_accessor :data
-
-    def debugging; LOG_LEVEL == LOG_LEVEL_DEBUG; end
+    #
+    # def debugging; LOG_LEVEL == LOG_LEVEL_DEBUG; end
 
     def initialize(data)
       @data = data

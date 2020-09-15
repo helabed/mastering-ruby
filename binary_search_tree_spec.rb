@@ -39,6 +39,7 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
         puts ""
         bst = BinarySearchTree.new
         L = Logger
+        L.set_level(Logger::LOG_LEVEL_NONE)
 
         L.log rand_array, 'the array'
         bst.insert_into(rand_array)
