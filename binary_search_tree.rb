@@ -141,18 +141,22 @@ class BinarySearchTree
     end
   end
 
-  def do_ancestors_traverse(value)
+  def do_ancestors_traverse(value, &block)
     if L.debugging || L.info
-       L.log nil, "Ancestors Traversal"
+      L.log nil, "Ancestors Traversal"
+      @root_tree.show_me_ancestors_traverse(@root_tree, Node.new(value))
+    else
+      @root_tree.ancestors_traverse(@root_tree, Node.new(value), &block)
     end
-    @root_tree.show_me_ancestors_traverse(@root_tree, Node.new(value))
   end
 
-  def do_descendants_traverse(value)
+  def do_descendants_traverse(value, &block)
     if L.debugging || L.info
-       L.log nil, "Descendants Traversal"
+      L.log nil, "Descendants Traversal"
+      @root_tree.show_me_descendants_traverse(@root_tree, Node.new(value))
+    else
+      @root_tree.descendants_traverse(@root_tree, Node.new(value), &block)
     end
-    @root_tree.show_me_descendants_traverse(@root_tree, Node.new(value))
   end
 
   #
@@ -876,7 +880,6 @@ class BinarySearchTree
         slashes_array[level] = slashes
         slashes_above_array[level] = slashes_above
       end
-      display_original_array(rt)
       display_complete_tree(boxes_array, slashes_array, slashes_above_array)
     end
 
@@ -1030,17 +1033,6 @@ class BinarySearchTree
         puts slashes_above_array[i].join('')
         puts a.join('')
         puts slashes_array[i].join('')
-      end
-    end
-
-    def self.display_original_array(rt)
-      if L.debugging || L.info
-        puts "The array we just inserted:"
-        tmp_array = []
-        rt.pre_order_traverse do |t|
-          tmp_array << t.node.data
-        end
-        puts "#{tmp_array}"
       end
     end
 
