@@ -18,7 +18,7 @@ RSpec.describe 'BinarySearchTree (BST) Specification' do
     before(:all) do
       @bst = BinarySearchTree.new
       L = Logger
-      L.set_level(Logger::LOG_LEVEL_NONE)
+      L.set_level(Logger::LOG_LEVEL_INFO)
 
       @rand_array = [3,1,2,0,5,4,6]
       @bst.insert_into(@rand_array)
@@ -90,6 +90,7 @@ RSpec.describe 'BinarySearchTree (BST) Specification' do
       expect(accumulator).to eq [1,0,2,5,4,6]
     end
   end
+
 
   context 'deleting elements from the BST' do
     before(:each) do

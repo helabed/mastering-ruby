@@ -145,18 +145,16 @@ class BinarySearchTree
     if L.debugging || L.info
       L.log nil, "Ancestors Traversal"
       @root_tree.show_me_ancestors_traverse(@root_tree, Node.new(value))
-    else
-      @root_tree.ancestors_traverse(@root_tree, Node.new(value), &block)
     end
+    @root_tree.ancestors_traverse(@root_tree, Node.new(value), &block)
   end
 
   def do_descendants_traverse(value, &block)
     if L.debugging || L.info
       L.log nil, "Descendants Traversal"
       @root_tree.show_me_descendants_traverse(@root_tree, Node.new(value))
-    else
-      @root_tree.descendants_traverse(@root_tree, Node.new(value), &block)
     end
+    @root_tree.descendants_traverse(@root_tree, Node.new(value), &block)
   end
 
   #
