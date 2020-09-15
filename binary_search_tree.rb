@@ -1,4 +1,5 @@
-# Logger
+#
+# Logger, plain vanilla logger for BinarySearchTree
 #
 class Logger
   LOG_LEVEL_DEBUG = 2
@@ -18,7 +19,7 @@ class Logger
 end
 # End of Logger
 
-#
+
 #
 # BinarySearchTree
 #

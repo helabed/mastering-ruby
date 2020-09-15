@@ -1,5 +1,8 @@
-#comment out this line for standlone RSpec (i.e when NOT in coderpad)
+#in coderpad.io/sandbox, copy file binary_search_tree.rb
+#to the bottom of this file and comment out this
+#require line below.
 require './binary_search_tree'
+#comment out this line below for standlone RSpec (i.e when NOT in coderpad)
 require 'rspec/autorun'
 ##The above statements are useful when running in
 ##coderpad.io/sandbox - otherwise comment out
