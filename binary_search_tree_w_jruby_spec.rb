@@ -61,22 +61,42 @@ RSpec.describe 'BinarySearchTree (BST) testing - iteration last' do
         bst.do_post_in_order_traverse
 
         bst.do_right_to_left_leaf_traverse
-        outcome = bst.do_ancestors_traverse(item_to_traverse_from)
+
+        accumulator = []
+        outcome = bst.do_ancestors_traverse(item_to_traverse_from) do |t|
+          accumulator << t.node.data
+        end
         expect(outcome).to be true
 
-        outcome = bst.do_descendants_traverse(item_to_traverse_from)
+        accumulator = []
+        outcome = bst.do_descendants_traverse(item_to_traverse_from) do |t|
+          accumulator << t.node.data
+        end
         expect(outcome).to be true
         bst.display_tree
         L.log '', 'SUCCESS'
 
+        levels_with_trees = BinarySearchTree::TreeDisplayer.trees_grouped_by_level(bst.root_tree)
+
         # Java swing library below in preparation for displaying trees & nodes
         # in Swing
         frame = javax.swing.JFrame.new("JRuby is Awesome!")
-        button = javax.swing.JButton.new('Press me!')
-        frame.add button
-        frame.set_size 300, 300
+        frame.set_size 600, 600
+        vertical_grid = java.awt.GridLayout.new(bst.height_of_tree, 1)
+        vertical_panel = javax.swing.JPanel.new
+        vertical_panel.set_layout(vertical_grid)
+        levels_with_trees.each_pair do |level, trees|
+          panel = javax.swing.JPanel.new
+          panel.set_layout(java.awt.FlowLayout.new)
+          trees.each_with_index do |t, i|
+            button = javax.swing.JButton.new(t.node.data.to_s)
+            button.add_action_listener { button.text = "L#{level}t#{i+1}" }
+            panel.add button
+          end
+          vertical_panel.add(panel)
+        end
+        frame.add(vertical_panel)
         frame.show
-        button.add_action_listener { button.text = 'you pressed me!' }
 
       end
     end
