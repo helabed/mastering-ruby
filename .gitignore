@@ -21,3 +21,4 @@ tmp/*
 .*.swp
 .idea
 .byebug_history
+*.class
