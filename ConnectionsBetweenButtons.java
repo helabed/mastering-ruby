@@ -21,6 +21,14 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+/**
+ * This class was copied as is from stackoverflow.com.
+ * all credit/blame goes to 'madprogrammer'
+ *   https://stackoverflow.com/users/992484/madprogrammer
+ * His/Her post about this class including a nice image
+ * showing the buttons connected can be found here:
+ *   https://stackoverflow.com/questions/30161207/draw-clickable-lines-between-buttons-swing
+ **/
 public class ConnectionsBetweenButtons {
 
     public static void main(String[] args) {
