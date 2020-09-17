@@ -237,3 +237,99 @@ describe 'Enumerable transformers' do
     end
   end
 end
+
+
+
+RSpec.describe 'Enumerables' do
+  before(:each) do
+    @arr = [1,2,3]
+  end
+
+  it 'each should produce every element of the array' do
+    expect(
+      @arr.each {|e| e}
+    ).to eq [1,2,3]
+  end
+
+  it 'Enumerator created from each without a block' do
+    expect((@arr.each).class).to be Enumerator
+  end
+
+  it 'Enumerator allows chaining multiple enumerators' do
+    expect(@arr.map.with_index {|e,i| "element: #{e} is at index: #{i}"}).to eq [
+      "element: 1 is at index: 0",
+      "element: 2 is at index: 1",
+      "element: 3 is at index: 2"]
+  end
+
+  context 'when inlcuded in a class, Enumerator can augment its behavior' do
+    before(:each) do
+      @ll = LinkedList.new
+      @ll.insert(5)
+      @ll.insert(6)
+      @ll.insert(7)
+      @ll.insert(8)
+      #@ll.inspect
+    end
+
+    it 'should return all elements the list when traversed' do
+      array = []
+      @ll.traverse do |data|
+        array << data
+      end
+      expect(array).to eq [5,6,7,8]
+    end
+  end
+end
+
+class LinkedList
+  attr_accessor :head
+
+  def traverse(&block)
+    locator = @head
+    block.call(locator.node.data)
+    while locator.next != nil
+      locator = locator.next
+      block.call(locator.node.data)
+    end
+  end
+
+  def insert(val)
+    if @head == nil
+      @head = List.new(val)
+      return
+    end
+    locator = @head
+    while locator.next != nil
+      locator = locator.next
+    end
+    locator.next = List.new(val)
+  end
+
+  def inspect
+    locator = @head
+    while locator != nil
+      puts "node: #{locator.node.data}, next: #{locator.next}"
+      locator = locator.next
+      #binding.pry
+    end
+  end
+
+  class Node
+    attr_accessor :data
+
+    def initialize(val)
+      @data = val
+    end
+  end
+
+  class List
+    attr_accessor :next
+    attr_accessor :node
+
+    def initialize(val)
+      @node = Node.new(val)
+      @next = nil
+    end
+  end
+end
