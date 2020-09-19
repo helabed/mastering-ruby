@@ -2,6 +2,7 @@ require 'securerandom'
 require 'set'
 require 'active_support/all'
 
+
 describe 'Enumerable transformers' do
   context 'Enumerable methods' do
     Enumerable_methods = <<-METHODS
@@ -269,7 +270,7 @@ RSpec.describe 'Enumerables' do
       @ll.insert(6)
       @ll.insert(7)
       @ll.insert(8)
-      #@ll.inspect
+      @ll.inspect
     end
 
     it 'should return all elements the list when traversed' do
@@ -308,10 +309,10 @@ class LinkedList
 
   def inspect
     locator = @head
+    puts ""
     while locator != nil
       puts "node: #{locator.node.data}, next: #{locator.next}"
       locator = locator.next
-      #binding.pry
     end
   end
 
