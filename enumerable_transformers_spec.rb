@@ -2,7 +2,6 @@ require 'securerandom'
 require 'set'
 require 'active_support/all'
 
-
 describe 'Enumerable transformers' do
   context 'Enumerable methods' do
     Enumerable_methods = <<-METHODS
@@ -263,14 +262,14 @@ RSpec.describe 'Enumerables' do
       "element: 3 is at index: 2"]
   end
 
-  context 'when inlcuded in a class, Enumerator can augment its behavior' do
+  context 'when inlcuded in a class, Enumerable can augment its behavior' do
     before(:each) do
       @ll = LinkedList.new
       @ll.insert(5)
       @ll.insert(6)
       @ll.insert(7)
       @ll.insert(8)
-      @ll.inspect
+      #@ll.inspect
     end
 
     it 'should return all elements the list when traversed' do
@@ -280,18 +279,68 @@ RSpec.describe 'Enumerables' do
       end
       expect(array).to eq [5,6,7,8]
     end
+
+    it 'should be able to sort the LinkedList because it implements each method' do
+      expect(@ll.sort).to eq [5,6,7,8]
+    end
+
+    it 'should be able to reverse sort the LinkedList because it implements each method' do
+      expect(@ll.sort.reverse).to eq [8,7,6,5]
+    end
+
+    it 'should be able to get a count of the LinkedList' do
+      expect(@ll.count).to eq 4
+    end
+
+    it 'should be able to use include? method' do
+      expect(@ll.include?(10)).to be false
+    end
+
+    it 'should be able to use include? method' do
+      expect(@ll.include?(5)).to be true
+      expect(@ll.include?(8)).to be true
+    end
+
+    it 'should be able to use some aggregate methods from Enumerable' do
+      expect(@ll.max).to eq 8
+      expect(@ll.min).to eq 5
+      expect(@ll.minmax).to eq [5,8]
+    end
+
+    it 'should be able to chain methods from Enumerable' do
+      expect(@ll.each.with_index.to_h).to eq ({5 => 0,
+                                               6 => 1,
+                                               7 => 2,
+                                               8 => 3})
+    end
   end
 end
 
+
+# Adding Enumerable module to LinkedList
+#
+# The Enumerable mixin provides collection classes with several traversal and searching methods,
+# and with the ability to sort.
+# The class must provide a method 'each', which yields successive members of the collection.
+# If #max, min, or sort is used, the objects in the collection must also implement
+# a meaningful <=> operator, as these methods rely on an ordering between members of the collection.
 class LinkedList
-  attr_accessor :head
+  include Enumerable
+
+  def each(&block)
+    traverse(&block)
+  end
 
   def traverse(&block)
-    locator = @head
-    block.call(locator.node.data)
-    while locator.next != nil
-      locator = locator.next
+    if block_given?
+      locator = @head
       block.call(locator.node.data)
+      while locator.next != nil
+        locator = locator.next
+        block.call(locator.node.data)
+      end
+    else
+      to_enum(:each)
     end
   end
 
