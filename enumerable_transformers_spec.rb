@@ -1,3 +1,5 @@
+#require 'rspec/autorun'
+# un-comment out above when in coderpad.io/sandbox
 require 'securerandom'
 require 'set'
 require 'active_support/all'
@@ -239,8 +241,7 @@ describe 'Enumerable transformers' do
 end
 
 
-
-RSpec.describe 'Enumerables' do
+RSpec.describe 'Including Enumerables in another data structure' do
   before(:each) do
     @arr = [1,2,3]
   end
@@ -262,7 +263,7 @@ RSpec.describe 'Enumerables' do
       "element: 3 is at index: 2"]
   end
 
-  context 'when inlcuded in a class, Enumerable can augment its behavior' do
+  context 'when inlcuded in a class(Ex: LinkedList), Enumerable can augment its behavior' do
     before(:each) do
       @ll = LinkedList.new
       @ll.insert(5)
@@ -272,7 +273,7 @@ RSpec.describe 'Enumerables' do
       #@ll.inspect
     end
 
-    it 'should return all elements the list when traversed' do
+    it 'traverse should return all elements the list when traversed' do
       array = []
       @ll.traverse do |data|
         array << data
@@ -280,38 +281,80 @@ RSpec.describe 'Enumerables' do
       expect(array).to eq [5,6,7,8]
     end
 
-    it 'should be able to sort the LinkedList because it implements each method' do
-      expect(@ll.sort).to eq [5,6,7,8]
-    end
+    context 'and because LinkedList implements the each and <=> methods' do
+      it 'should be able to sort the LinkedList' do
+        expect(@ll.sort).to eq [5,6,7,8]
+      end
 
-    it 'should be able to reverse sort the LinkedList because it implements each method' do
-      expect(@ll.sort.reverse).to eq [8,7,6,5]
-    end
+      it 'should be able to reverse sort the LinkedList' do
+        expect(@ll.sort.reverse).to eq [8,7,6,5]
+      end
 
-    it 'should be able to get a count of the LinkedList' do
-      expect(@ll.count).to eq 4
-    end
+      it 'should be able to get a count of the LinkedList' do
+        expect(@ll.count).to eq 4
+      end
 
-    it 'should be able to use include? method' do
-      expect(@ll.include?(10)).to be false
-    end
+      it 'should be able to use include? to see if an element is in the LinkedList' do
+        expect(@ll.include?(10)).to be false
+      end
 
-    it 'should be able to use include? method' do
-      expect(@ll.include?(5)).to be true
-      expect(@ll.include?(8)).to be true
-    end
+      it 'should be able to use include? method' do
+        expect(@ll.include?(5)).to be true
+        expect(@ll.include?(8)).to be true
+      end
 
-    it 'should be able to use some aggregate methods from Enumerable' do
-      expect(@ll.max).to eq 8
-      expect(@ll.min).to eq 5
-      expect(@ll.minmax).to eq [5,8]
-    end
+      it 'should be able to use some aggregate methods from Enumerable' do
+        expect(@ll.max).to eq 8
+        expect(@ll.min).to eq 5
+        expect(@ll.minmax).to eq [5,8]
+      end
 
-    it 'should be able to chain methods from Enumerable' do
-      expect(@ll.each.with_index.to_h).to eq ({5 => 0,
-                                               6 => 1,
-                                               7 => 2,
-                                               8 => 3})
+      it 'should be able to chain methods from Enumerable' do
+        expect(@ll.each.with_index.to_h).to eq ({5 => 0,
+                                                 6 => 1,
+                                                 7 => 2,
+                                                 8 => 3})
+      end
+
+      it 'should be able to reverse the list' do
+        expect(@ll.sort.reverse).to eq ([8,7,6,5])
+      end
+
+      it 'should be able to reverse with sort alone' do
+        expect(@ll.sort {|a,b| b <=> a}).to eq ([8,7,6,5])
+      end
+
+      it 'should be able to sort with help of <=>' do
+        expect(@ll.sort {|a,b| a <=> b}).to eq ([5,6,7,8])
+      end
+
+      it 'should be able to sum all element of the list' do
+        expect(@ll.sum).to eq (26)
+      end
+
+      it 'should be able to exclude any element of the list' do
+        expect(@ll.exclude?(8)).to eq (false)
+        expect(@ll.exclude?(1)).to eq (true)
+      end
+
+      it 'should be able to find any element of the list' do
+        expect(@ll.find {|x| x == 8}).to eq (8)
+        expect(@ll.find {|x| x == 1}).to eq (nil) # 1 is not in list
+      end
+
+      it 'should be able to find all elements of the list' do
+        expect(@ll.find_all {|x| x < 7}).to eq ([5,6])
+        expect(@ll.find_all {|x| x < 1}).to eq ([])
+      end
+
+      it 'should be able to get first element of the list' do
+        expect(@ll.first).to eq (5)
+      end
+
+      it 'should be able to see if an element is a member? of the list' do
+        expect(@ll.member?(4)).to eq (false)
+        expect(@ll.member?(7)).to eq (true)
+      end
     end
   end
 end
@@ -329,6 +372,10 @@ class LinkedList
 
   def each(&block)
     traverse(&block)
+  end
+
+  def <=>(other)
+    self.node.data <=> other.node.data
   end
 
   def traverse(&block)
