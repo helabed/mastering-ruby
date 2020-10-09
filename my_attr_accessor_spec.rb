@@ -1,13 +1,13 @@
 describe 'my_attr_accessor' do
   before(:each) do
-    module Logger
+    module MyLogger
       def self.log(msg)
         msg
       end
     end
 
     module MyAccessor
-      include Logger
+      include MyLogger
       def my_attr_accessor(name)
         ivar_name = "@#{name}"
         define_method(name) do
@@ -15,7 +15,7 @@ describe 'my_attr_accessor' do
         end
         define_method("#{name}=") do |val|
           instance_variable_set(ivar_name, val)
-          Logger.log( "#{self.class}@#{name} => #{val}" )
+          MyLogger.log( "#{self.class}@#{name} => #{val}" )
         end
       end
     end

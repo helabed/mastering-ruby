@@ -29,14 +29,14 @@ describe 'Modulization' do
   end
 
   context "for creating instance methods" do
-    module Logger
+    module MyLogger
       def log(msg)
         msg
       end
     end
 
     class Truck
-      include Logger
+      include MyLogger
     end
 
     it "should provide access to the module's instance method" do
@@ -47,7 +47,7 @@ describe 'Modulization' do
     it "should assert that to 'include' a module's instance method does not mean copying the method's body, but instead referencing the one and only copy of it" do
       a_truck = Truck.new
       # reopening and overwriting log method
-      module Logger
+      module MyLogger
         def log(msg)
           "go away"
         end
@@ -56,14 +56,14 @@ describe 'Modulization' do
     end
 
     it "should be available for use from more than one class" do
-      module Logger
+      module MyLogger
         def log(msg)
           msg
         end
       end
 
       class Ship
-        include Logger
+        include MyLogger
       end
 
       a_truck = Truck.new
@@ -73,19 +73,19 @@ describe 'Modulization' do
     end
 
     it "should be available for use from an object with the 'extend' keyword" do
-      module Logger
+      module MyLogger
         def log(msg)
           msg
         end
       end
 
       animal = "cat"
-      animal.extend Logger
+      animal.extend MyLogger
       expect(animal.log("Greetings from the cat")).to eq "Greetings from the cat"
     end
 
     it "should be available for use from an object by including the methods from the module into a singleton class using 'class << object' " do
-      module Logger
+      module MyLogger
         def log(msg)
           msg
         end
@@ -93,14 +93,14 @@ describe 'Modulization' do
 
       animal = "cat"
       class << animal
-        include Logger
+        include MyLogger
       end
       expect(animal.log("Greetings from the singleton cat")).to eq "Greetings from the singleton cat"
     end
   end
 
   context "for converting a module instance methods into class methods of the class that is mixing in the module" do
-    module Logger
+    module MyLogger
       def log(msg)
         msg
       end
@@ -108,7 +108,7 @@ describe 'Modulization' do
 
     class Truck
       class << self
-        include Logger
+        include MyLogger
       end
     end
 
@@ -119,7 +119,7 @@ describe 'Modulization' do
     it "should provide access to the module's instance method as a class method using the 'extend' keyword" do
 
       class Car
-        extend Logger
+        extend MyLogger
       end
 
       expect(Car.log("hello from the Car class")).to eq "hello from the Car class"
@@ -128,7 +128,7 @@ describe 'Modulization' do
     it "should provide access to the module's instance method as a class method using the 'extend' keyword and from within the extending class at the class level" do
 
       class Accessor
-        extend Logger
+        extend MyLogger
 
         class << self
           attr_accessor :the_message
